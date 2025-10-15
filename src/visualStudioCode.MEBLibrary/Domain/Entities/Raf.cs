@@ -4,7 +4,7 @@ namespace Domain.Entities;
 
 public class Raf : Entity<Guid>
 {
-    public int KutuphaneBolumuId { get; set; } // 10, 45, 88
+    public Guid KutuphaneBolumuId { get; set; } // 10, 45, 88
     public string Kod { get; set; } = string.Empty; // "FEN-A1", "EDEB-B2", "MULTI-DVD-1"
     public string? Aciklama { get; set; } // "9. sınıf fen kaynakları", "Okuma kulübü seçkisi", null
 

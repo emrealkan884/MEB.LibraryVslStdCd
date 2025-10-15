@@ -7,7 +7,7 @@ public class DeweySiniflama: Entity<Guid>
     public string Kod { get; set; } = string.Empty; // "500", "510", "516.2"
     public string Baslik { get; set; } = string.Empty; // "Fen Bilimleri", "Matematik", "Geometri"
     public string? Aciklama { get; set; } // "Doğa bilimleri genel", "Cebir ve sayılar", null
-    public int? UstSinifId { get; set; } // null, 500, 510
+    public Guid? UstSinifId { get; set; } // null, 500, 510
 
     //Navigation properties
     public DeweySiniflama? UstSinif { get; set; }

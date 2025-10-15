@@ -8,15 +8,14 @@
 - `KatalogKaydi` sinifi Dewey kodu, Marc21 verisi, RDA bayragi, sayfa sayisi, kapak yolu gibi alanlarla zenginlestirildi; `MateryalTuru` enum u ile baglandi.
 - Materyal formatlarini detaylandirmak icin `MateryalFormatDetay` sinifi, Dewey siniflamasi icin `DeweySiniflama` varligi ve authority yapisi icin `OtoriteKaydi`, `OtoriteTuru`, `KatalogKonu` siniflari eklendi.
 - Guvenlikten gelen hazir varliklar `Entities/Security` klasorune tasinarak domain yapisi sade tutuldu.
+- `nArchGenerator` ile tum domain nesneleri icin CQRS komut/sorgu setleri, AutoMapper profilleri, business kurallari, validatorler, servis arayuzleri ve WebAPI controller lari olusturuldu. Persistence katmaninda ilgili repository ve konfigurasyon siniflari eklendi; `ApplicationServiceRegistration` ve `PersistenceServiceRegistration` uzerinden DI kayitlari guncellendi.
 - Tum degisiklikler `dotnet build VisualStudioCode.MEBLibrary.sln` komutuyla dogrulandi (0 uyari, 0 hata).
 
 ## 2. Kalan Adimlar
-1. Persistence katmaninda yeni varliklar icin EF Core konfigurasyonlarini yaz (DeweySiniflama, MateryalFormatDetay, OtoriteKaydi, KatalogKonu, YeniKatalogTalebi ve Security klasoru).
-2. Domain servisleri ve validation kurallarini ekle: talep olusurken zorunlu alanlar, materyal turune gore ISBN/ISSN kontrolu, authority baglantisi dogrulama vb.
-3. Application katmaninda talep olusturma/onay/ret akislari, katalog kaydina baglama, okulun materyal ve nusha eklemesi icin komut ve sorgulari gelistir.
-4. Birim testlerini guncelleyerek yeni davranislari dogrula; talep onayi, otorite baglantisi, Dewey siniflama baglari icin senaryolar yaz.
-5. Katmanlar arasi bagimliliklari guncelle (DI kayitlari, AutoMapper profilleri, DTO lar) ve dokumantasyonla uyumlu hale getir.
-6. Siradaki gelistirmeleri planla: kullanici/rol modeli, audit log, dijital icerik yonetimi, barkod/RFID, bildirim ve odunc kurallari, raporlama, entegrasyon ve yedekleme.
+1. Domain servisleri ve validation kurallarini zenginlestir: talep olusurken zorunlu alanlar, materyal turune gore ISBN/ISSN kontrolu, authority baglantisi dogrulama vb. (su anda olusan iskelet kurallar `NotEmpty` seviyesinde).
+2. Application katmaninda talep olusturma/onay/ret akislari, katalog kaydina baglama, okulun materyal ve nusha eklemesi icin davranis odakli komut ve sorgulari gelistir.
+3. Birim testlerini guncelleyerek yeni davranislari dogrula; talep onayi, otorite baglantisi, Dewey siniflama baglari icin senaryolar yaz.
+4. Siradaki gelistirmeleri planla: kullanici/rol modeli, audit log, dijital icerik yonetimi, barkod/RFID, bildirim ve odunc kurallari, raporlama, entegrasyon ve yedekleme.
 
 ## 3. Katalog Kaydi – Materyal – Nusha Temel Iliski
 - `KatalogKaydi`: Kaynagin bibliyografik kimligi. Baslik, ISBN, Dewey kodu, Marc21 verisi gibi bilgileri tutar. `KutuphaneId` hangi kurumun kaydi yonettigini, `KaynakTalepId` kaydin hangi talep uzerinden olustugunu gosterir. `MateryalTuru` (kitap, dergi, video) ve `MateryalAltTuru` (roman, belgesel, aylik bilim) kaynagin turunu belirtir.
@@ -51,3 +50,13 @@
 3. Merkez talebi inceleyip onaylarsa `KatalogKaydi` olusur, `TalepDurumu` `Onaylandi` olur ve `KaynakTalepId` baglanir.
 4. Okul, onaylanan kaydi kullanarak `Materyal` ve `Nusha` kayitlarini acar.
 5. Reddedilen talepler gerekce ile saklanir; okul duzeltip yeniden gönderebilir.
+
+
+## 8. nArchGenerator Ciktilari - Dosya Haritasi
+- `src/visualStudioCode.MEBLibrary/Application/Features/*`: Her domain nesnesi icin Create/Update/Delete komutlari, GetById/GetList sorgulari, business kurallari, AutoMapper profilleri ve yerellestirme dosyalari.
+- `src/visualStudioCode.MEBLibrary/Application/Services/*`: IoC kaydi yapilmis servis arayuzleri ve Manager siniflari; repository arayuzleri `Application/Services/Repositories` altinda.
+- `src/visualStudioCode.MEBLibrary/Persistence/Repositories` ve `Persistence/EntityConfigurations`: EfRepositoryBase tabanli repository ler ile Fluent API konfigurasyonlari.
+- `src/visualStudioCode.MEBLibrary/Persistence/Contexts/BaseDbContext.cs`: Tum yeni varliklar icin `DbSet<>` tanimlari.
+- `src/visualStudioCode.MEBLibrary/WebAPI/Controllers/*Controller.cs`: CQRS endpoint lerini saglayan REST controller lari.
+
+> Not: Olusan iskelet kodlar domain is kurallari, validasyonlar ve test kapsamiyla detaylandirilmaya devam edecek.

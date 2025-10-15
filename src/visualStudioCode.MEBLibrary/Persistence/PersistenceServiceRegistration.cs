@@ -1,4 +1,4 @@
-﻿using Application.Services.Repositories;
+using Application.Services.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +22,23 @@ public static class PersistenceServiceRegistration
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserOperationClaimRepository, UserOperationClaimRepository>();
 
+        services.AddScoped<IYazarRepository, YazarRepository>();
+        services.AddScoped<IDeweySiniflamaRepository, DeweySiniflamaRepository>();
+        services.AddScoped<IEtkinlikRepository, EtkinlikRepository>();
+        services.AddScoped<IKatalogKaydiRepository, KatalogKaydiRepository>();
+        services.AddScoped<IKatalogKaydiYazarRepository, KatalogKaydiYazarRepository>();
+        services.AddScoped<IKatalogKonuRepository, KatalogKonuRepository>();
+        services.AddScoped<IKutuphaneRepository, KutuphaneRepository>();
+        services.AddScoped<IKutuphaneBolumuRepository, KutuphaneBolumuRepository>();
+        services.AddScoped<IMateryalRepository, MateryalRepository>();
+        services.AddScoped<IMateryalEtiketRepository, MateryalEtiketRepository>();
+        services.AddScoped<IMateryalFormatDetayRepository, MateryalFormatDetayRepository>();
+        services.AddScoped<INushaRepository, NushaRepository>();
+        services.AddScoped<IOduncIslemiRepository, OduncIslemiRepository>();
+        services.AddScoped<IOtoriteKaydiRepository, OtoriteKaydiRepository>();
+        services.AddScoped<IRafRepository, RafRepository>();
+        services.AddScoped<IRezervasyonRepository, RezervasyonRepository>();
+        services.AddScoped<IYeniKatalogTalebiRepository, YeniKatalogTalebiRepository>();
         return services;
     }
 }

@@ -1,0 +1,17 @@
+using Domain.Enums;
+using NArchitecture.Core.Application.Dtos;
+
+namespace Application.Features.OduncIslemler.Queries.GetList;
+
+public class GetListOduncIslemiListItemDto : IDto
+{
+    public Guid Id { get; set; }
+    public Guid KutuphaneId { get; set; }
+    public Guid KullaniciId { get; set; }
+    public Guid NushaId { get; set; }
+    public DateTime AlinmaTarihi { get; set; }
+    public DateTime SonTeslimTarihi { get; set; }
+    public DateTime? IadeTarihi { get; set; }
+    public OduncDurumu Durumu { get; set; }
+    public string? Not { get; set; }
+}

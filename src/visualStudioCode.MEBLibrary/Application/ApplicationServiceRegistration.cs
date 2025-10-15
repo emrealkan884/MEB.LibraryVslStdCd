@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using Application.Services.AuthenticatorService;
 using Application.Services.AuthService;
+using Application.Services.DeweySiniflamalari;
+using Application.Services.Etkinlikler;
 using Application.Services.UsersService;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +22,21 @@ using NArchitecture.Core.Mailing;
 using NArchitecture.Core.Mailing.MailKit;
 using NArchitecture.Core.Security.DependencyInjection;
 using NArchitecture.Core.Security.JWT;
+using Application.Services.KatalogKaydiYazarlar;
+using Application.Services.KatalogKayitlari;
+using Application.Services.KatalogKonulari;
+using Application.Services.KutuphaneBolumleri;
+using Application.Services.Kutuphaneler;
+using Application.Services.MateryalEtiketleri;
+using Application.Services.MateryalFormatDetaylari;
+using Application.Services.Materyaller;
+using Application.Services.Nushalar;
+using Application.Services.OduncIslemleri;
+using Application.Services.OtoriteKayitlari;
+using Application.Services.Raflar;
+using Application.Services.Rezervasyonlar;
+using Application.Services.Yazarlar;
+using Application.Services.YeniKatalogTalepleri;
 
 namespace Application;
 
@@ -61,6 +78,23 @@ public static class ApplicationServiceRegistration
 
         services.AddSecurityServices<Guid, int, Guid>(tokenOptions);
 
+        services.AddScoped<IYazarService, YazarManager>();
+        services.AddScoped<IDeweySiniflamaService, DeweySiniflamaManager>();
+        services.AddScoped<IEtkinlikService, EtkinlikManager>();
+        services.AddScoped<IKatalogKaydiService, KatalogKaydiManager>();
+        services.AddScoped<IKatalogKaydiYazarService, KatalogKaydiYazarManager>();
+        services.AddScoped<IKatalogKonuService, KatalogKonuManager>();
+        services.AddScoped<IKutuphaneService, KutuphaneManager>();
+        services.AddScoped<IKutuphaneBolumuService, KutuphaneBolumuManager>();
+        services.AddScoped<IMateryalService, MateryalManager>();
+        services.AddScoped<IMateryalEtiketService, MateryalEtiketManager>();
+        services.AddScoped<IMateryalFormatDetayService, MateryalFormatDetayManager>();
+        services.AddScoped<INushaService, NushaManager>();
+        services.AddScoped<IOduncIslemiService, OduncIslemiManager>();
+        services.AddScoped<IOtoriteKaydiService, OtoriteKaydiManager>();
+        services.AddScoped<IRafService, RafManager>();
+        services.AddScoped<IRezervasyonService, RezervasyonManager>();
+        services.AddScoped<IYeniKatalogTalebiService, YeniKatalogTalebiManager>();
         return services;
     }
 
