@@ -63,6 +63,15 @@ Aşağıdaki örnek akışlar `KutuphaneId` bilgisinin yokluğunda karşılaşı
 
 Bu nedenle `KutuphaneId` bilgisi, merkez–okul sorumluluk ayrımını, talep sürecinin izlenmesini ve yetki politikalarının uygulanmasını sağlar; `KaynakTalepId` ise yalnızca talep kökenli kayıtları işaretleyerek bu yapıyı tamamlar.
 
+## Otorite Kayıtları Neden Gerekli?
+Merkez kütüphanenin “Otoriteler” modülü, katalogdaki kişi, kurum ve konu başlıklarının tutarlı kullanılmasını sağlamak için `OtoriteKaydi` varlığını kullanır. Örneğin “STEM Eğitimi” konu başlığı için tek bir otorite kaydı açılır:
+- `YetkiliBaslik` resmi adıdır; `AlternatifBasliklar` alanında “Fen Bilimleri Eğitimi” gibi varyantlar tutulur.
+- `BagliTerimler`, ilişkili veya daha geniş/dar kavramları listeler; arama yapılırken öneriler bu alandan gelir.
+- `HariciKayitNo`, Library of Congress gibi dış authority sistemleriyle eşleşmeyi mümkün kılar.
+- `OtoriteTuru` bu kaydın konu, kişi, kurum vb. olduğunu belirtir.
+
+`KatalogKonu` ve `KatalogKaydiYazar` varlıkları ilgili katalog kayıtlarını bu otorite kaydına bağlar. Böylece Yahya Turan Fen Lisesi “Fen Bilimleri Eğitimi” diye arama yaptığında da “STEM Eğitimi” authority kaydına bağlı tüm kitapları bulur; farklı yazımlar tek başlık altında toplanır. Bu yapı, gereksinimlerde belirtilen “Otoriteler” fonksiyonunun domain tarafındaki karşılığıdır.
+
 ## Yeni Katalog Talebi Akışı
 - Okul kütüphanesi tarama yaptığında uygun `KatalogKaydi` bulamazsa “Yeni Katalog Talebi” oluşturur.
 - Talep kaydı (planlanan `YeniKatalogTalebi` varlığı) şu bilgileri içerecektir: talep eden kütüphane, materyal türü/alt türü, temel bibliyografik alanlar (başlık, yazar, ISBN veya ISSN varsa, yayın bilgileri), talep nedeni ve durum (`Beklemede`, `İnceleniyor`, `Onaylandı`, `Reddedildi`).
