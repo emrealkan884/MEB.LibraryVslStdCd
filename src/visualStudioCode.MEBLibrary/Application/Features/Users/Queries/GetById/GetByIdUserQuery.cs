@@ -3,6 +3,7 @@ using Application.Features.Users.Rules;
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Entities.Security;
 using MediatR;
 using NArchitecture.Core.Application.Pipelines.Authorization;
 

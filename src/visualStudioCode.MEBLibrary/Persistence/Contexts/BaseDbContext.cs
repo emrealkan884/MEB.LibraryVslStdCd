@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Domain.Entities;
+using Domain.Entities.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 

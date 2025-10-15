@@ -4,6 +4,7 @@ using Application.Services.AuthenticatorService;
 using Application.Services.Repositories;
 using Application.Services.UsersService;
 using Domain.Entities;
+using Domain.Entities.Security;
 using MediatR;
 using MimeKit;
 using NArchitecture.Core.Application.Pipelines.Authorization;

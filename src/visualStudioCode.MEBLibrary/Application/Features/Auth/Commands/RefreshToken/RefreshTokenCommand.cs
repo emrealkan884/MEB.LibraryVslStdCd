@@ -2,6 +2,7 @@
 using Application.Services.AuthService;
 using Application.Services.UsersService;
 using Domain.Entities;
+using Domain.Entities.Security;
 using MediatR;
 using NArchitecture.Core.Security.JWT;
 
@@ -39,7 +40,7 @@ public class RefreshTokenCommand : IRequest<RefreshedTokensResponse>
 
         public async Task<RefreshedTokensResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            Domain.Entities.RefreshToken? refreshToken = await _authService.GetRefreshTokenByToken(request.RefreshToken);
+            Domain.Entities.Security.RefreshToken? refreshToken = await _authService.GetRefreshTokenByToken(request.RefreshToken);
             await _authBusinessRules.RefreshTokenShouldBeExists(refreshToken);
 
             if (refreshToken!.RevokedDate != null)
@@ -56,12 +57,12 @@ public class RefreshTokenCommand : IRequest<RefreshedTokensResponse>
             );
             await _authBusinessRules.UserShouldBeExistsWhenSelected(user);
 
-            Domain.Entities.RefreshToken newRefreshToken = await _authService.RotateRefreshToken(
+            Domain.Entities.Security.RefreshToken newRefreshToken = await _authService.RotateRefreshToken(
                 user: user!,
                 refreshToken,
                 request.IpAddress
             );
-            Domain.Entities.RefreshToken addedRefreshToken = await _authService.AddRefreshToken(newRefreshToken);
+            Domain.Entities.Security.RefreshToken addedRefreshToken = await _authService.AddRefreshToken(newRefreshToken);
             await _authService.DeleteOldRefreshTokens(refreshToken.UserId);
 
             AccessToken createdAccessToken = await _authService.CreateAccessToken(user!);

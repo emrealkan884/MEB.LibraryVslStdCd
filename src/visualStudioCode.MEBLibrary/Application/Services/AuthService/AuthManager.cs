@@ -2,6 +2,7 @@
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Entities.Security;
 using Microsoft.Extensions.Configuration;
 using NArchitecture.Core.Security.JWT;
 

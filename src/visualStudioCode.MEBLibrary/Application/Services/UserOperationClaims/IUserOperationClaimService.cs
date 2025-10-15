@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Domain.Entities;
+using Domain.Entities.Security;
 using Microsoft.EntityFrameworkCore.Query;
 using NArchitecture.Core.Persistence.Paging;
 

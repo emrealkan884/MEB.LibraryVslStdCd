@@ -2,6 +2,7 @@
 using Application.Services.AuthService;
 using Application.Services.Repositories;
 using Domain.Entities;
+using Domain.Entities.Security;
 using MediatR;
 using NArchitecture.Core.Application.Dtos;
 using NArchitecture.Core.Security.Hashing;
@@ -63,11 +64,11 @@ public class RegisterCommand : IRequest<RegisteredResponse>
 
             AccessToken createdAccessToken = await _authService.CreateAccessToken(createdUser);
 
-            Domain.Entities.RefreshToken createdRefreshToken = await _authService.CreateRefreshToken(
+            Domain.Entities.Security.RefreshToken createdRefreshToken = await _authService.CreateRefreshToken(
                 createdUser,
                 request.IpAddress
             );
-            Domain.Entities.RefreshToken addedRefreshToken = await _authService.AddRefreshToken(createdRefreshToken);
+            Domain.Entities.Security.RefreshToken addedRefreshToken = await _authService.AddRefreshToken(createdRefreshToken);
 
             RegisteredResponse registeredResponse = new() { AccessToken = createdAccessToken, RefreshToken = addedRefreshToken };
             return registeredResponse;

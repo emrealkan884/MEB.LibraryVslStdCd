@@ -1,6 +1,7 @@
 ﻿using Application.Features.Auth.Rules;
 using Application.Services.Repositories;
 using Domain.Entities;
+using Domain.Entities.Security;
 using MediatR;
 
 namespace Application.Features.Auth.Commands.VerifyEmailAuthenticator;

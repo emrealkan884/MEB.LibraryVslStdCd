@@ -3,6 +3,7 @@ using Application.Features.OperationClaims.Constants;
 using Application.Features.UserOperationClaims.Constants;
 using Application.Features.Users.Constants;
 using Domain.Entities;
+using Domain.Entities.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NArchitecture.Core.Security.Constants;

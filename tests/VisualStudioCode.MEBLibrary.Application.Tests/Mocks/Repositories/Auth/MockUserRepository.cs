@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Application.Services.Repositories;
 using Domain.Entities;
+using Domain.Entities.Security;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using StarterProject.Application.Tests.Mocks.FakeDatas;

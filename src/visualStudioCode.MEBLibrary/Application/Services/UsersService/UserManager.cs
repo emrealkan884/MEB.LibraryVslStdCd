@@ -2,6 +2,7 @@
 using Application.Features.Users.Rules;
 using Application.Services.Repositories;
 using Domain.Entities;
+using Domain.Entities.Security;
 using Microsoft.EntityFrameworkCore.Query;
 using NArchitecture.Core.Persistence.Paging;
 

@@ -1,4 +1,5 @@
 ﻿using Application.Services.Repositories;
+using Domain.Entities.Security;
 using Moq;
 using StarterProject.Application.Tests.Mocks.FakeDatas;
 
@@ -15,7 +16,7 @@ public class MockRefreshTokenRepository
 
     public IRefreshTokenRepository GetMockRefreshTokenRepository()
     {
-        List<Domain.Entities.RefreshToken> tokens = _refreshTokenFakeData.Data;
+        List<RefreshToken> tokens = _refreshTokenFakeData.Data;
         var mockRepo = new Mock<IRefreshTokenRepository>();
         mockRepo.Setup(s => s.GetOldRefreshTokensAsync(It.IsAny<Guid>(), It.IsAny<int>())).ReturnsAsync(() => tokens);
         return mockRepo.Object;

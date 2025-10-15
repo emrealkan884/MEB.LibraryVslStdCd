@@ -1,5 +1,6 @@
 ﻿using Application.Services.Repositories;
 using Domain.Entities;
+using Domain.Entities.Security;
 using MimeKit;
 using NArchitecture.Core.CrossCuttingConcerns.Exception.Types;
 using NArchitecture.Core.Mailing;

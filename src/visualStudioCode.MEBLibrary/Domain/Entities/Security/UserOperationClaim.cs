@@ -1,4 +1,4 @@
-namespace Domain.Entities;
+namespace Domain.Entities.Security;
 
 public class UserOperationClaim : NArchitecture.Core.Security.Entities.UserOperationClaim<Guid, Guid, int>
 {

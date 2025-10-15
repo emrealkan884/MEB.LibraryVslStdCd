@@ -1,6 +1,7 @@
 using Application.Features.Auth.Commands.RevokeToken;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Entities.Security;
 
 namespace Application.Features.Auth.Profiles;
 

@@ -2,6 +2,7 @@
 using Application.Features.Users.Rules;
 using Application.Services.Repositories;
 using Domain.Entities;
+using Domain.Entities.Security;
 using NArchitecture.Core.Test.Application.Repositories;
 using StarterProject.Application.Tests.Mocks.FakeDatas;
 

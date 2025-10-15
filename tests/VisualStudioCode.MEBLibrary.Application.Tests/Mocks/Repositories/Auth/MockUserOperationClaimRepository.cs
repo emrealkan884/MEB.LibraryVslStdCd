@@ -1,4 +1,5 @@
 ﻿using Application.Services.Repositories;
+using Domain.Entities.Security;
 using Moq;
 using StarterProject.Application.Tests.Mocks.FakeDatas;
 
@@ -15,7 +16,7 @@ public class MockUserOperationClaimRepository
 
     public IUserOperationClaimRepository GetMockUserOperationClaimRepository()
     {
-        List<Domain.Entities.OperationClaim> operationClaims = _operationClaimFakeData.Data;
+        List<OperationClaim> operationClaims = _operationClaimFakeData.Data;
         var mockRepo = new Mock<IUserOperationClaimRepository>();
 
         mockRepo

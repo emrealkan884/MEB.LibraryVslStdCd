@@ -1,4 +1,4 @@
-namespace Domain.Entities;
+namespace Domain.Entities.Security;
 
 public class RefreshToken : NArchitecture.Core.Security.Entities.RefreshToken<Guid, Guid>
 {

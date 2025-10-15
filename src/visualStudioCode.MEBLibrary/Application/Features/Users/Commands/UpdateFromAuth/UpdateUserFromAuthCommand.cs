@@ -3,6 +3,7 @@ using Application.Services.AuthService;
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Entities.Security;
 using MediatR;
 using NArchitecture.Core.Security.Hashing;
 

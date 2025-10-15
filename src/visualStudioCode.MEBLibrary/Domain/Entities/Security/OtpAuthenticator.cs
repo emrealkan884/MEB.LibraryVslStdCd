@@ -1,4 +1,4 @@
-namespace Domain.Entities;
+namespace Domain.Entities.Security;
 
 public class OtpAuthenticator : NArchitecture.Core.Security.Entities.OtpAuthenticator<Guid>
 {

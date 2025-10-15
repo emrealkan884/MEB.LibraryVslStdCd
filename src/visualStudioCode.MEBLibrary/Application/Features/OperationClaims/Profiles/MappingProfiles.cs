@@ -5,6 +5,7 @@ using Application.Features.OperationClaims.Queries.GetById;
 using Application.Features.OperationClaims.Queries.GetList;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Entities.Security;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Paging;
 

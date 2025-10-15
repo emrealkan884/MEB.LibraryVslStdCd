@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Security;
 
 namespace Application.Services.AuthenticatorService;
 

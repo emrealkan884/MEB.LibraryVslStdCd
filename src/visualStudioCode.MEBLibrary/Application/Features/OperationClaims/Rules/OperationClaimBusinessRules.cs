@@ -1,6 +1,7 @@
 using Application.Features.OperationClaims.Constants;
 using Application.Services.Repositories;
 using Domain.Entities;
+using Domain.Entities.Security;
 using NArchitecture.Core.Application.Rules;
 using NArchitecture.Core.CrossCuttingConcerns.Exception.Types;
 using NArchitecture.Core.Localization.Abstraction;
