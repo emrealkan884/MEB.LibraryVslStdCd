@@ -10,11 +10,17 @@ namespace Application.Features.KatalogKonulari.Rules;
 public class KatalogKonuBusinessRules : BaseBusinessRules
 {
     private readonly IKatalogKonuRepository _katalogKonuRepository;
+    private readonly IOtoriteKaydiRepository _otoriteKaydiRepository;
     private readonly ILocalizationService _localizationService;
 
-    public KatalogKonuBusinessRules(IKatalogKonuRepository katalogKonuRepository, ILocalizationService localizationService)
+    public KatalogKonuBusinessRules(
+        IKatalogKonuRepository katalogKonuRepository,
+        IOtoriteKaydiRepository otoriteKaydiRepository,
+        ILocalizationService localizationService
+    )
     {
         _katalogKonuRepository = katalogKonuRepository;
+        _otoriteKaydiRepository = otoriteKaydiRepository;
         _localizationService = localizationService;
     }
 
@@ -38,5 +44,19 @@ public class KatalogKonuBusinessRules : BaseBusinessRules
             cancellationToken: cancellationToken
         );
         await KatalogKonuShouldExistWhenSelected(katalogKonu);
+    }
+
+    public async Task KatalogKonuShouldReferenceExistingOtorite(Guid? otoriteKaydiId, CancellationToken cancellationToken)
+    {
+        if (!otoriteKaydiId.HasValue)
+            await throwBusinessException(KatalogKonusBusinessMessages.OtoriteKaydiRequiredForSubject);
+
+        bool exists = await _otoriteKaydiRepository.AnyAsync(
+            predicate: x => x.Id == otoriteKaydiId.Value,
+            cancellationToken: cancellationToken
+        );
+
+        if (!exists)
+            await throwBusinessException(KatalogKonusBusinessMessages.OtoriteKaydiNotExistsForSubject);
     }
 }

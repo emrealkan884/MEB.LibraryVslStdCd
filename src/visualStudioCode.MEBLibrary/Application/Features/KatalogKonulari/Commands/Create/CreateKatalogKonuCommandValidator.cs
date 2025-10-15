@@ -8,5 +8,6 @@ public class CreateKatalogKonuCommandValidator : AbstractValidator<CreateKatalog
     {
         RuleFor(c => c.KatalogKaydiId).NotEmpty();
         RuleFor(c => c.KonuBasligi).NotEmpty();
+        RuleFor(c => c.OtoriteKaydiId).NotEmpty();
     }
 }

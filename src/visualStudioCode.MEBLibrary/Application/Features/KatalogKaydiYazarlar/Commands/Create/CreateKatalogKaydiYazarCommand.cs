@@ -31,6 +31,11 @@ public class CreateKatalogKaydiYazarCommand : IRequest<CreatedKatalogKaydiYazarR
 
         public async Task<CreatedKatalogKaydiYazarResponse> Handle(CreateKatalogKaydiYazarCommand request, CancellationToken cancellationToken)
         {
+            await _katalogKaydiYazarBusinessRules.KatalogKaydiYazarShouldReferenceExistingOtorite(
+                request.OtoriteKaydiId,
+                cancellationToken
+            );
+
             KatalogKaydiYazar katalogKaydiYazar = _mapper.Map<KatalogKaydiYazar>(request);
 
             await _katalogKaydiYazarRepository.AddAsync(katalogKaydiYazar);

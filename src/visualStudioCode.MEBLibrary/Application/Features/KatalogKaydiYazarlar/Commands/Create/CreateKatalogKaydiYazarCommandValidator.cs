@@ -8,5 +8,7 @@ public class CreateKatalogKaydiYazarCommandValidator : AbstractValidator<CreateK
     {
         RuleFor(c => c.KatalogKaydiId).NotEmpty();
         RuleFor(c => c.YazarId).NotEmpty();
+        RuleFor(c => c.OtoriteKaydiId).NotEmpty();
+        RuleFor(c => c.Sira).GreaterThanOrEqualTo(1);
     }
 }

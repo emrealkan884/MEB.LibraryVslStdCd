@@ -35,6 +35,12 @@ public class UpdateOtoriteKaydiCommand : IRequest<UpdatedOtoriteKaydiResponse>
         {
             OtoriteKaydi? otoriteKaydi = await _otoriteKaydiRepository.GetAsync(predicate: x => x.Id == request.Id, cancellationToken: cancellationToken);
             await _otoriteKaydiBusinessRules.OtoriteKaydiShouldExistWhenSelected(otoriteKaydi);
+            await _otoriteKaydiBusinessRules.OtoriteKaydiYetkiliBaslikShouldBeUnique(
+                request.YetkiliBaslik,
+                request.OtoriteTuru,
+                cancellationToken,
+                request.Id
+            );
             otoriteKaydi = _mapper.Map(request, otoriteKaydi);
 
             await _otoriteKaydiRepository.UpdateAsync(otoriteKaydi!);

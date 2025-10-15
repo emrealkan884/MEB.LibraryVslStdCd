@@ -1,1 +1,3 @@
-KatalogKonuNotExists: KatalogKonu does not exist.
+KatalogKonuNotExists: Catalog-subject link does not exist.
+OtoriteKaydiRequiredForSubject: Authority record must be provided for catalog subject.
+OtoriteKaydiNotExistsForSubject: Referenced authority record for subject could not be found.

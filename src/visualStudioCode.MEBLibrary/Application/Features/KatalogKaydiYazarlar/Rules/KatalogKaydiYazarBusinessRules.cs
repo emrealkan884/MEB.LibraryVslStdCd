@@ -10,11 +10,17 @@ namespace Application.Features.KatalogKaydiYazarlar.Rules;
 public class KatalogKaydiYazarBusinessRules : BaseBusinessRules
 {
     private readonly IKatalogKaydiYazarRepository _katalogKaydiYazarRepository;
+    private readonly IOtoriteKaydiRepository _otoriteKaydiRepository;
     private readonly ILocalizationService _localizationService;
 
-    public KatalogKaydiYazarBusinessRules(IKatalogKaydiYazarRepository katalogKaydiYazarRepository, ILocalizationService localizationService)
+    public KatalogKaydiYazarBusinessRules(
+        IKatalogKaydiYazarRepository katalogKaydiYazarRepository,
+        IOtoriteKaydiRepository otoriteKaydiRepository,
+        ILocalizationService localizationService
+    )
     {
         _katalogKaydiYazarRepository = katalogKaydiYazarRepository;
+        _otoriteKaydiRepository = otoriteKaydiRepository;
         _localizationService = localizationService;
     }
 
@@ -38,5 +44,22 @@ public class KatalogKaydiYazarBusinessRules : BaseBusinessRules
             cancellationToken: cancellationToken
         );
         await KatalogKaydiYazarShouldExistWhenSelected(katalogKaydiYazar);
+    }
+
+    public async Task KatalogKaydiYazarShouldReferenceExistingOtorite(
+        Guid? otoriteKaydiId,
+        CancellationToken cancellationToken
+    )
+    {
+        if (!otoriteKaydiId.HasValue)
+            await throwBusinessException(KatalogKaydiYazarsBusinessMessages.OtoriteKaydiRequired);
+
+        bool exists = await _otoriteKaydiRepository.AnyAsync(
+            predicate: x => x.Id == otoriteKaydiId.Value,
+            cancellationToken: cancellationToken
+        );
+
+        if (!exists)
+            await throwBusinessException(KatalogKaydiYazarsBusinessMessages.OtoriteKaydiNotExists);
     }
 }

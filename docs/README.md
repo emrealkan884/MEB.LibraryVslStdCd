@@ -1,4 +1,4 @@
-# Domain Notlari
+﻿# Domain Notlari
 
 ## 1. Genel Durum
 - Domain katmanindaki temel varliklar Turkce ve sade isimlerle yeniden tanimlandi (`Kutuphane`, `KatalogKaydi`, `Materyal`, `Nusha`, `OduncIslemi`, `Rezervasyon`, `Etkinlik`).
@@ -60,3 +60,47 @@
 - `src/visualStudioCode.MEBLibrary/WebAPI/Controllers/*Controller.cs`: CQRS endpoint lerini saglayan REST controller lari.
 
 > Not: Olusan iskelet kodlar domain is kurallari, validasyonlar ve test kapsamiyla detaylandirilmaya devam edecek.
+
+## 9. Otorite Senaryosunu Adim Adim Denemek
+WebAPI uygulamasi calistiginda InMemory veritabani otomatik olarak ornek verilerle tohumlaniyor (`WebAPI/Extensions/DataSeedingExtensions.cs`). Swagger uzerinden ya da herhangi bir HTTP istemcisiyle asagidaki akisi izleyebilirsin:
+
+1. **Otorite kayitlarini listele**  
+   `GET /api/OtoriteKayitlari` → “Pamuk, Orhan” (Kisi) ve “Türk romanları” (Konu) otoritelerini görürsün.
+2. **Hazir katalog kaydini incele**  
+   `GET /api/KatalogKayitlari/{id}`  
+   Örnek id: `B89F8F4E-29C3-4F1C-A301-16D5B7BBC7DB`. Dönen DTO içinde hem `KatalogKaydiYazarlar` hem `KatalogKonular` baglanti otorite kimliklerini gosterir.
+3. **Yeni otorite ekle**  
+   `POST /api/OtoriteKayitlari`  
+   ```json
+   {
+     "yetkiliBaslik": "Pamuk, Orhan (TR örneği)",
+     "otoriteTuru": 2,
+     "alternatifBasliklar": "Orhan Pamuk TR; Pamuk, O. (TR)",
+     "aciklama": "Deneme icin ikinci otorite"
+   }
+   ```  
+   Aynı yetkili başlık ve türle tekrar denersen `OtoriteKaydiAlreadyExists` hatasi alırsın (business rule).
+4. **Katalog yazar baglantisi olustur**  
+   `POST /api/KatalogKaydiYazarlar`  
+   ```json
+   {
+     "katalogKaydiId": "B89F8F4E-29C3-4F1C-A301-16D5B7BBC7DB",
+     "yazarId": "D6D6DF64-9F3F-4C40-9BA7-9B8177F9C0E7",
+     "otoriteKaydiId": "E2E6A5C8-AD7B-4B07-A1A2-7AE8281F34D3",
+     "rol": 1,
+     "sira": 1
+   }
+   ```  
+   `otoriteKaydiId` bos veya hataliysa is kurali devreye girer ve istek reddedilir.
+5. **Katalog konu baglantisi olustur**  
+   `POST /api/KatalogKonulari`  
+   ```json
+   {
+     "katalogKaydiId": "B89F8F4E-29C3-4F1C-A301-16D5B7BBC7DB",
+     "konuBasligi": "Türk romanları",
+     "otoriteKaydiId": "6F22A3D3-AD77-4F47-B5D0-7D1A0DE7C2A4"
+   }
+   ```  
+   Girdi otorite kaydına bağlanamadığında `OtoriteKaydiNotExistsForSubject` hatasını görürsün.
+
+Bu akış, otorite kaydının katalog nesneleriyle nasıl zorunlu ve doğrulanmış şekilde ilişkilendirildiğini gözlemlemeyi sağlar.

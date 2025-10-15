@@ -9,5 +9,6 @@ public class UpdateKatalogKonuCommandValidator : AbstractValidator<UpdateKatalog
         RuleFor(c => c.Id).NotEmpty();
         RuleFor(c => c.KatalogKaydiId).NotEmpty();
         RuleFor(c => c.KonuBasligi).NotEmpty();
+        RuleFor(c => c.OtoriteKaydiId).NotEmpty();
     }
 }

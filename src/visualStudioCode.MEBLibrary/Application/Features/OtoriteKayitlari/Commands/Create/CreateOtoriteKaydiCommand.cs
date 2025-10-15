@@ -32,6 +32,12 @@ public class CreateOtoriteKaydiCommand : IRequest<CreatedOtoriteKaydiResponse>
 
         public async Task<CreatedOtoriteKaydiResponse> Handle(CreateOtoriteKaydiCommand request, CancellationToken cancellationToken)
         {
+            await _otoriteKaydiBusinessRules.OtoriteKaydiYetkiliBaslikShouldBeUnique(
+                request.YetkiliBaslik,
+                request.OtoriteTuru,
+                cancellationToken
+            );
+
             OtoriteKaydi otoriteKaydi = _mapper.Map<OtoriteKaydi>(request);
 
             await _otoriteKaydiRepository.AddAsync(otoriteKaydi);

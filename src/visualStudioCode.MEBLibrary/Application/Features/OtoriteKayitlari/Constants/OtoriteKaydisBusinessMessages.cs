@@ -5,4 +5,5 @@ public static class OtoriteKaydisBusinessMessages
     public const string SectionName = "OtoriteKaydi";
 
     public const string OtoriteKaydiNotExists = "OtoriteKaydiNotExists";
+    public const string OtoriteKaydiAlreadyExists = "OtoriteKaydiAlreadyExists";
 }

@@ -28,6 +28,11 @@ public class CreateKatalogKonuCommand : IRequest<CreatedKatalogKonuResponse>
 
         public async Task<CreatedKatalogKonuResponse> Handle(CreateKatalogKonuCommand request, CancellationToken cancellationToken)
         {
+            await _katalogKonuBusinessRules.KatalogKonuShouldReferenceExistingOtorite(
+                request.OtoriteKaydiId,
+                cancellationToken
+            );
+
             KatalogKonu katalogKonu = _mapper.Map<KatalogKonu>(request);
 
             await _katalogKonuRepository.AddAsync(katalogKonu);

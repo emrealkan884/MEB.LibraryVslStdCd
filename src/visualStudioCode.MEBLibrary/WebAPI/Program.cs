@@ -15,6 +15,7 @@ using NArchitecture.Core.Security.WebApi.Swagger.Extensions;
 using Persistence;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using WebAPI;
+using WebAPI.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -99,6 +100,7 @@ if (app.Environment.IsProduction())
     app.ConfigureCustomExceptionMiddleware();
 
 app.UseDbMigrationApplier();
+app.SeedSampleData();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -31,6 +31,10 @@ public class UpdateKatalogKonuCommand : IRequest<UpdatedKatalogKonuResponse>
         {
             KatalogKonu? katalogKonu = await _katalogKonuRepository.GetAsync(predicate: x => x.Id == request.Id, cancellationToken: cancellationToken);
             await _katalogKonuBusinessRules.KatalogKonuShouldExistWhenSelected(katalogKonu);
+            await _katalogKonuBusinessRules.KatalogKonuShouldReferenceExistingOtorite(
+                request.OtoriteKaydiId,
+                cancellationToken
+            );
             katalogKonu = _mapper.Map(request, katalogKonu);
 
             await _katalogKonuRepository.UpdateAsync(katalogKonu!);

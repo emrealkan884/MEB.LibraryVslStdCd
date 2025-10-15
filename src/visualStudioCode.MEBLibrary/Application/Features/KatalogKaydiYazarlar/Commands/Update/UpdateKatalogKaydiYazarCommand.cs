@@ -34,6 +34,10 @@ public class UpdateKatalogKaydiYazarCommand : IRequest<UpdatedKatalogKaydiYazarR
         {
             KatalogKaydiYazar? katalogKaydiYazar = await _katalogKaydiYazarRepository.GetAsync(predicate: x => x.Id == request.Id, cancellationToken: cancellationToken);
             await _katalogKaydiYazarBusinessRules.KatalogKaydiYazarShouldExistWhenSelected(katalogKaydiYazar);
+            await _katalogKaydiYazarBusinessRules.KatalogKaydiYazarShouldReferenceExistingOtorite(
+                request.OtoriteKaydiId,
+                cancellationToken
+            );
             katalogKaydiYazar = _mapper.Map(request, katalogKaydiYazar);
 
             await _katalogKaydiYazarRepository.UpdateAsync(katalogKaydiYazar!);

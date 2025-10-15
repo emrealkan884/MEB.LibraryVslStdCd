@@ -1,1 +1,3 @@
-KatalogKaydiYazarNotExists: KatalogKaydiYazar does not exist.
+KatalogKaydiYazarNotExists: Catalog-author link does not exist.
+OtoriteKaydiRequiredForAuthor: Authority record must be provided for catalog author.
+OtoriteKaydiNotExistsForAuthor: Referenced authority record could not be found.

@@ -1,6 +1,7 @@
 using Application.Features.OtoriteKayitlari.Constants;
 using Application.Services.Repositories;
 using Domain.Entities;
+using Domain.Enums;
 using NArchitecture.Core.Application.Rules;
 using NArchitecture.Core.CrossCuttingConcerns.Exception.Types;
 using NArchitecture.Core.Localization.Abstraction;
@@ -38,5 +39,24 @@ public class OtoriteKaydiBusinessRules : BaseBusinessRules
             cancellationToken: cancellationToken
         );
         await OtoriteKaydiShouldExistWhenSelected(otoriteKaydi);
+    }
+
+    public async Task OtoriteKaydiYetkiliBaslikShouldBeUnique(
+        string yetkiliBaslik,
+        OtoriteTuru otoriteTuru,
+        CancellationToken cancellationToken,
+        Guid? excludeId = null
+    )
+    {
+        bool alreadyExists = await _otoriteKaydiRepository.AnyAsync(
+            predicate: x =>
+                x.OtoriteTuru == otoriteTuru
+                && x.YetkiliBaslik.ToLower() == yetkiliBaslik.ToLower()
+                && (!excludeId.HasValue || x.Id != excludeId),
+            cancellationToken: cancellationToken
+        );
+
+        if (alreadyExists)
+            await throwBusinessException(OtoriteKaydisBusinessMessages.OtoriteKaydiAlreadyExists);
     }
 }

@@ -5,4 +5,6 @@ public static class KatalogKonusBusinessMessages
     public const string SectionName = "KatalogKonu";
 
     public const string KatalogKonuNotExists = "KatalogKonuNotExists";
+    public const string OtoriteKaydiRequiredForSubject = "OtoriteKaydiRequiredForSubject";
+    public const string OtoriteKaydiNotExistsForSubject = "OtoriteKaydiNotExistsForSubject";
 }
