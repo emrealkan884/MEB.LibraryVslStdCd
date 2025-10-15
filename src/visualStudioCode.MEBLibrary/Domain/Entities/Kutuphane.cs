@@ -4,14 +4,14 @@ namespace Domain.Entities;
 
 public class Kutuphane
 {
-    public int Id { get; set; } // Örnekler: 1, 25, 310
-    public string Kod { get; set; } = string.Empty; // Örnekler: "MERKEZ-01", "ANK-CNK-05", "YTF-01"
-    public string Ad { get; set; } = string.Empty; // Örnekler: "Merkez Kutuphanesi", "Cankaya Ilce Kutuphanesi", "Yahya Turan Fen Lisesi Kutuphanesi"
-    public KutuphaneTipi Tip { get; set; } // Örnekler: KutuphaneTipi.Merkez, KutuphaneTipi.Okul, KutuphaneTipi.Okul
-    public string Adres { get; set; } = string.Empty; // Örnekler: "Bakanliklar / Ankara", "Ataturk Bulvari 125 / Cankaya", "Fen Lisesi Kampusu / Izmir"
-    public string? Telefon { get; set; } // Örnekler: "0312 123 45 67", "+90 232 765 43 21", null
-    public string? EPosta { get; set; } // Örnekler: "merkez@meb.gov.tr", "kutuphane@fenlisesi.edu.tr", null
-    public bool Aktif { get; set; } = true; // Örnekler: true, false, true
+    public int Id { get; set; } // 1, 25, 310
+    public string Kod { get; set; } = string.Empty; // "MERKEZ-01", "ANK-CNK-05", "YTF-01"
+    public string Ad { get; set; } = string.Empty; // "Merkez Kutuphanesi", "Cankaya Ilce Kutuphanesi", "Yahya Turan Fen Lisesi Kutuphanesi"
+    public KutuphaneTipi Tip { get; set; } // KutuphaneTipi.Merkez, KutuphaneTipi.Okul, KutuphaneTipi.Okul
+    public string Adres { get; set; } = string.Empty; // "Bakanliklar / Ankara", "Ataturk Bulvari 125 / Cankaya", "Fen Lisesi Kampusu / Izmir"
+    public string? Telefon { get; set; } // "0312 123 45 67", "+90 232 765 43 21", null
+    public string? EPosta { get; set; } // "merkez@meb.gov.tr", "kutuphane@fenlisesi.edu.tr", null
+    public bool Aktif { get; set; } = true; // true, false, true
 
     public ICollection<KatalogKaydi> KatalogKayitlari { get; set; } = new List<KatalogKaydi>();
     public ICollection<Materyal> Materyaller { get; set; } = new List<Materyal>();
