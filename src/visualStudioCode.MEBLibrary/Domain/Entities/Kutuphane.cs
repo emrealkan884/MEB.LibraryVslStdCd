@@ -17,4 +17,5 @@ public class Kutuphane
     public ICollection<Materyal> Materyaller { get; set; } = new List<Materyal>();
     public ICollection<Etkinlik> Etkinlikler { get; set; } = new List<Etkinlik>();
     public ICollection<KutuphaneBolumu> Bolumler { get; set; } = new List<KutuphaneBolumu>();
+    public ICollection<YeniKatalogTalebi> YeniKatalogTalepleri { get; set; } = new List<YeniKatalogTalebi>();
 }
