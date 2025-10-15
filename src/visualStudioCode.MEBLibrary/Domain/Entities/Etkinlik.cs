@@ -1,9 +1,10 @@
+using NArchitecture.Core.Persistence.Repositories;
+
 namespace Domain.Entities;
 
-public class Etkinlik
+public class Etkinlik: Entity<Guid>
 {
-    public int Id { get; set; } // 15, 32, 78
-    public int KutuphaneId { get; set; } // 205, 310, 512
+    public Guid KutuphaneId { get; set; } // 205, 310, 512
     public string Baslik { get; set; } = string.Empty; // "Kitap Okuma Kulübü", "STEM Atölyesi", "Yazar Buluşması"
     public string? Aciklama { get; set; } // "9. sınıf öğrencileri için okuma tartışması.", "Robotik kodlama atölyesi.", null
     public DateTime BaslangicTarihi { get; set; } // 2024-03-12 10:00, 2024-04-05 14:30, 2024-05-20 09:00
@@ -11,5 +12,6 @@ public class Etkinlik
     public string? Konum { get; set; } // "Konferans Salonu", "Fen Laboratuvarı", "Çevrim içi"
     public string? AfisDosyasi { get; set; } // "/etkinlikler/stem-atolye.jpg", "https://cdn.okul.gov/afis.pdf", null
 
+    //Navigation properties
     public Kutuphane? Kutuphane { get; set; }
 }
