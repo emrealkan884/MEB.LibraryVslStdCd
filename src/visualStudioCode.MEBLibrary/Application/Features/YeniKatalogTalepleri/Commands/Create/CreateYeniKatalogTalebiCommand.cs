@@ -1,4 +1,5 @@
-using Application.Features.YeniKatalogTalepleri.Rules;
+﻿using Application.Features.YeniKatalogTalepleri.Rules;
+using Application.Features.YeniKatalogTalepleri.Utilities;
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
@@ -42,16 +43,19 @@ public class CreateYeniKatalogTalebiCommand : IRequest<CreatedYeniKatalogTalebiR
 
         public async Task<CreatedYeniKatalogTalebiResponse> Handle(CreateYeniKatalogTalebiCommand request, CancellationToken cancellationToken)
         {
+            string? normalizedIsbn = YeniKatalogTalebiSanitizer.NormalizeIsbn(request.Isbn);
+
             await _yeniKatalogTalebiBusinessRules.YeniKatalogTalebiShouldBeUnique(
                 request.TalepEdenKutuphaneId,
                 request.Baslik,
-                request.Isbn,
+                normalizedIsbn,
                 cancellationToken
             );
 
             DateTime now = DateTime.UtcNow;
 
             YeniKatalogTalebi yeniKatalogTalebi = _mapper.Map<YeniKatalogTalebi>(request);
+            yeniKatalogTalebi.Isbn = normalizedIsbn;
             yeniKatalogTalebi.Durum = TalepDurumu.Beklemede;
             yeniKatalogTalebi.TalepTarihi = now;
             yeniKatalogTalebi.SonGuncellemeTarihi = now;

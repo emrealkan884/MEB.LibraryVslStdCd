@@ -1,3 +1,4 @@
+using Application.Features.YeniKatalogTalepleri.Utilities;
 using Application.Features.YeniKatalogTalepleri.Constants;
 using Application.Services.Repositories;
 using Domain.Entities;
@@ -77,7 +78,7 @@ public class YeniKatalogTalebiBusinessRules : BaseBusinessRules
     public async Task YeniKatalogTalebiShouldBeUnique(Guid talepEdenKutuphaneId, string baslik, string? isbn, CancellationToken cancellationToken)
     {
         string normalizedBaslik = baslik.Trim().ToLowerInvariant();
-        string? normalizedIsbn = string.IsNullOrWhiteSpace(isbn) ? null : isbn.Trim().ToLowerInvariant();
+        string? normalizedIsbn = YeniKatalogTalebiSanitizer.NormalizeIsbn(isbn);
 
         bool exists = await _yeniKatalogTalebiRepository.AnyAsync(
             predicate: x =>
@@ -100,3 +101,4 @@ public class YeniKatalogTalebiBusinessRules : BaseBusinessRules
         return Task.CompletedTask;
     }
 }
+
