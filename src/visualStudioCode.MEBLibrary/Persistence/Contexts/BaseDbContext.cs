@@ -32,6 +32,7 @@ public class BaseDbContext : DbContext
     public DbSet<Raf> Raflar { get; set; }
     public DbSet<Rezervasyon> Rezervasyonlar { get; set; }
     public DbSet<YeniKatalogTalebi> YeniKatalogTalepleri { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
 
     public BaseDbContext(DbContextOptions dbContextOptions, IConfiguration configuration)
         : base(dbContextOptions)

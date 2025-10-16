@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Application.Pipelines.Audit;
 using Application.Services.AuthenticatorService;
 using Application.Services.AuthService;
 using Application.Services.DeweySiniflamalari;
@@ -60,6 +61,7 @@ public static class ApplicationServiceRegistration
             configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
             configuration.AddOpenBehavior(typeof(RequestValidationBehavior<,>));
             configuration.AddOpenBehavior(typeof(TransactionScopeBehavior<,>));
+            configuration.AddOpenBehavior(typeof(AuditLoggingBehavior<,>));
         });
 
         services.AddSubClassesOfType(Assembly.GetExecutingAssembly(), typeof(BaseBusinessRules));

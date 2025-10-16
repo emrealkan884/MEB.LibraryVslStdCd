@@ -39,6 +39,7 @@ public static class PersistenceServiceRegistration
         services.AddScoped<IRafRepository, RafRepository>();
         services.AddScoped<IRezervasyonRepository, RezervasyonRepository>();
         services.AddScoped<IYeniKatalogTalebiRepository, YeniKatalogTalebiRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         return services;
     }
 }
