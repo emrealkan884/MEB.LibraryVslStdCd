@@ -5,10 +5,12 @@ using Application.Features.YeniKatalogTalepleri.Commands.Reject;
 using Application.Features.YeniKatalogTalepleri.Commands.Update;
 using Application.Features.YeniKatalogTalepleri.Queries.GetById;
 using Application.Features.YeniKatalogTalepleri.Queries.GetList;
+using Application.Features.YeniKatalogTalepleri.Queries.GetListByDynamic;
 using Domain.Enums;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using Microsoft.AspNetCore.Mvc;
+using NArchitecture.Core.Persistence.Dynamic;
 
 namespace WebAPI.Controllers;
 
@@ -56,6 +58,23 @@ public class YeniKatalogTalepleriController : BaseController
     public async Task<ActionResult<GetListResponse<GetListYeniKatalogTalebiListItemDto>>> GetList([FromQuery] PageRequest pageRequest)
     {
         GetListYeniKatalogTalebiQuery query = new() { PageRequest = pageRequest };
+
+        GetListResponse<GetListYeniKatalogTalebiListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListYeniKatalogTalebiListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicYeniKatalogTalebiQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
 
         GetListResponse<GetListYeniKatalogTalebiListItemDto> response = await Mediator.Send(query);
 

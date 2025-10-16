@@ -11,6 +11,7 @@
 - `nArchGenerator` ile tum domain nesneleri icin CQRS komut/sorgu setleri, AutoMapper profilleri, business kurallari, validatorler, servis arayuzleri ve WebAPI controller lari olusturuldu. Persistence katmaninda ilgili repository ve konfigurasyon siniflari eklendi; `ApplicationServiceRegistration` ve `PersistenceServiceRegistration` uzerinden DI kayitlari guncellendi.
 - Ayn� kutuphanenin ayni baslik/ISBN ile tekrar talep olusturmasi engellendi; CreateYeniKatalogTalebiCommand oncesinde benzersiz talep kontrolu yapiliyor.
 - Katalog talep akisi icin `ApproveYeniKatalogTalebiCommand` ve `RejectYeniKatalogTalebiCommand` dahil olmak uzere tum komut/yanit siniflari ile `YeniKatalogTalebiWorkflowService` yazildi; onaylandiginda katalog kaydi otomatik aciliyor, reddedildiginde gerekce saklaniyor ve workflow adimlari is kurallariyla baglandi.
+- YeniKatalogTalep listesi icin klasik `GET /api/YeniKatalogTalepleri` endpoint'i aktif tutuldu; ayrica ayrintili filtreleme saglayan `POST /api/YeniKatalogTalepleri/GetListByDynamic` endpoint'i eklendi.
 - Onay isleminde merkez kullanici `MateryalTuru` ve `MateryalAltTuru` degerlerini istekte acikca girmeye devam ediyor; workflow yalnizca katalog kaydini olusturuyor, materyal/nusha otomasyonu devrede degil.
 - Tum degisiklikler `dotnet build VisualStudioCode.MEBLibrary.sln` komutuyla dogrulandi (0 uyari, 0 hata).
 
@@ -109,5 +110,41 @@ WebAPI uygulamasi calistiginda InMemory veritabani otomatik olarak ornek veriler
 Bu ak��, otorite kayd�n�n katalog nesneleriyle nas�l zorunlu ve do�rulanm�� �ekilde ili�kilendirildi�ini g�zlemlemeyi sa�lar.
 
 > Not: Yeni katalog talebini onaylamak icin POST /api/YeniKatalogTalepleri/{id}/approve, reddetmek icin POST /api/YeniKatalogTalepleri/{id}/reject endpointlerini kullanabilirsin.
+
+## 10. Yeni Katalog Talepleri Dinamik Filtreleme
+- Varsayilan listeleme icin `GET /api/YeniKatalogTalepleri?pageIndex=0&pageSize=10` kullanilmaya devam edilir.
+- Nitelikli aramalar icin `POST /api/YeniKatalogTalepleri/GetListByDynamic?pageIndex=0&pageSize=20` endpoint'i eklendi. Govdede `DynamicQuery` modeli beklenir; operator degerleri `eq`, `neq`, `contains` gibi anahtar kelimelerle calisir.
+- Enum alanlarinda (`Durum`) deger olarak enum ismi (`Beklemede`, `Inceleniyor`, `Onaylandi`, `Reddedildi`) gonderilmelidir. Ornek istek:
+  ```json
+  {
+    "filter": {
+      "field": "Durum",
+      "operator": "eq",
+      "value": "Reddedildi"
+    },
+    "sort": [
+      { "field": "TalepTarihi", "dir": "desc" }
+    ]
+  }
+  ```
+- Birden fazla kosul icin `logic` ve `filters` alanlari kullanilabilir:
+  ```json
+  {
+    "filter": {
+      "logic": "and",
+      "filters": [
+        { "field": "Durum", "operator": "eq", "value": "Inceleniyor" },
+        { "field": "TalepEdenKutuphaneId", "operator": "eq", "value": "5c87d9f1-6f9b-46e0-90f0-7f205874a9f8" }
+      ]
+    }
+  }
+  ```
+- Endpoint, gelen filtreyi `YeniKatalogTalebi` repository'sindeki `GetListByDynamicAsync` ile calistirarak sayfalama bilgisiyle birlikte DTO listesini dondurur.
+
+## 11. Dewey Onlu Siniflama Tablolari Neden Ayrı Saklaniyor?
+- Dewey Decimal Classification (DDC) kitaplari tum dunyada ayni sayisal kodlarla konuya gore siralar; 000 Genel Konular, 100 Felsefe, 500 Bilim, 510 Matematik gibi kodlar standarttir ve OCLC tarafindan guncellenir.
+- Kodlar degismediginden, sistemler arasi veri aktariminda (KOHA'dan gecis, milli kutuphane entegrasyonu vb.) DeweyId'nin korunmasi tutarlilik saglar.
+- Veritabaninda `DeweySiniflama` tablosunu ayri tutarak hiyerarsik yapiyi (ust kategori, aciklama, yerel notlar) saklayabilir, UI'da agac veya filtre olarak sunabilir ve yeni kayitlarda dogrulama yapabiliriz.
+- Materyal ve katalog kayitlari sadece kodu referans eder (`DeweySiniflamaId`), boylece kod degisimleri merkezi tablodan yonetilir ve raporlar (ornegin tum 510 Matematik kaynaklari) kolayca alinir.
 
 
