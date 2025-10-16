@@ -5,6 +5,7 @@ using Application.Features.YeniKatalogTalepleri.Commands.Reject;
 using Application.Features.YeniKatalogTalepleri.Commands.Update;
 using Application.Features.YeniKatalogTalepleri.Queries.GetById;
 using Application.Features.YeniKatalogTalepleri.Queries.GetList;
+using Application.Features.YeniKatalogTalepleri.Utilities;
 using AutoMapper;
 using Domain.Entities;
 using NArchitecture.Core.Application.Responses;
@@ -28,9 +29,14 @@ public class MappingProfiles : Profile
         CreateMap<YeniKatalogTalebi, ApprovedYeniKatalogTalebiResponse>();
         CreateMap<YeniKatalogTalebi, RejectedYeniKatalogTalebiResponse>();
 
-        CreateMap<YeniKatalogTalebi, GetByIdYeniKatalogTalebiResponse>();
+        CreateMap<YeniKatalogTalebi, GetByIdYeniKatalogTalebiResponse>()
+            .ForMember(dest => dest.SuggestedMateryalTuru, opt => opt.MapFrom(src => MateryalTuruMapper.MapFromTalep(src)))
+            .ForMember(dest => dest.SuggestedMateryalAltTuru, opt => opt.MapFrom(src => src.MateryalAltTuru));
 
-        CreateMap<YeniKatalogTalebi, GetListYeniKatalogTalebiListItemDto>();
+        CreateMap<YeniKatalogTalebi, GetListYeniKatalogTalebiListItemDto>()
+            .ForMember(dest => dest.SuggestedMateryalTuru, opt => opt.MapFrom(src => MateryalTuruMapper.MapFromTalep(src)))
+            .ForMember(dest => dest.SuggestedMateryalAltTuru, opt => opt.MapFrom(src => src.MateryalAltTuru));
+
         CreateMap<IPaginate<YeniKatalogTalebi>, GetListResponse<GetListYeniKatalogTalebiListItemDto>>();
     }
 }

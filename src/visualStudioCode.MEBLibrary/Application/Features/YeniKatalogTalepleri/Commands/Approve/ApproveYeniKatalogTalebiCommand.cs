@@ -1,4 +1,5 @@
 using Application.Features.YeniKatalogTalepleri.Rules;
+using Application.Features.YeniKatalogTalepleri.Utilities;
 using Application.Services.Repositories;
 using Application.Services.YeniKatalogTalepleri;
 using AutoMapper;
@@ -12,7 +13,7 @@ public class ApproveYeniKatalogTalebiCommand : IRequest<ApprovedYeniKatalogTaleb
 {
     public Guid Id { get; set; }
     public Guid OnaylayanKutuphaneId { get; set; }
-    public MateryalTuru MateryalTuru { get; set; }
+    public MateryalTuru? MateryalTuru { get; set; }
     public string? MateryalAltTuru { get; set; }
     public Guid? DeweySiniflamaId { get; set; }
     public string? Marc21Verisi { get; set; }
@@ -50,11 +51,14 @@ public class ApproveYeniKatalogTalebiCommand : IRequest<ApprovedYeniKatalogTaleb
 
             await _yeniKatalogTalebiBusinessRules.YeniKatalogTalebiShouldExistWhenSelected(yeniKatalogTalebi);
 
+            MateryalTuru materyalTuru = DetermineMateryalTuru(request.MateryalTuru, yeniKatalogTalebi);
+            string? materyalAltTuru = DetermineMateryalAltTuru(request.MateryalAltTuru, yeniKatalogTalebi);
+
             YeniKatalogTalebi sonuc = await _yeniKatalogTalebiWorkflowService.ApproveAsync(
                 yeniKatalogTalebi!,
                 request.OnaylayanKutuphaneId,
-                request.MateryalTuru,
-                request.MateryalAltTuru,
+                materyalTuru,
+                materyalAltTuru,
                 request.DeweySiniflamaId,
                 request.Marc21Verisi,
                 request.RdaUyumlu,
@@ -69,5 +73,13 @@ public class ApproveYeniKatalogTalebiCommand : IRequest<ApprovedYeniKatalogTaleb
 
             return response;
         }
+
+        private static MateryalTuru DetermineMateryalTuru(MateryalTuru? requestedValue, YeniKatalogTalebi? talep) =>
+            requestedValue ?? MateryalTuruMapper.MapFromTalep(talep);
+
+        private static string? DetermineMateryalAltTuru(string? requestedValue, YeniKatalogTalebi? talep) =>
+            !string.IsNullOrWhiteSpace(requestedValue)
+                ? requestedValue
+                : talep?.MateryalAltTuru;
     }
 }

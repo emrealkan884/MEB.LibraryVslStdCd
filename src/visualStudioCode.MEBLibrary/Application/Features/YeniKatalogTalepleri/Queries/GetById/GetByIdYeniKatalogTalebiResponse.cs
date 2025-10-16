@@ -24,4 +24,6 @@ public class GetByIdYeniKatalogTalebiResponse : IResponse
     public DateTime TalepTarihi { get; set; }
     public DateTime? SonGuncellemeTarihi { get; set; }
     public Guid? KatalogKaydiId { get; set; }
+    public MateryalTuru? SuggestedMateryalTuru { get; set; }
+    public string? SuggestedMateryalAltTuru { get; set; }
 }
