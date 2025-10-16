@@ -1,3 +1,4 @@
+using Application.Features.YeniKatalogTalepleri.Rules;
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
@@ -26,18 +27,28 @@ public class CreateYeniKatalogTalebiCommand : IRequest<CreatedYeniKatalogTalebiR
     {
         private readonly IMapper _mapper;
         private readonly IYeniKatalogTalebiRepository _yeniKatalogTalebiRepository;
+        private readonly YeniKatalogTalebiBusinessRules _yeniKatalogTalebiBusinessRules;
 
         public CreateYeniKatalogTalebiCommandHandler(
             IMapper mapper,
-            IYeniKatalogTalebiRepository yeniKatalogTalebiRepository
+            IYeniKatalogTalebiRepository yeniKatalogTalebiRepository,
+            YeniKatalogTalebiBusinessRules yeniKatalogTalebiBusinessRules
         )
         {
             _mapper = mapper;
             _yeniKatalogTalebiRepository = yeniKatalogTalebiRepository;
+            _yeniKatalogTalebiBusinessRules = yeniKatalogTalebiBusinessRules;
         }
 
         public async Task<CreatedYeniKatalogTalebiResponse> Handle(CreateYeniKatalogTalebiCommand request, CancellationToken cancellationToken)
         {
+            await _yeniKatalogTalebiBusinessRules.YeniKatalogTalebiShouldBeUnique(
+                request.TalepEdenKutuphaneId,
+                request.Baslik,
+                request.Isbn,
+                cancellationToken
+            );
+
             DateTime now = DateTime.UtcNow;
 
             YeniKatalogTalebi yeniKatalogTalebi = _mapper.Map<YeniKatalogTalebi>(request);

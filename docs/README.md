@@ -1,4 +1,4 @@
-ï»¿# Domain Notlari
+# Domain Notlari
 
 ## 1. Genel Durum
 - Domain katmanindaki temel varliklar Turkce ve sade isimlerle yeniden tanimlandi (`Kutuphane`, `KatalogKaydi`, `Materyal`, `Nusha`, `OduncIslemi`, `Rezervasyon`, `Etkinlik`).
@@ -9,6 +9,7 @@
 - Materyal formatlarini detaylandirmak icin `MateryalFormatDetay` sinifi, Dewey siniflamasi icin `DeweySiniflama` varligi ve authority yapisi icin `OtoriteKaydi`, `OtoriteTuru`, `KatalogKonu` siniflari eklendi.
 - Guvenlikten gelen hazir varliklar `Entities/Security` klasorune tasinarak domain yapisi sade tutuldu.
 - `nArchGenerator` ile tum domain nesneleri icin CQRS komut/sorgu setleri, AutoMapper profilleri, business kurallari, validatorler, servis arayuzleri ve WebAPI controller lari olusturuldu. Persistence katmaninda ilgili repository ve konfigurasyon siniflari eklendi; `ApplicationServiceRegistration` ve `PersistenceServiceRegistration` uzerinden DI kayitlari guncellendi.
+- Ayný kutuphanenin ayni baslik/ISBN ile tekrar talep olusturmasi engellendi; CreateYeniKatalogTalebiCommand oncesinde benzersiz talep kontrolu yapiliyor.
 - Katalog talep akisi icin `ApproveYeniKatalogTalebiCommand` ve `RejectYeniKatalogTalebiCommand` dahil olmak uzere tum komut/yanit siniflari ile `YeniKatalogTalebiWorkflowService` yazildi; onaylandiginda katalog kaydi otomatik aciliyor, reddedildiginde gerekce saklaniyor ve workflow adimlari is kurallariyla baglandi.
 - Onay isleminde merkez kullanici `MateryalTuru` ve `MateryalAltTuru` degerlerini istekte acikca girmeye devam ediyor; workflow yalnizca katalog kaydini olusturuyor, materyal/nusha otomasyonu devrede degil.
 - Tum degisiklikler `dotnet build VisualStudioCode.MEBLibrary.sln` komutuyla dogrulandi (0 uyari, 0 hata).
@@ -19,21 +20,21 @@
 3. Talep olusturma/guncelleme validatorlerini ISBN, ISSN ve materyal turu baglami ile zenginlestir.
 4. Yerellestirme dosyalarini TR/EN olarak genisletip Swagger uzerinde yeni akisi belgele.
 
-## 3. Katalog Kaydi â€“ Materyal â€“ Nusha Temel Iliski
+## 3. Katalog Kaydi – Materyal – Nusha Temel Iliski
 - `KatalogKaydi`: Kaynagin bibliyografik kimligi. Baslik, ISBN, Dewey kodu, Marc21 verisi gibi bilgileri tutar. `KutuphaneId` hangi kurumun kaydi yonettigini, `KaynakTalepId` kaydin hangi talep uzerinden olustugunu gosterir. `MateryalTuru` (kitap, dergi, video) ve `MateryalAltTuru` (roman, belgesel, aylik bilim) kaynagin turunu belirtir.
 - `Materyal`: Belirli bir kutuphanedeki hizmet parametrelerini tutar. `KutuphaneId` okul ya da merkez, `KutuphaneBolumuId` materyalin bolumu, `MaksimumOduncSuresiGun` ve `RezervasyonaAcik` gibi alanlar yerel politikayi belirtir. `MateryalEtiket` ile okul icin esnek etiketleme yapilabilir.
-- `Nusha`: Materyalin tekil kopyasi (fiziksel ya da dijital). `Barkod`, `RafId`, `Durumu` alanlariyla takip edilir. AynÄ± materyale ait birden fazla nusha olabilir.
+- `Nusha`: Materyalin tekil kopyasi (fiziksel ya da dijital). `Barkod`, `RafId`, `Durumu` alanlariyla takip edilir. Ayný materyale ait birden fazla nusha olabilir.
 
 ## 4. Ayrintili Senaryo: Yahya Turan Fen Lisesi
-1. **Yeni kaynak talebi** â€“ Okul kÃ¼tÃ¼phanecisi Mehmet Demir â€œ21. Yuzyilda STEM Egitimiâ€ kitabi icin `YeniKatalogTalebi` olusturur (ISBN, yazar, Dewey kodu, aciklama).
-2. **Merkez onayi** â€“ Bakanlik yetkilisi Ayse Kara talebi `TalepDurumu.Onaylandi` yapar ve `KatalogKaydi` olusur; `KutuphaneId` merkez, `KaynakTalepId` talep kaydini gosterir.
-3. **Authority ve konu baglantilari** â€“ Yazar `Yazar` ve `KatalogKaydiYazar` uzerinden kayda baglanir, konu basliklari `KatalogKonu` ile `OtoriteKaydi` kayitlarina eslenir.
-4. **Format detaylari** â€“ `MateryalFormatDetay` (fiziksel tanim, dil, erisim) olusturulur, kapak resmi kaydedilir.
-5. **Okul materyali** â€“ Okul `Materyal` kaydi acar (bolum, odunc suresi, not) ve etiketler (`MateryalEtiket`).
-6. **Nusha girisi** â€“ Uc kopya icin `Nusha` kayitlari eklenir; barkodlar â€œSTEM-2024-001â€ vb.
-7. **Rezervasyon ve odunc** â€“ Ogrenci Elif `Rezervasyon` olusturur, Mehmet `OduncIslemi` kaydi ile kitabi verir.
-8. **Etkinlik** â€“ â€œSTEM Odakli Bahar Etkinligiâ€ `Etkinlik` kaydi olarak eklenir; kitaplar proje icin kullanilir.
-9. **Raporlama** â€“ Merkez yetkilisi `KatalogKaydi -> Materyal -> Nusha -> OduncIslemi` baglantisi uzerinden kopya ve odunc raporu alir.
+1. **Yeni kaynak talebi** – Okul kütüphanecisi Mehmet Demir “21. Yuzyilda STEM Egitimi” kitabi icin `YeniKatalogTalebi` olusturur (ISBN, yazar, Dewey kodu, aciklama).
+2. **Merkez onayi** – Bakanlik yetkilisi Ayse Kara talebi `TalepDurumu.Onaylandi` yapar ve `KatalogKaydi` olusur; `KutuphaneId` merkez, `KaynakTalepId` talep kaydini gosterir.
+3. **Authority ve konu baglantilari** – Yazar `Yazar` ve `KatalogKaydiYazar` uzerinden kayda baglanir, konu basliklari `KatalogKonu` ile `OtoriteKaydi` kayitlarina eslenir.
+4. **Format detaylari** – `MateryalFormatDetay` (fiziksel tanim, dil, erisim) olusturulur, kapak resmi kaydedilir.
+5. **Okul materyali** – Okul `Materyal` kaydi acar (bolum, odunc suresi, not) ve etiketler (`MateryalEtiket`).
+6. **Nusha girisi** – Uc kopya icin `Nusha` kayitlari eklenir; barkodlar “STEM-2024-001” vb.
+7. **Rezervasyon ve odunc** – Ogrenci Elif `Rezervasyon` olusturur, Mehmet `OduncIslemi` kaydi ile kitabi verir.
+8. **Etkinlik** – “STEM Odakli Bahar Etkinligi” `Etkinlik` kaydi olarak eklenir; kitaplar proje icin kullanilir.
+9. **Raporlama** – Merkez yetkilisi `KatalogKaydi -> Materyal -> Nusha -> OduncIslemi` baglantisi uzerinden kopya ve odunc raporu alir.
 
 ## 5. Neden `KatalogKaydi.KutuphaneId` Onemli?
 - Kaydin kim tarafindan uretildigini ve kimlerin degistirebilecegini belirler.
@@ -47,11 +48,11 @@
 - `KatalogKonu` ve `KatalogKaydiYazar` varliklari katalog kayitlarini authority kayitlarina baglar; aramalarda tutarlilik saglanir.
 
 ## 7. Yeni Katalog Talebi Akisi
-1. Okul kÃ¼tÃ¼phanesi uygun `KatalogKaydi` bulamazsa `YeniKatalogTalebi` olusturur.
+1. Okul kütüphanesi uygun `KatalogKaydi` bulamazsa `YeniKatalogTalebi` olusturur.
 2. Talep kaydinda materyal turu, bibliyografik alanlar, aciklama ve talep eden kutuphane bilgileri bulunur.
 3. Merkez talebi inceleyip onaylarsa `KatalogKaydi` olusur, `TalepDurumu` `Onaylandi` olur ve `KaynakTalepId` baglanir.
 4. Okul, onaylanan kaydi kullanarak `Materyal` ve `Nusha` kayitlarini acar.
-5. Reddedilen talepler gerekce ile saklanir; okul duzeltip yeniden gÃ¶nderebilir.
+5. Reddedilen talepler gerekce ile saklanir; okul duzeltip yeniden gönderebilir.
 
 
 ## 8. nArchGenerator Ciktilari - Dosya Haritasi
@@ -67,21 +68,21 @@
 WebAPI uygulamasi calistiginda InMemory veritabani otomatik olarak ornek verilerle tohumlaniyor (`WebAPI/Extensions/DataSeedingExtensions.cs`). Swagger uzerinden ya da herhangi bir HTTP istemcisiyle asagidaki akisi izleyebilirsin:
 
 1. **Otorite kayitlarini listele**  
-   `GET /api/OtoriteKayitlari` â†’ â€œPamuk, Orhanâ€ (Kisi) ve â€œTÃ¼rk romanlarÄ±â€ (Konu) otoritelerini gÃ¶rÃ¼rsÃ¼n.
+   `GET /api/OtoriteKayitlari` › “Pamuk, Orhan” (Kisi) ve “Türk romanlarý” (Konu) otoritelerini görürsün.
 2. **Hazir katalog kaydini incele**  
    `GET /api/KatalogKayitlari/{id}`  
-   Ã–rnek id: `B89F8F4E-29C3-4F1C-A301-16D5B7BBC7DB`. DÃ¶nen DTO iÃ§inde hem `KatalogKaydiYazarlar` hem `KatalogKonular` baglanti otorite kimliklerini gosterir.
+   Örnek id: `B89F8F4E-29C3-4F1C-A301-16D5B7BBC7DB`. Dönen DTO içinde hem `KatalogKaydiYazarlar` hem `KatalogKonular` baglanti otorite kimliklerini gosterir.
 3. **Yeni otorite ekle**  
    `POST /api/OtoriteKayitlari`  
    ```json
    {
-     "yetkiliBaslik": "Pamuk, Orhan (TR Ã¶rneÄŸi)",
+     "yetkiliBaslik": "Pamuk, Orhan (TR örneði)",
      "otoriteTuru": 2,
      "alternatifBasliklar": "Orhan Pamuk TR; Pamuk, O. (TR)",
      "aciklama": "Deneme icin ikinci otorite"
    }
    ```  
-   AynÄ± yetkili baÅŸlÄ±k ve tÃ¼rle tekrar denersen `OtoriteKaydiAlreadyExists` hatasi alÄ±rsÄ±n (business rule).
+   Ayný yetkili baþlýk ve türle tekrar denersen `OtoriteKaydiAlreadyExists` hatasi alýrsýn (business rule).
 4. **Katalog yazar baglantisi olustur**  
    `POST /api/KatalogKaydiYazarlar`  
    ```json
@@ -99,12 +100,14 @@ WebAPI uygulamasi calistiginda InMemory veritabani otomatik olarak ornek veriler
    ```json
    {
      "katalogKaydiId": "B89F8F4E-29C3-4F1C-A301-16D5B7BBC7DB",
-     "konuBasligi": "TÃ¼rk romanlarÄ±",
+     "konuBasligi": "Türk romanlarý",
      "otoriteKaydiId": "6F22A3D3-AD77-4F47-B5D0-7D1A0DE7C2A4"
    }
    ```  
-   Girdi otorite kaydÄ±na baÄŸlanamadÄ±ÄŸÄ±nda `OtoriteKaydiNotExistsForSubject` hatasÄ±nÄ± gÃ¶rÃ¼rsÃ¼n.
+   Girdi otorite kaydýna baðlanamadýðýnda `OtoriteKaydiNotExistsForSubject` hatasýný görürsün.
 
-Bu akÄ±ÅŸ, otorite kaydÄ±nÄ±n katalog nesneleriyle nasÄ±l zorunlu ve doÄŸrulanmÄ±ÅŸ ÅŸekilde iliÅŸkilendirildiÄŸini gÃ¶zlemlemeyi saÄŸlar.
+Bu akýþ, otorite kaydýnýn katalog nesneleriyle nasýl zorunlu ve doðrulanmýþ þekilde iliþkilendirildiðini gözlemlemeyi saðlar.
 
 > Not: Yeni katalog talebini onaylamak icin POST /api/YeniKatalogTalepleri/{id}/approve, reddetmek icin POST /api/YeniKatalogTalepleri/{id}/reject endpointlerini kullanabilirsin.
+
+

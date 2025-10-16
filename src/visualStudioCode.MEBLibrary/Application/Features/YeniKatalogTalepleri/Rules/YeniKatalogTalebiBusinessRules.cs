@@ -74,6 +74,24 @@ public class YeniKatalogTalebiBusinessRules : BaseBusinessRules
             await throwBusinessException(YeniKatalogTalebisBusinessMessages.YeniKatalogTalebiInvalidStatusForApproval);
     }
 
+    public async Task YeniKatalogTalebiShouldBeUnique(Guid talepEdenKutuphaneId, string baslik, string? isbn, CancellationToken cancellationToken)
+    {
+        string normalizedBaslik = baslik.Trim().ToLowerInvariant();
+        string? normalizedIsbn = string.IsNullOrWhiteSpace(isbn) ? null : isbn.Trim().ToLowerInvariant();
+
+        bool exists = await _yeniKatalogTalebiRepository.AnyAsync(
+            predicate: x =>
+                x.TalepEdenKutuphaneId == talepEdenKutuphaneId
+                && x.Baslik.ToLower() == normalizedBaslik
+                && (normalizedIsbn == null || (x.Isbn != null && x.Isbn.ToLower() == normalizedIsbn))
+                && x.Durum != TalepDurumu.Reddedildi,
+            cancellationToken: cancellationToken
+        );
+
+        if (exists)
+            await throwBusinessException(YeniKatalogTalebisBusinessMessages.YeniKatalogTalebiAlreadyExists);
+    }
+
     public Task YeniKatalogTalebiRejectReasonShouldBeProvided(string? gerekce)
     {
         if (string.IsNullOrWhiteSpace(gerekce))
