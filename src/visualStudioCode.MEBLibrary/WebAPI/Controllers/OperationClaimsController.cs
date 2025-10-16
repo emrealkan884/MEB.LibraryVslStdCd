@@ -1,11 +1,13 @@
-﻿using Application.Features.OperationClaims.Commands.Create;
+using Application.Features.OperationClaims.Commands.Create;
 using Application.Features.OperationClaims.Commands.Delete;
 using Application.Features.OperationClaims.Commands.Update;
 using Application.Features.OperationClaims.Queries.GetById;
 using Application.Features.OperationClaims.Queries.GetList;
+using Application.Features.OperationClaims.Queries.GetListByDynamic;
 using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 
 namespace WebAPI.Controllers;
 
@@ -47,5 +49,22 @@ public class OperationClaimsController : BaseController
     {
         DeletedOperationClaimResponse result = await Mediator.Send(deleteOperationClaimCommand);
         return Ok(result);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListOperationClaimListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicOperationClaimQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
+
+        GetListResponse<GetListOperationClaimListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
     }
 }

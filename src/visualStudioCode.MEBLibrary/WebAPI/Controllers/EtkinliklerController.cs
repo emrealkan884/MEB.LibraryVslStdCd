@@ -3,8 +3,10 @@ using Application.Features.Etkinlikler.Commands.Delete;
 using Application.Features.Etkinlikler.Commands.Update;
 using Application.Features.Etkinlikler.Queries.GetById;
 using Application.Features.Etkinlikler.Queries.GetList;
+using Application.Features.Etkinlikler.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -53,6 +55,23 @@ public class EtkinliklerController : BaseController
     public async Task<ActionResult<GetListResponse<GetListEtkinlikListItemDto>>> GetList([FromQuery] PageRequest pageRequest)
     {
         GetListEtkinlikQuery query = new() { PageRequest = pageRequest };
+
+        GetListResponse<GetListEtkinlikListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListEtkinlikListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicEtkinlikQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
 
         GetListResponse<GetListEtkinlikListItemDto> response = await Mediator.Send(query);
 

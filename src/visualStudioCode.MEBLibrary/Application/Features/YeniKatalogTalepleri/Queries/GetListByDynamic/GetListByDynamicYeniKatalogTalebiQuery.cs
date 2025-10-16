@@ -2,6 +2,7 @@ using Application.Features.YeniKatalogTalepleri.Queries.GetList;
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Entities.Security;
 using MediatR;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
@@ -45,3 +46,4 @@ public class GetListByDynamicYeniKatalogTalebiQuery : IRequest<GetListResponse<G
         }
     }
 }
+

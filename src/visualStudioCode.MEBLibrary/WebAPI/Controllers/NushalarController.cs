@@ -3,8 +3,10 @@ using Application.Features.Nushalar.Commands.Delete;
 using Application.Features.Nushalar.Commands.Update;
 using Application.Features.Nushalar.Queries.GetById;
 using Application.Features.Nushalar.Queries.GetList;
+using Application.Features.Nushalar.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -53,6 +55,23 @@ public class NushalarController : BaseController
     public async Task<ActionResult<GetListResponse<GetListNushaListItemDto>>> GetList([FromQuery] PageRequest pageRequest)
     {
         GetListNushaQuery query = new() { PageRequest = pageRequest };
+
+        GetListResponse<GetListNushaListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListNushaListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicNushaQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
 
         GetListResponse<GetListNushaListItemDto> response = await Mediator.Send(query);
 

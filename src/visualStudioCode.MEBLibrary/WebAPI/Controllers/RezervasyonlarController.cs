@@ -3,8 +3,10 @@ using Application.Features.Rezervasyonlar.Commands.Delete;
 using Application.Features.Rezervasyonlar.Commands.Update;
 using Application.Features.Rezervasyonlar.Queries.GetById;
 using Application.Features.Rezervasyonlar.Queries.GetList;
+using Application.Features.Rezervasyonlar.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -53,6 +55,23 @@ public class RezervasyonlarController : BaseController
     public async Task<ActionResult<GetListResponse<GetListRezervasyonListItemDto>>> GetList([FromQuery] PageRequest pageRequest)
     {
         GetListRezervasyonQuery query = new() { PageRequest = pageRequest };
+
+        GetListResponse<GetListRezervasyonListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListRezervasyonListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicRezervasyonQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
 
         GetListResponse<GetListRezervasyonListItemDto> response = await Mediator.Send(query);
 

@@ -3,8 +3,10 @@ using Application.Features.Kutuphaneler.Commands.Delete;
 using Application.Features.Kutuphaneler.Commands.Update;
 using Application.Features.Kutuphaneler.Queries.GetById;
 using Application.Features.Kutuphaneler.Queries.GetList;
+using Application.Features.Kutuphaneler.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -53,6 +55,23 @@ public class KutuphanelerController : BaseController
     public async Task<ActionResult<GetListResponse<GetListKutuphaneListItemDto>>> GetList([FromQuery] PageRequest pageRequest)
     {
         GetListKutuphaneQuery query = new() { PageRequest = pageRequest };
+
+        GetListResponse<GetListKutuphaneListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListKutuphaneListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicKutuphaneQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
 
         GetListResponse<GetListKutuphaneListItemDto> response = await Mediator.Send(query);
 

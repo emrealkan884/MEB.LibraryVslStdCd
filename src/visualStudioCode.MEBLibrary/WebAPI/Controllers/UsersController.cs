@@ -1,12 +1,14 @@
-﻿using Application.Features.Users.Commands.Create;
+using Application.Features.Users.Commands.Create;
 using Application.Features.Users.Commands.Delete;
 using Application.Features.Users.Commands.Update;
 using Application.Features.Users.Commands.UpdateFromAuth;
 using Application.Features.Users.Queries.GetById;
 using Application.Features.Users.Queries.GetList;
+using Application.Features.Users.Queries.GetListByDynamic;
 using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 
 namespace WebAPI.Controllers;
 
@@ -64,5 +66,22 @@ public class UsersController : BaseController
     {
         DeletedUserResponse result = await Mediator.Send(deleteUserCommand);
         return Ok(result);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListUserListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicUserQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
+
+        GetListResponse<GetListUserListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
     }
 }

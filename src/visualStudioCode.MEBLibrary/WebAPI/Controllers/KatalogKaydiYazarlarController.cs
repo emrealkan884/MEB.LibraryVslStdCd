@@ -3,8 +3,10 @@ using Application.Features.KatalogKaydiYazarlar.Commands.Delete;
 using Application.Features.KatalogKaydiYazarlar.Commands.Update;
 using Application.Features.KatalogKaydiYazarlar.Queries.GetById;
 using Application.Features.KatalogKaydiYazarlar.Queries.GetList;
+using Application.Features.KatalogKaydiYazarlar.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -53,6 +55,23 @@ public class KatalogKaydiYazarlarController : BaseController
     public async Task<ActionResult<GetListResponse<GetListKatalogKaydiYazarListItemDto>>> GetList([FromQuery] PageRequest pageRequest)
     {
         GetListKatalogKaydiYazarQuery query = new() { PageRequest = pageRequest };
+
+        GetListResponse<GetListKatalogKaydiYazarListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListKatalogKaydiYazarListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicKatalogKaydiYazarQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
 
         GetListResponse<GetListKatalogKaydiYazarListItemDto> response = await Mediator.Send(query);
 

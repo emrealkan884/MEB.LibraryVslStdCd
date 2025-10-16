@@ -3,8 +3,10 @@ using Application.Features.Raflar.Commands.Delete;
 using Application.Features.Raflar.Commands.Update;
 using Application.Features.Raflar.Queries.GetById;
 using Application.Features.Raflar.Queries.GetList;
+using Application.Features.Raflar.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -53,6 +55,23 @@ public class RaflarController : BaseController
     public async Task<ActionResult<GetListResponse<GetListRafListItemDto>>> GetList([FromQuery] PageRequest pageRequest)
     {
         GetListRafQuery query = new() { PageRequest = pageRequest };
+
+        GetListResponse<GetListRafListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListRafListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicRafQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
 
         GetListResponse<GetListRafListItemDto> response = await Mediator.Send(query);
 

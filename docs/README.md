@@ -12,6 +12,7 @@
 - Ayn� kutuphanenin ayni baslik/ISBN ile tekrar talep olusturmasi engellendi; CreateYeniKatalogTalebiCommand oncesinde benzersiz talep kontrolu yapiliyor.
 - Katalog talep akisi icin `ApproveYeniKatalogTalebiCommand` ve `RejectYeniKatalogTalebiCommand` dahil olmak uzere tum komut/yanit siniflari ile `YeniKatalogTalebiWorkflowService` yazildi; onaylandiginda katalog kaydi otomatik aciliyor, reddedildiginde gerekce saklaniyor ve workflow adimlari is kurallariyla baglandi.
 - YeniKatalogTalep listesi icin klasik `GET /api/YeniKatalogTalepleri` endpoint'i aktif tutuldu; ayrica ayrintili filtreleme saglayan `POST /api/YeniKatalogTalepleri/GetListByDynamic` endpoint'i eklendi.
+- Ayni strateji tum temel feature'lara tasinarak `POST /api/<Feature>/GetListByDynamic` uc noktalarinda tutarli dinamik filtreleme destegi saglandi (Materyaller, KatalogKayitlari, Kutuphaneler vb.).
 - Talep inceleme adimi icin `POST /api/YeniKatalogTalepleri/{id}/review` endpoint'i eklendi; talepler `Beklemede -> Inceleniyor -> Onaylandi/Reddedildi` durum zincirini izler.
 - Onay isleminde merkez kullanici `MateryalTuru` ve `MateryalAltTuru` degerlerini istekte acikca girmeye devam ediyor; workflow yalnizca katalog kaydini olusturuyor, materyal/nusha otomasyonu devrede degil.
 - Tum degisiklikler `dotnet build VisualStudioCode.MEBLibrary.sln` komutuyla dogrulandi (0 uyari, 0 hata).

@@ -3,8 +3,10 @@ using Application.Features.Materyaller.Commands.Delete;
 using Application.Features.Materyaller.Commands.Update;
 using Application.Features.Materyaller.Queries.GetById;
 using Application.Features.Materyaller.Queries.GetList;
+using Application.Features.Materyaller.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -58,4 +60,22 @@ public class MateryallerController : BaseController
 
         return Ok(response);
     }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListMateryalListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicMateryalQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
+
+        GetListResponse<GetListMateryalListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
 }
+

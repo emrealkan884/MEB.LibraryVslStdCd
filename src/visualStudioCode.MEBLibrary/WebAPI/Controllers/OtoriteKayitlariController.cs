@@ -3,8 +3,10 @@ using Application.Features.OtoriteKayitlari.Commands.Delete;
 using Application.Features.OtoriteKayitlari.Commands.Update;
 using Application.Features.OtoriteKayitlari.Queries.GetById;
 using Application.Features.OtoriteKayitlari.Queries.GetList;
+using Application.Features.OtoriteKayitlari.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -53,6 +55,23 @@ public class OtoriteKayitlariController : BaseController
     public async Task<ActionResult<GetListResponse<GetListOtoriteKaydiListItemDto>>> GetList([FromQuery] PageRequest pageRequest)
     {
         GetListOtoriteKaydiQuery query = new() { PageRequest = pageRequest };
+
+        GetListResponse<GetListOtoriteKaydiListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListOtoriteKaydiListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicOtoriteKaydiQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
 
         GetListResponse<GetListOtoriteKaydiListItemDto> response = await Mediator.Send(query);
 

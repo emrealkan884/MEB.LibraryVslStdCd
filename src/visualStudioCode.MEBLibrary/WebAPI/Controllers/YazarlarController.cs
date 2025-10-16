@@ -3,8 +3,10 @@ using Application.Features.Yazarlar.Commands.Delete;
 using Application.Features.Yazarlar.Commands.Update;
 using Application.Features.Yazarlar.Queries.GetById;
 using Application.Features.Yazarlar.Queries.GetList;
+using Application.Features.Yazarlar.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -53,6 +55,23 @@ public class YazarlarController : BaseController
     public async Task<ActionResult<GetListResponse<GetListYazarListItemDto>>> GetList([FromQuery] PageRequest pageRequest)
     {
         GetListYazarQuery query = new() { PageRequest = pageRequest };
+
+        GetListResponse<GetListYazarListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListYazarListItemDto>>> GetListByDynamic(
+        [FromQuery] PageRequest pageRequest,
+        [FromBody] DynamicQuery dynamicQuery
+    )
+    {
+        GetListByDynamicYazarQuery query = new()
+        {
+            PageRequest = pageRequest,
+            DynamicQuery = dynamicQuery
+        };
 
         GetListResponse<GetListYazarListItemDto> response = await Mediator.Send(query);
 
