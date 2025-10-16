@@ -24,6 +24,7 @@ public class YeniKatalogTalebiConfiguration : IEntityTypeConfiguration<YeniKatal
         builder.Property(e => e.YayinYeri).HasColumnName("YayinYeri");
         builder.Property(e => e.YayinYili).HasColumnName("YayinYili");
         builder.Property(e => e.Aciklama).HasColumnName("Aciklama");
+        builder.Property(e => e.RedGerekcesi).HasColumnName("RedGerekcesi");
         builder.Property(e => e.Durum).HasColumnName("Durum").IsRequired();
         builder.Property(e => e.TalepTarihi).HasColumnName("TalepTarihi").IsRequired();
         builder.Property(e => e.SonGuncellemeTarihi).HasColumnName("SonGuncellemeTarihi");

@@ -1,4 +1,3 @@
-using Application.Features.YeniKatalogTalepleri.Rules;
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
@@ -22,28 +21,31 @@ public class CreateYeniKatalogTalebiCommand : IRequest<CreatedYeniKatalogTalebiR
     public string? YayinYeri { get; set; }
     public int? YayinYili { get; set; }
     public string? Aciklama { get; set; }
-    public TalepDurumu Durum { get; set; }
-    public DateTime TalepTarihi { get; set; }
-    public DateTime? SonGuncellemeTarihi { get; set; }
-    public Guid? KatalogKaydiId { get; set; }
 
     public class CreateYeniKatalogTalebiCommandHandler : IRequestHandler<CreateYeniKatalogTalebiCommand, CreatedYeniKatalogTalebiResponse>
     {
         private readonly IMapper _mapper;
         private readonly IYeniKatalogTalebiRepository _yeniKatalogTalebiRepository;
-        private readonly YeniKatalogTalebiBusinessRules _yeniKatalogTalebiBusinessRules;
 
-        public CreateYeniKatalogTalebiCommandHandler(IMapper mapper, IYeniKatalogTalebiRepository yeniKatalogTalebiRepository,
-                                             YeniKatalogTalebiBusinessRules yeniKatalogTalebiBusinessRules)
+        public CreateYeniKatalogTalebiCommandHandler(
+            IMapper mapper,
+            IYeniKatalogTalebiRepository yeniKatalogTalebiRepository
+        )
         {
             _mapper = mapper;
             _yeniKatalogTalebiRepository = yeniKatalogTalebiRepository;
-            _yeniKatalogTalebiBusinessRules = yeniKatalogTalebiBusinessRules;
         }
 
         public async Task<CreatedYeniKatalogTalebiResponse> Handle(CreateYeniKatalogTalebiCommand request, CancellationToken cancellationToken)
         {
+            DateTime now = DateTime.UtcNow;
+
             YeniKatalogTalebi yeniKatalogTalebi = _mapper.Map<YeniKatalogTalebi>(request);
+            yeniKatalogTalebi.Durum = TalepDurumu.Beklemede;
+            yeniKatalogTalebi.TalepTarihi = now;
+            yeniKatalogTalebi.SonGuncellemeTarihi = now;
+            yeniKatalogTalebi.RedGerekcesi = null;
+            yeniKatalogTalebi.KatalogKaydiId = null;
 
             await _yeniKatalogTalebiRepository.AddAsync(yeniKatalogTalebi);
 

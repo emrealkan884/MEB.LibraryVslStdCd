@@ -9,13 +9,14 @@
 - Materyal formatlarini detaylandirmak icin `MateryalFormatDetay` sinifi, Dewey siniflamasi icin `DeweySiniflama` varligi ve authority yapisi icin `OtoriteKaydi`, `OtoriteTuru`, `KatalogKonu` siniflari eklendi.
 - Guvenlikten gelen hazir varliklar `Entities/Security` klasorune tasinarak domain yapisi sade tutuldu.
 - `nArchGenerator` ile tum domain nesneleri icin CQRS komut/sorgu setleri, AutoMapper profilleri, business kurallari, validatorler, servis arayuzleri ve WebAPI controller lari olusturuldu. Persistence katmaninda ilgili repository ve konfigurasyon siniflari eklendi; `ApplicationServiceRegistration` ve `PersistenceServiceRegistration` uzerinden DI kayitlari guncellendi.
+- Katalog talep akisi icin `ApproveYeniKatalogTalebiCommand` ve `RejectYeniKatalogTalebiCommand` dahil olmak uzere tum komut/yanit siniflari ile `YeniKatalogTalebiWorkflowService` yazildi; onaylandiginda katalog kaydi otomatik aciliyor, reddedildiginde gerekce saklaniyor ve workflow adimlari is kurallariyla baglandi.
 - Tum degisiklikler `dotnet build VisualStudioCode.MEBLibrary.sln` komutuyla dogrulandi (0 uyari, 0 hata).
 
 ## 2. Kalan Adimlar
-1. Domain servisleri ve validation kurallarini zenginlestir: talep olusurken zorunlu alanlar, materyal turune gore ISBN/ISSN kontrolu, authority baglantisi dogrulama vb. (su anda olusan iskelet kurallar `NotEmpty` seviyesinde).
-2. Application katmaninda talep olusturma/onay/ret akislari, katalog kaydina baglama, okulun materyal ve nusha eklemesi icin davranis odakli komut ve sorgulari gelistir.
-3. Birim testlerini guncelleyerek yeni davranislari dogrula; talep onayi, otorite baglantisi, Dewey siniflama baglari icin senaryolar yaz.
-4. Siradaki gelistirmeleri planla: kullanici/rol modeli, audit log, dijital icerik yonetimi, barkod/RFID, bildirim ve odunc kurallari, raporlama, entegrasyon ve yedekleme.
+1. WebAPI katmaninda onay/ret komutlarini aciga cikaran endpoint leri ekle ve yetkilendirme politikalarini netlestir.
+2. Yeni workflow ve is kurallari icin birim/integration testleri yazarak onay ve red senaryolarini dogrula.
+3. Talep olusturma/guncelleme validatorlerini ISBN, ISSN ve materyal turu baglami ile zenginlestir.
+4. Yerellestirme dosyalarini TR/EN olarak genisletip Swagger uzerinde yeni akisi belgele.
 
 ## 3. Katalog Kaydi – Materyal – Nusha Temel Iliski
 - `KatalogKaydi`: Kaynagin bibliyografik kimligi. Baslik, ISBN, Dewey kodu, Marc21 verisi gibi bilgileri tutar. `KutuphaneId` hangi kurumun kaydi yonettigini, `KaynakTalepId` kaydin hangi talep uzerinden olustugunu gosterir. `MateryalTuru` (kitap, dergi, video) ve `MateryalAltTuru` (roman, belgesel, aylik bilim) kaynagin turunu belirtir.
@@ -104,3 +105,5 @@ WebAPI uygulamasi calistiginda InMemory veritabani otomatik olarak ornek veriler
    Girdi otorite kaydına bağlanamadığında `OtoriteKaydiNotExistsForSubject` hatasını görürsün.
 
 Bu akış, otorite kaydının katalog nesneleriyle nasıl zorunlu ve doğrulanmış şekilde ilişkilendirildiğini gözlemlemeyi sağlar.
+
+> Not: Yeni katalog talebini onaylamak icin POST /api/YeniKatalogTalepleri/{id}/approve, reddetmek icin POST /api/YeniKatalogTalepleri/{id}/reject endpointlerini kullanabilirsin.

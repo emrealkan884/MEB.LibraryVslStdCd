@@ -19,6 +19,7 @@ public class UpdatedYeniKatalogTalebiResponse : IResponse
     public string? YayinYeri { get; set; }
     public int? YayinYili { get; set; }
     public string? Aciklama { get; set; }
+    public string? RedGerekcesi { get; set; }
     public TalepDurumu Durum { get; set; }
     public DateTime TalepTarihi { get; set; }
     public DateTime? SonGuncellemeTarihi { get; set; }

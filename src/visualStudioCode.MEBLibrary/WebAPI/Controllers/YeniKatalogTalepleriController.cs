@@ -1,8 +1,11 @@
+using Application.Features.YeniKatalogTalepleri.Commands.Approve;
 using Application.Features.YeniKatalogTalepleri.Commands.Create;
 using Application.Features.YeniKatalogTalepleri.Commands.Delete;
+using Application.Features.YeniKatalogTalepleri.Commands.Reject;
 using Application.Features.YeniKatalogTalepleri.Commands.Update;
 using Application.Features.YeniKatalogTalepleri.Queries.GetById;
 using Application.Features.YeniKatalogTalepleri.Queries.GetList;
+using Domain.Enums;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -58,4 +61,54 @@ public class YeniKatalogTalepleriController : BaseController
 
         return Ok(response);
     }
+
+    [HttpPost("{id:guid}/approve")]
+    public async Task<ActionResult<ApprovedYeniKatalogTalebiResponse>> Approve(
+        [FromRoute] Guid id,
+        [FromBody] ApproveYeniKatalogTalebiRequest request
+    )
+    {
+        ApproveYeniKatalogTalebiCommand command = new()
+        {
+            Id = id,
+            OnaylayanKutuphaneId = request.OnaylayanKutuphaneId,
+            MateryalTuru = request.MateryalTuru,
+            MateryalAltTuru = request.MateryalAltTuru,
+            DeweySiniflamaId = request.DeweySiniflamaId,
+            Marc21Verisi = request.Marc21Verisi,
+            RdaUyumlu = request.RdaUyumlu,
+            SayfaSayisi = request.SayfaSayisi,
+            Notlar = request.Notlar
+        };
+
+        ApprovedYeniKatalogTalebiResponse response = await Mediator.Send(command);
+
+        return Ok(response);
+    }
+
+    [HttpPost("{id:guid}/reject")]
+    public async Task<ActionResult<RejectedYeniKatalogTalebiResponse>> Reject(
+        [FromRoute] Guid id,
+        [FromBody] RejectYeniKatalogTalebiRequest request
+    )
+    {
+        RejectYeniKatalogTalebiCommand command = new() { Id = id, Gerekce = request.Gerekce };
+
+        RejectedYeniKatalogTalebiResponse response = await Mediator.Send(command);
+
+        return Ok(response);
+    }
+
+    public sealed record ApproveYeniKatalogTalebiRequest(
+        Guid OnaylayanKutuphaneId,
+        MateryalTuru MateryalTuru,
+        string? MateryalAltTuru,
+        Guid? DeweySiniflamaId,
+        string? Marc21Verisi,
+        bool RdaUyumlu,
+        int? SayfaSayisi,
+        string? Notlar
+    );
+
+    public sealed record RejectYeniKatalogTalebiRequest(string Gerekce);
 }

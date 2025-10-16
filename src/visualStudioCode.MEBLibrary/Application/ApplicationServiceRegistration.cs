@@ -95,6 +95,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IRafService, RafManager>();
         services.AddScoped<IRezervasyonService, RezervasyonManager>();
         services.AddScoped<IYeniKatalogTalebiService, YeniKatalogTalebiManager>();
+        services.AddScoped<IYeniKatalogTalebiWorkflowService, YeniKatalogTalebiWorkflowService>();
         return services;
     }
 

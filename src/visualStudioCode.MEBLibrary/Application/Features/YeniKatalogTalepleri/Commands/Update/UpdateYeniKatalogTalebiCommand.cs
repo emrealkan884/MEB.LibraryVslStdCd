@@ -2,7 +2,6 @@ using Application.Features.YeniKatalogTalepleri.Rules;
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
-using Domain.Enums;
 using MediatR;
 
 namespace Application.Features.YeniKatalogTalepleri.Commands.Update;
@@ -23,10 +22,6 @@ public class UpdateYeniKatalogTalebiCommand : IRequest<UpdatedYeniKatalogTalebiR
     public string? YayinYeri { get; set; }
     public int? YayinYili { get; set; }
     public string? Aciklama { get; set; }
-    public TalepDurumu Durum { get; set; }
-    public DateTime TalepTarihi { get; set; }
-    public DateTime? SonGuncellemeTarihi { get; set; }
-    public Guid? KatalogKaydiId { get; set; }
 
     public class UpdateYeniKatalogTalebiCommandHandler : IRequestHandler<UpdateYeniKatalogTalebiCommand, UpdatedYeniKatalogTalebiResponse>
     {
@@ -34,8 +29,11 @@ public class UpdateYeniKatalogTalebiCommand : IRequest<UpdatedYeniKatalogTalebiR
         private readonly IYeniKatalogTalebiRepository _yeniKatalogTalebiRepository;
         private readonly YeniKatalogTalebiBusinessRules _yeniKatalogTalebiBusinessRules;
 
-        public UpdateYeniKatalogTalebiCommandHandler(IMapper mapper, IYeniKatalogTalebiRepository yeniKatalogTalebiRepository,
-                                             YeniKatalogTalebiBusinessRules yeniKatalogTalebiBusinessRules)
+        public UpdateYeniKatalogTalebiCommandHandler(
+            IMapper mapper,
+            IYeniKatalogTalebiRepository yeniKatalogTalebiRepository,
+            YeniKatalogTalebiBusinessRules yeniKatalogTalebiBusinessRules
+        )
         {
             _mapper = mapper;
             _yeniKatalogTalebiRepository = yeniKatalogTalebiRepository;
@@ -44,11 +42,32 @@ public class UpdateYeniKatalogTalebiCommand : IRequest<UpdatedYeniKatalogTalebiR
 
         public async Task<UpdatedYeniKatalogTalebiResponse> Handle(UpdateYeniKatalogTalebiCommand request, CancellationToken cancellationToken)
         {
-            YeniKatalogTalebi? yeniKatalogTalebi = await _yeniKatalogTalebiRepository.GetAsync(predicate: x => x.Id == request.Id, cancellationToken: cancellationToken);
-            await _yeniKatalogTalebiBusinessRules.YeniKatalogTalebiShouldExistWhenSelected(yeniKatalogTalebi);
-            yeniKatalogTalebi = _mapper.Map(request, yeniKatalogTalebi);
+            YeniKatalogTalebi? yeniKatalogTalebi = await _yeniKatalogTalebiRepository.GetAsync(
+                predicate: x => x.Id == request.Id,
+                enableTracking: true,
+                cancellationToken: cancellationToken
+            );
 
-            await _yeniKatalogTalebiRepository.UpdateAsync(yeniKatalogTalebi!);
+            await _yeniKatalogTalebiBusinessRules.YeniKatalogTalebiShouldExistWhenSelected(yeniKatalogTalebi);
+            await _yeniKatalogTalebiBusinessRules.YeniKatalogTalebiShouldAllowUpdate(yeniKatalogTalebi!);
+
+            yeniKatalogTalebi!.TalepEdenKutuphaneId = request.TalepEdenKutuphaneId;
+            yeniKatalogTalebi.TalepBilgileriniGuncelle(
+                request.Baslik,
+                request.AltBaslik,
+                request.YazarMetni,
+                request.Isbn,
+                request.Issn,
+                request.MateryalTuru,
+                request.MateryalAltTuru,
+                request.Dil,
+                request.Yayinevi,
+                request.YayinYeri,
+                request.YayinYili,
+                request.Aciklama
+            );
+
+            await _yeniKatalogTalebiRepository.UpdateAsync(yeniKatalogTalebi);
 
             UpdatedYeniKatalogTalebiResponse response = _mapper.Map<UpdatedYeniKatalogTalebiResponse>(yeniKatalogTalebi);
             return response;
