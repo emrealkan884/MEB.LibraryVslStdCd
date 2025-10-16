@@ -12,6 +12,7 @@
 - Ayn� kutuphanenin ayni baslik/ISBN ile tekrar talep olusturmasi engellendi; CreateYeniKatalogTalebiCommand oncesinde benzersiz talep kontrolu yapiliyor.
 - Katalog talep akisi icin `ApproveYeniKatalogTalebiCommand` ve `RejectYeniKatalogTalebiCommand` dahil olmak uzere tum komut/yanit siniflari ile `YeniKatalogTalebiWorkflowService` yazildi; onaylandiginda katalog kaydi otomatik aciliyor, reddedildiginde gerekce saklaniyor ve workflow adimlari is kurallariyla baglandi.
 - YeniKatalogTalep listesi icin klasik `GET /api/YeniKatalogTalepleri` endpoint'i aktif tutuldu; ayrica ayrintili filtreleme saglayan `POST /api/YeniKatalogTalepleri/GetListByDynamic` endpoint'i eklendi.
+- Talep inceleme adimi icin `POST /api/YeniKatalogTalepleri/{id}/review` endpoint'i eklendi; talepler `Beklemede -> Inceleniyor -> Onaylandi/Reddedildi` durum zincirini izler.
 - Onay isleminde merkez kullanici `MateryalTuru` ve `MateryalAltTuru` degerlerini istekte acikca girmeye devam ediyor; workflow yalnizca katalog kaydini olusturuyor, materyal/nusha otomasyonu devrede degil.
 - Tum degisiklikler `dotnet build VisualStudioCode.MEBLibrary.sln` komutuyla dogrulandi (0 uyari, 0 hata).
 
@@ -49,13 +50,11 @@
 - `KatalogKonu` ve `KatalogKaydiYazar` varliklari katalog kayitlarini authority kayitlarina baglar; aramalarda tutarlilik saglanir.
 
 ## 7. Yeni Katalog Talebi Akisi
-1. Okul k�t�phanesi uygun `KatalogKaydi` bulamazsa `YeniKatalogTalebi` olusturur.
-2. Talep kaydinda materyal turu, bibliyografik alanlar, aciklama ve talep eden kutuphane bilgileri bulunur.
-3. Merkez talebi inceleyip onaylarsa `KatalogKaydi` olusur, `TalepDurumu` `Onaylandi` olur ve `KaynakTalepId` baglanir.
-4. Okul, onaylanan kaydi kullanarak `Materyal` ve `Nusha` kayitlarini acar.
-5. Reddedilen talepler gerekce ile saklanir; okul duzeltip yeniden g�nderebilir.
-
-
+1. Okul kutuphanesi uygun `KatalogKaydi` bulamazsa `YeniKatalogTalebi` olusturur ve kayit otomatik olarak `TalepDurumu = Beklemede` olur.
+2. Merkez gorevlisi talebi isleme aldiginda `POST /api/YeniKatalogTalepleri/{id}/review` endpoint'i ile durum `Inceleniyor` yapilir; boylece kaydin aktif olarak incelendigini izlemek kolaylasir.
+3. Inceleme tamamlandiginda `approve` veya `reject` komutlari kullanilir. Onayda `KatalogKaydi` olusur ve durum `Onaylandi`, reddedilirse gerekce saklanarak durum `Reddedildi` olur.
+4. Onaylanan kayit uzerinden okul `Materyal` ve `Nusha` kayitlarini acar.
+5. Reddedilen talepler gerekcesi ile saklandigindan okul gerekli duzeltmeleri yapip yeni talep olusturabilir.
 ## 8. nArchGenerator Ciktilari - Dosya Haritasi
 - `src/visualStudioCode.MEBLibrary/Application/Features/*`: Her domain nesnesi icin Create/Update/Delete komutlari, GetById/GetList sorgulari, business kurallari, AutoMapper profilleri ve yerellestirme dosyalari.
 - `src/visualStudioCode.MEBLibrary/Application/Services/*`: IoC kaydi yapilmis servis arayuzleri ve Manager siniflari; repository arayuzleri `Application/Services/Repositories` altinda.
@@ -146,5 +145,8 @@ Bu ak��, otorite kayd�n�n katalog nesneleriyle nas�l zorunlu ve do�r
 - Kodlar degismediginden, sistemler arasi veri aktariminda (KOHA'dan gecis, milli kutuphane entegrasyonu vb.) DeweyId'nin korunmasi tutarlilik saglar.
 - Veritabaninda `DeweySiniflama` tablosunu ayri tutarak hiyerarsik yapiyi (ust kategori, aciklama, yerel notlar) saklayabilir, UI'da agac veya filtre olarak sunabilir ve yeni kayitlarda dogrulama yapabiliriz.
 - Materyal ve katalog kayitlari sadece kodu referans eder (`DeweySiniflamaId`), boylece kod degisimleri merkezi tablodan yonetilir ve raporlar (ornegin tum 510 Matematik kaynaklari) kolayca alinir.
+
+
+
 
 

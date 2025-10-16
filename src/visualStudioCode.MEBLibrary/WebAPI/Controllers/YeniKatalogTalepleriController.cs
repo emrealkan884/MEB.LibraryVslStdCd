@@ -3,6 +3,7 @@ using Application.Features.YeniKatalogTalepleri.Commands.Create;
 using Application.Features.YeniKatalogTalepleri.Commands.Delete;
 using Application.Features.YeniKatalogTalepleri.Commands.Reject;
 using Application.Features.YeniKatalogTalepleri.Commands.Update;
+using Application.Features.YeniKatalogTalepleri.Commands.Review;
 using Application.Features.YeniKatalogTalepleri.Queries.GetById;
 using Application.Features.YeniKatalogTalepleri.Queries.GetList;
 using Application.Features.YeniKatalogTalepleri.Queries.GetListByDynamic;
@@ -114,6 +115,16 @@ public class YeniKatalogTalepleriController : BaseController
         RejectYeniKatalogTalebiCommand command = new() { Id = id, Gerekce = request.Gerekce };
 
         RejectedYeniKatalogTalebiResponse response = await Mediator.Send(command);
+
+        return Ok(response);
+    }
+
+    [HttpPost("{id:guid}/review")]
+    public async Task<ActionResult<StartedReviewYeniKatalogTalebiResponse>> StartReview([FromRoute] Guid id)
+    {
+        StartReviewYeniKatalogTalebiCommand command = new() { Id = id };
+
+        StartedReviewYeniKatalogTalebiResponse response = await Mediator.Send(command);
 
         return Ok(response);
     }

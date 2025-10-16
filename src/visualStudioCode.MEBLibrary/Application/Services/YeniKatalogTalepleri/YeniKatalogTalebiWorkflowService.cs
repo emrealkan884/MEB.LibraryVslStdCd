@@ -87,4 +87,19 @@ public class YeniKatalogTalebiWorkflowService : IYeniKatalogTalebiWorkflowServic
 
         return talep;
     }
+
+    public async Task<YeniKatalogTalebi> StartReviewAsync(
+        YeniKatalogTalebi talep,
+        CancellationToken cancellationToken
+    )
+    {
+        await _yeniKatalogTalebiBusinessRules.YeniKatalogTalebiShouldNotBeFinalized(talep);
+        await _yeniKatalogTalebiBusinessRules.YeniKatalogTalebiShouldBePendingForReview(talep);
+
+        talep.TalebiIncelemeyeAl();
+
+        await _yeniKatalogTalebiRepository.UpdateAsync(talep);
+
+        return talep;
+    }
 }

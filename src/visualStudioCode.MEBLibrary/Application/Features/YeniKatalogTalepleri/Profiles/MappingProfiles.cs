@@ -2,6 +2,7 @@ using Application.Features.YeniKatalogTalepleri.Commands.Approve;
 using Application.Features.YeniKatalogTalepleri.Commands.Create;
 using Application.Features.YeniKatalogTalepleri.Commands.Delete;
 using Application.Features.YeniKatalogTalepleri.Commands.Reject;
+using Application.Features.YeniKatalogTalepleri.Commands.Review;
 using Application.Features.YeniKatalogTalepleri.Commands.Update;
 using Application.Features.YeniKatalogTalepleri.Queries.GetById;
 using Application.Features.YeniKatalogTalepleri.Queries.GetList;
@@ -27,6 +28,7 @@ public class MappingProfiles : Profile
 
         CreateMap<YeniKatalogTalebi, ApprovedYeniKatalogTalebiResponse>();
         CreateMap<YeniKatalogTalebi, RejectedYeniKatalogTalebiResponse>();
+        CreateMap<YeniKatalogTalebi, StartedReviewYeniKatalogTalebiResponse>();
 
         CreateMap<YeniKatalogTalebi, GetByIdYeniKatalogTalebiResponse>();
 

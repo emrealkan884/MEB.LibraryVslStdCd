@@ -100,5 +100,12 @@ public class YeniKatalogTalebiBusinessRules : BaseBusinessRules
 
         return Task.CompletedTask;
     }
-}
 
+    public Task YeniKatalogTalebiShouldBePendingForReview(YeniKatalogTalebi yeniKatalogTalebi)
+    {
+        if (yeniKatalogTalebi.Durum != TalepDurumu.Beklemede)
+            return throwBusinessException(YeniKatalogTalebisBusinessMessages.YeniKatalogTalebiInvalidStatusForReview);
+
+        return Task.CompletedTask;
+    }
+}

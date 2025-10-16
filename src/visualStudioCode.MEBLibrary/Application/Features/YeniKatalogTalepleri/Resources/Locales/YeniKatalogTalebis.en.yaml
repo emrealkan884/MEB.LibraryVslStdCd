@@ -4,4 +4,5 @@ YeniKatalogTalebiCatalogAlreadyCreated: A catalog record has already been create
 YeniKatalogTalebiInvalidStatusForApproval: The request status does not allow approval.
 YeniKatalogTalebiRejectReasonRequired: A rejection reason must be provided.
 YeniKatalogTalebiInvalidStatusForUpdate: The request status does not allow updates.
+YeniKatalogTalebiInvalidStatusForReview: The request status does not allow moving into review.
 YeniKatalogTalebiAlreadyExists: YeniKatalogTalebi already exists.

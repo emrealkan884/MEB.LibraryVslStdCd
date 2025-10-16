@@ -23,4 +23,9 @@ public interface IYeniKatalogTalebiWorkflowService
         string gerekce,
         CancellationToken cancellationToken
     );
+
+    Task<YeniKatalogTalebi> StartReviewAsync(
+        YeniKatalogTalebi talep,
+        CancellationToken cancellationToken
+    );
 }
