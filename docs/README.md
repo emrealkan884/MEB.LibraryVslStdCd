@@ -13,6 +13,33 @@
 - Katalog talep akisi icin `ApproveYeniKatalogTalebiCommand` ve `RejectYeniKatalogTalebiCommand` dahil olmak uzere tum komut/yanit siniflari ile `YeniKatalogTalebiWorkflowService` yazildi; onaylandiginda katalog kaydi otomatik aciliyor, reddedildiginde gerekce saklaniyor ve workflow adimlari is kurallariyla baglandi.
 - YeniKatalogTalep listesi icin klasik `GET /api/YeniKatalogTalepleri` endpoint'i aktif tutuldu; ayrica ayrintili filtreleme saglayan `POST /api/YeniKatalogTalepleri/GetListByDynamic` endpoint'i eklendi.
 - Ayni strateji tum temel feature'lara tasinarak `POST /api/<Feature>/GetListByDynamic` uc noktalarinda tutarli dinamik filtreleme destegi saglandi (Materyaller, KatalogKayitlari, Kutuphaneler vb.).
+- Swagger'da dinamik filtreleme uc noktalarini test etmek icin `Request body` alanina asagidaki gibi ornek bir payload birakildi; `DynamicQuery` icerigini degistirerek farkli kombinasyonlari deneyebilirsin:
+  ```json
+  {
+    "filter": {
+      "logic": "and",
+      "filters": [
+        { "field": "Durum", "operator": "eq", "value": "Beklemede" },
+        { "field": "TalepTarihi", "operator": "gte", "value": "2025-01-01T00:00:00Z" }
+      ]
+    },
+    "sort": [
+      { "field": "TalepTarihi", "dir": "desc" }
+    ]
+  }
+  ```
+- UI/istemci katmaninda filtre formu olustururken kullanicinin operator secimini (`eq`, `contains`, `gte` vb.) ve deger tipini (metin, enum, tarih) belirtmesine imkan tanina; olusan filtreler JSON'a cevrilerek ilgili endpoint'e gonderilir.
+- Yeni workflow (`Beklemede -> Inceleniyor -> Onaylandi/Reddedildi`) icin istemci tarafinda kart/etiket renkleriyle durum gosterimi ve `review` komutunu tetikleyen bir aksiyon butonu eklenmesi planlanmali. Durum degistiginde liste uc noktalarindaki dinamik filtreler sayesinde ekran anlik olarak guncellenebilir.
+
+### Yol Haritası / Planlanan İyileştirmeler
+- **Kimlik ve Yetki**: MEBBİS / e-Okul entegrasyonu için merkezi kimlik sağlayıcı, rol hiyerarşisi ve policy tabanlı `[Authorize]` kontrolleri.
+- **Raporlama**: Geciken materyal, kullanım sıklığı, ödünç/iade istatistiklerini PDF/Excel olarak üreten CQRS sorguları.
+- **Entegrasyon**: KOHA veri aktarımı, Z39.50 & ISBN lookup, dijital içerik (Word/PDF) ve resim saklama servisleri.
+- **Donanım destekleri**: Barkod/RFID adaptörleri, toplu materyal/yazar/öğrenci import akışı, kullanıcı kartı basımı.
+- **Yedekleme & Bildirim**: Otomatik yedekleme job’ları, ödünç/iade hatırlatma e-postaları veya SMS bildirimleri.
+- **UI/Swagger**: Dinamik filtre formunun ve `review` akışının ön yüz destekleri; Swagger’da tüm yeni endpoint’ler için örnekler.
+- **Test & Audit**: Workflow ve dinamik filtre uç noktaları için birim/entegrasyon testleri, audit log’ların raporlanması.
+- **Çoklu dil**: TR/EN localization dosyalarının tamamlanması ve istemcinin dil seçimi desteği.
 - Talep inceleme adimi icin `POST /api/YeniKatalogTalepleri/{id}/review` endpoint'i eklendi; talepler `Beklemede -> Inceleniyor -> Onaylandi/Reddedildi` durum zincirini izler.
 - Onay isleminde merkez kullanici `MateryalTuru` ve `MateryalAltTuru` degerlerini istekte acikca girmeye devam ediyor; workflow yalnizca katalog kaydini olusturuyor, materyal/nusha otomasyonu devrede degil.
 - Tum degisiklikler `dotnet build VisualStudioCode.MEBLibrary.sln` komutuyla dogrulandi (0 uyari, 0 hata).
@@ -146,6 +173,8 @@ Bu ak��, otorite kayd�n�n katalog nesneleriyle nas�l zorunlu ve do�r
 - Kodlar degismediginden, sistemler arasi veri aktariminda (KOHA'dan gecis, milli kutuphane entegrasyonu vb.) DeweyId'nin korunmasi tutarlilik saglar.
 - Veritabaninda `DeweySiniflama` tablosunu ayri tutarak hiyerarsik yapiyi (ust kategori, aciklama, yerel notlar) saklayabilir, UI'da agac veya filtre olarak sunabilir ve yeni kayitlarda dogrulama yapabiliriz.
 - Materyal ve katalog kayitlari sadece kodu referans eder (`DeweySiniflamaId`), boylece kod degisimleri merkezi tablodan yonetilir ve raporlar (ornegin tum 510 Matematik kaynaklari) kolayca alinir.
+
+
 
 
 
