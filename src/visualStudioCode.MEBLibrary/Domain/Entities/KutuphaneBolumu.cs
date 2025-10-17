@@ -4,6 +4,17 @@ namespace Domain.Entities;
 
 public class KutuphaneBolumu : Entity<Guid>
 {
+    public KutuphaneBolumu()
+    {
+    }
+
+    public KutuphaneBolumu(Guid id, Guid kutuphaneId, string? aciklama, Kutuphane? kutuphane) : base(id)
+    {
+        KutuphaneId = kutuphaneId;
+        Aciklama = aciklama;
+        Kutuphane = kutuphane;
+    }
+
     public Guid KutuphaneId { get; set; } // 205, 310, 512
     public string Ad { get; set; } = string.Empty; // "Fen Bilimleri", "Edebiyat", "Multimedya"
     public string? Aciklama { get; set; } // "STEM materyalleri için", "Okuma kulübü rafı", null

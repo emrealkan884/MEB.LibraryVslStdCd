@@ -2,8 +2,19 @@ using NArchitecture.Core.Persistence.Repositories;
 
 namespace Domain.Entities;
 
-public class DeweySiniflama: Entity<Guid>
+public class DeweySiniflama : Entity<Guid>
 {
+    public DeweySiniflama()
+    {
+    }
+
+    public DeweySiniflama(Guid id, string? aciklama, Guid? ustSinifId, DeweySiniflama? ustSinif) : base(id)
+    {
+        Aciklama = aciklama;
+        UstSinifId = ustSinifId;
+        UstSinif = ustSinif;
+    }
+
     public string Kod { get; set; } = string.Empty; // "500", "510", "516.2"
     public string Baslik { get; set; } = string.Empty; // "Fen Bilimleri", "Matematik", "Geometri"
     public string? Aciklama { get; set; } // "Doğa bilimleri genel", "Cebir ve sayılar", null

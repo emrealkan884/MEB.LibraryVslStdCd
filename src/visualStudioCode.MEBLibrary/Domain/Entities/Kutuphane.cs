@@ -5,10 +5,28 @@ namespace Domain.Entities;
 
 public class Kutuphane : Entity<Guid>
 {
+    public Kutuphane()
+    {
+    }
+
+    public Kutuphane(Guid id, KutuphaneTipi tip, string? telefon, string? ePosta, bool aktif) : base(id)
+    {
+        Tip = tip;
+        Telefon = telefon;
+        EPosta = ePosta;
+        Aktif = aktif;
+    }
+
     public string Kod { get; set; } = string.Empty; // "MERKEZ-01", "ANK-CNK-05", "YTF-01"
-    public string Ad { get; set; } = string.Empty; // "Merkez Kutuphanesi", "Cankaya Ilce Kutuphanesi", "Yahya Turan Fen Lisesi Kutuphanesi"
+
+    public string Ad { get; set; } =
+        string.Empty; // "Merkez Kutuphanesi", "Cankaya Ilce Kutuphanesi", "Yahya Turan Fen Lisesi Kutuphanesi"
+
     public KutuphaneTipi Tip { get; set; } // KutuphaneTipi.Merkez, KutuphaneTipi.Okul, KutuphaneTipi.Okul
-    public string Adres { get; set; } = string.Empty; // "Bakanliklar / Ankara", "Ataturk Bulvari 125 / Cankaya", "Fen Lisesi Kampusu / Izmir"
+
+    public string Adres { get; set; } =
+        string.Empty; // "Bakanliklar / Ankara", "Ataturk Bulvari 125 / Cankaya", "Fen Lisesi Kampusu / Izmir"
+
     public string? Telefon { get; set; } // "0312 123 45 67", "+90 232 765 43 21", null
     public string? EPosta { get; set; } // "merkez@meb.gov.tr", "kutuphane@fenlisesi.edu.tr", null
     public bool Aktif { get; set; } = true; // true, false, true
