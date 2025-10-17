@@ -8,6 +8,7 @@ using Application.Features.OduncIslemler.Queries.GetList;
 using Application.Features.OduncIslemler.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
+using NArchitecture.Core.Persistence.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -63,7 +64,7 @@ public class OduncIslemleriController : BaseController
     }
 
     [HttpPost("GetListByDynamic")]
-    public async Task<ActionResult<GetListResponse<GetListOduncIslemiListItemDto>>> GetListByDynamic([FromQuery] PageRequest pageRequest, [FromBody] dynamic dynamicQuery)
+    public async Task<ActionResult<GetListResponse<GetListOduncIslemiListItemDto>>> GetListByDynamic([FromQuery] PageRequest pageRequest, [FromBody] DynamicQuery dynamicQuery)
     {
         GetListByDynamicOduncIslemiQuery query = new() { PageRequest = pageRequest, DynamicQuery = dynamicQuery };
 

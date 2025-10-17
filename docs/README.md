@@ -231,15 +231,26 @@ POST /api/OduncIslemleri/GetListByDynamic?pageIndex=0&pageSize=20
 **Request Body:**
 ```json
 {
-  "filter": {
-    "logic": "and",
-    "filters": [
-      { "field": "Durumu", "operator": "eq", "value": "Aktif" },
-      { "field": "KutuphaneId", "operator": "eq", "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6" }
+  "Filter": {
+    "Logic": "And",
+    "Filters": [
+      {
+        "Field": "Durumu",
+        "Operator": "Eq",
+        "Value": "Aktif"
+      },
+      {
+        "Field": "KutuphaneId",
+        "Operator": "Eq",
+        "Value": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      }
     ]
   },
-  "sort": [
-    { "field": "AlinmaTarihi", "dir": "desc" }
+  "Sort": [
+    {
+      "Field": "AlinmaTarihi",
+      "Dir": "Desc"
+    }
   ]
 }
 ```
@@ -262,6 +273,195 @@ Detayli kullanim icin bkz. `docs/ReportingGuide.md`.
 - `GET /api/Raporlama/odunc/usage`: Materyal bazli odunc kullanimi (toplam, aktif, geciken, iade edilen) istatistiklerini dondurur.
 - `POST /api/Raporlama/odunc/overdue/export` ve `POST /api/Raporlama/odunc/usage/export`: Sonuclari UTF-8 CSV olarak disari aktarir; response `FileName`, `text/csv` content-type ve dosya icerigini iceren binary doner.
 - Dinamik sorgu uc noktalarindaki ayni `DynamicQuery` yapisi raporlarda da kullanilabilir (ornek: belirli tarih araligi icin `BaslangicTarihi`, `BitisTarihi`).
+
+## 14. MEB Kütüphane Otomasyon Sistemi - Eksik Özellikler Analizi
+
+### ÖNCELİK SIRASINA GÖRE GELİŞTİRME PLANI
+
+#### 🔴 FAZ 1: Kritik Altyapı (1-2 Ay)
+
+##### 1. MEBBİS/e-Okul Entegrasyonu
+**Eksik:** Kullanıcı kimlik doğrulama ve senkronizasyon sistemi
+```csharp
+// EKLENMESİ GEREKEN:
+- IMEBBISIntegrationService interface ve implementasyonu
+- IEokulIntegrationService interface ve implementasyonu
+- Kullanıcı otomatik senkronizasyon job'u
+- SSO (Single Sign-On) altyapısı
+```
+
+**Gereksinim:** Kullanıcılar MEBBİS veya e-Okul bilgileri ile yetkileri doğrultusunda giriş yapabilmeli
+
+##### 2. Rol Tabanlı Yetkilendirme Sistemi
+**Eksik:** MEB hiyerarşik rol yapısı
+```csharp
+// EKLENMESİ GEREKEN:
+- BakanlikYetkilisi (Tüm Türkiye)
+- IlYetkilisi (İl bazında)
+- IlceYetkilisi (İlçe bazında)
+- OkulKutuphaneYoneticisi (Okul bazında)
+- Ogretmen/Ogrenci rolleri
+```
+
+**Gereksinim:** Her rolün farklı yetkileri olmalı ve erişim sınırlandırılmalı
+
+##### 3. Z39.50 Protokol Entegrasyonu
+**Eksik:** Harici katalog entegrasyonu
+```csharp
+// EKLENMESİ GEREKEN:
+- IZ3950Service interface
+- WorldCat, Milli Kütüphane, TO-KAT servisleri
+- ISBN otomatik veri çekme
+- Bibliyografik kayıt senkronizasyonu
+```
+
+**Gereksinim:** ISBN ile otomatik katalog verisi çekebilme
+
+#### 🟡 FAZ 2: Kullanıcı Deneyimi (1-2 Ay)
+
+##### 4. Çoklu Dil Desteği (Türkçe/İngilizce)
+**Eksik:** Tam UI çevirisi ve localization
+```csharp
+// EKLENMESİ GEREKEN:
+- I18n altyapısı genişletilmesi
+- Tüm UI metinleri için çeviri dosyaları
+- Dil değiştirme fonksiyonu
+- RTL/LTR layout desteği
+```
+
+**Gereksinim:** Kullanıcı ara yüzleri en az iki dilde hizmet verebilmeli
+
+##### 5. Gelişmiş Raporlama Sistemi
+**Eksik:** PDF/Excel export ve detaylı istatistikler
+```csharp
+// EKLENMESİ GEREKEN:
+- PDF raporlama servisi
+- Excel dışa aktarım
+- Yaş/cinsiyet/sınıf bazlı analizler
+- Dashboard ve grafik gösterimler
+```
+
+**Gereksinim:** Farklı türlerde rapor alma ve dışa aktarma
+
+##### 6. Mobil/Tablet Desteği
+**Eksik:** Responsive tasarım ve mobil API'ler
+```csharp
+// EKLENMESİ GEREKEN:
+- Responsive UI framework
+- Mobile-optimized API endpoints
+- Touch-friendly interface
+- Tablet layout optimizasyonu
+```
+
+**Gereksinim:** Mobil ve tablet gibi birimlerden giriş yapılabilmeli
+
+#### 🟢 FAZ 3: İleri Özellikler (2-3 Ay)
+
+##### 7. RFID ve Barkod Desteği
+**Eksik:** Donanım entegrasyonu
+```csharp
+// EKLENMESİ GEREKEN:
+- IBarcodeService interface
+- IRFIDService interface
+- Donanım adapter sınıfları
+- Otomatik ödünç/iade işlemleri
+```
+
+**Gereksinim:** Barkod ile hızlı ödünç verme ve iade işlemleri
+
+##### 8. AACR2 Kataloglama Kuralları
+**Eksik:** Standart kataloglama formatları
+```csharp
+// EKLENMESİ GEREKEN:
+- AACR2 validation kuralları
+- MARC21 format doğrulama
+- Kataloglama şablonları
+- Otomatik format kontrolü
+```
+
+**Gereksinim:** Bibliyografik künye girişlerinde AACR2 kullanılması
+
+##### 9. Güvenlik Modülü
+**Eksik:** İleri güvenlik özellikleri
+```csharp
+// EKLENMESİ GEREKEN:
+- SSL sertifikasyon altyapısı
+- İki faktörlü kimlik doğrulama
+- Otomatik yedekleme sistemi
+- Gelişmiş audit logging
+```
+
+**Gereksinim:** Bilgi güvenliği ön planda tutulmalı
+
+##### 10. KOHA Veri Aktarımı
+**Eksik:** Mevcut sistem geçişi
+```csharp
+// EKLENMESİ GEREKEN:
+- KOHA veri import/export servisleri
+- Veri dönüşüm ve mapping
+- Geçiş araçları ve scriptler
+- Veri bütünlük kontrolü
+```
+
+**Gereksinim:** KOHA katalog kayıtları aktarılabilmeli
+
+---
+
+### TEKNİK BORÇLAR
+
+#### Database Seçimi
+- **Şu Anda:** InMemory database kullanılıyor
+- **Gereksinim:** Oracle, MSSQL veya MySQL desteği gerekli
+- **Öncelik:** Yüksek
+
+#### Unicode Desteği
+- **Şu Anda:** Temel UTF-8
+- **Gereksinim:** AL32UTF8 karakter seti tam desteği
+- **Öncelik:** Orta
+
+#### Kullanıcı Kartı Basımı
+- **Şu Anda:** Yok
+- **Gereksinim:** Otomatik kullanıcı kartı üretimi ve yazdırma
+- **Öncelik:** Düşük
+
+#### Süreli Yayın Yönetimi
+- **Şu Anda:** Temel materyal yönetimi
+- **Gereksinim:** Dergi, gazete vb. süreli yayınlar için özel modül
+- **Öncelik:** Orta
+
+---
+
+### HIZLI KAZANIMLAR (Quick Wins)
+
+#### 1. Authentication'ı Genişletin
+```csharp
+// AuthOperationClaims'e eklenecek:
+public const string BakanlikYetkilisi = "Roles.BakanlikYetkilisi";
+public const string IlYetkilisi = "Roles.IlYetkilisi";
+public const string IlceYetkilisi = "Roles.IlceYetkilisi";
+public const string OkulKutuphaneYoneticisi = "Roles.OkulKutuphaneYoneticisi";
+```
+
+#### 2. MEBBİS Entegrasyon Servisi
+```csharp
+public interface IMEBBISIntegrationService
+{
+    Task<User> SyncUserFromMEBBIS(string tcNo);
+    Task<List<User>> SyncStudentsFromEokul(string schoolCode);
+    Task<bool> ValidateUserCredentials(string tcNo, string password);
+}
+```
+
+#### 3. Z39.50 Servis Adapter'ı
+```csharp
+public class Z3950ServiceAdapter : IZ3950Service
+{
+    public async Task<BibliographicRecord> SearchISBN(string isbn);
+    public async Task<List<BibliographicRecord>> SearchAuthor(string author);
+}
+```
+
+Bu roadmap ile projeniz MEB gereksinimlerine tam uyumlu hale gelecektir.
 
 ## 13. Denetim Kaydi Altyapisi
 - Tum `*Command` istekleri icin MediatR pipeline uzerinde `AuditLoggingBehavior` calisir ve istegi `AuditLogs` tablosuna kaydeder.
