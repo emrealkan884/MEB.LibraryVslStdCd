@@ -1,5 +1,6 @@
 using Application.Features.OduncIslemler.Commands.Create;
 using Application.Features.OduncIslemler.Commands.Delete;
+using Application.Features.OduncIslemler.Commands.Extend;
 using Application.Features.OduncIslemler.Commands.Return;
 using Application.Features.OduncIslemler.Commands.Update;
 using Application.Features.OduncIslemler.Queries.GetById;
@@ -83,5 +84,19 @@ public class OduncIslemleriController : BaseController
         await Mediator.Send(command);
 
         return NoContent(); // Başarılı iade için 204 No Content
+    }
+
+    [HttpPut("{id}/extend")]
+    public async Task<ActionResult<ExtendedOduncIslemiResponse>> Extend([FromRoute] Guid id, [FromBody] ExtendOduncIslemiCommand command)
+    {
+        if (command == null)
+        {
+            command = new ExtendOduncIslemiCommand();
+        }
+        command.Id = id;
+
+        ExtendedOduncIslemiResponse response = await Mediator.Send(command);
+
+        return Ok(response);
     }
 }

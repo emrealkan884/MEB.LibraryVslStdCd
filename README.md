@@ -26,69 +26,318 @@
 
 ## 💻 About The Project
 
-As Kodlama.io, we decided to share examples of completed projects. Inspired by Clean Architecture, nArchitecture is a monolith project that showcases advanced development techniques. The project includes Clean Architecture, CQRS, Advanced Repository, Dynamic Querying, JWT, OTP, Google & Microsoft Auth, Role-Based Management, Distributed Caching (Redis), Logging (Serilog), Elastic Search, [Code Generator](https://github.com/kodlamaio-projects/nArchitecture.Gen) and much more. By contributing, you can support the project and learn new things.
+# MEB Kütüphane Yönetim Sistemi
 
-### Built With
+**MEB Kütüphane Yönetim Sistemi**, Milli Eğitim Bakanlığı için geliştirilmiş kapsamlı bir kütüphane yönetim çözümüdür. Clean Architecture prensipleriyle geliştirilmiş bu sistem, okul kütüphanelerinin ve merkez kütüphanelerin tüm ihtiyaçlarını karşılayacak şekilde tasarlanmıştır.
 
-[![](https://img.shields.io/badge/.NET%20Core-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://learn.microsoft.com/tr-tr/dotnet/welcome)
+### 🎯 Temel Özellikler
+
+- **📚 Katalog Yönetimi** - Kitap, dergi, multimedia materyallerin detaylı kataloglanması
+- **👥 Kullanıcı Yönetimi** - Öğrenci, öğretmen ve yönetici rolleri
+- **📖 Ödünç İşlemleri** - Kitap ödünç alma/iade süreçleri
+- **🏛️ Çoklu Kütüphane Desteği** - Merkez ve okul kütüphaneleri
+- **🔍 Gelişmiş Arama** - Dinamik filtreleme ve akıllı öneri sistemi
+- **📊 Raporlama** - Ödünç istatistikleri ve kullanım raporları
+- **🔐 Güvenlik** - JWT authentication ve rol tabanlı yetkilendirme
+- **⚡ Cache Sistemi** - Yüksek performans için gelişmiş önbellekleme
+- **📋 İş Akışları** - Yeni katalog talepleri ve onay süreçleri
+- **🏷️ Otorite Kontrolü** - Bibliyografik standartlara uygun otorite yönetimi
+
+### 🏗️ Teknik Altyapı
+
+**Backend:**
+- **.NET 8** - Modern ve performanslı backend
+- **Clean Architecture** - Katmanlı mimari prensipleri
+- **CQRS Pattern** - Komut ve sorgu sorumluluğu ayrımı
+- **Entity Framework Core** - ORM ve veritabanı işlemleri
+- **MediatR** - In-memory messaging bus
+- **JWT Authentication** - Güvenli kimlik doğrulama
+- **Distributed Cache** - Redis ve memory cache desteği
+- **Serilog** - Yapılandırılmış loglama
+- **AutoMapper** - Nesne mapping işlemleri
+- **FluentValidation** - Model validasyonları
+
+**Frontend:**
+- **Vue.js 3** - Modern ve reactive frontend
+- **TypeScript** - Tip güvenli geliştirme
+- **Pinia** - State management
+- **Vitest** - Unit testing
+- **Responsive Design** - Mobil uyumlu arayüz
+
+**DevOps & Tools:**
+- **Docker** - Containerization
+- **Swagger** - API documentation
+- **xUnit** - Unit testing framework
+- **GitHub Actions** - CI/CD pipelines
+
+### 🛠️ Built With
+
+**Backend:**
+[![](https://img.shields.io/badge/.NET%208-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://learn.microsoft.com/tr-tr/dotnet/welcome)
+[![](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)](https://learn.microsoft.com/tr-tr/dotnet/csharp/)
+[![](https://img.shields.io/badge/Entity%20Framework-512BD4?style=for-the-badge&logo=entity-framework&logoColor=white)](https://docs.microsoft.com/tr-tr/ef/)
+
+**Architecture & Patterns:**
+[![](https://img.shields.io/badge/Clean%20Architecture-000?style=for-the-badge&logo=architectural-patterns&logoColor=white)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+[![](https://img.shields.io/badge/CQRS-000?style=for-the-badge&logo=architectural-patterns&logoColor=white)](https://martinfowler.com/bliki/CQRS.html)
+[![](https://img.shields.io/badge/MediatR-512BD4?style=for-the-badge&logo=mediatr&logoColor=white)](https://github.com/jbogard/MediatR)
+
+**Security & Auth:**
+[![](https://img.shields.io/badge/JWT-000?style=for-the-badge&logo=json-web-tokens&logoColor=white)](https://jwt.io/)
+[![](https://img.shields.io/badge/ASP.NET%20Core%20Identity-512BD4?style=for-the-badge&logo=asp.net&logoColor=white)](https://docs.microsoft.com/tr-tr/aspnet/core/security/)
+
+**Development Tools:**
+[![](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/)
+[![](https://img.shields.io/badge/xUnit-512BD4?style=for-the-badge&logo=xunit&logoColor=white)](https://xunit.net/)
+[![](https://img.shields.io/badge/Serilog-512BD4?style=for-the-badge&logo=serilog&logoColor=white)](https://serilog.net/)
+
+### 📊 System Features
+
+| Module | Status | Description |
+|--------|--------|-------------|
+| **📚 Katalog Yönetimi** | ✅ Aktif | Kitap ve materyal kataloglama |
+| **👥 Kullanıcı Yönetimi** | ✅ Aktif | Öğrenci ve yönetici rolleri |
+| **📖 Ödünç İşlemleri** | ✅ Aktif | Kitap ödünç alma/iade |
+| **🏛️ Kütüphane Yönetimi** | ✅ Aktif | Çoklu kütüphane desteği |
+| **🔍 Arama ve Filtreleme** | ✅ Aktif | Dinamik sorgu desteği |
+| **📊 Raporlama** | ✅ Aktif | İstatistik ve raporlar |
+| **🔐 Güvenlik** | ✅ Aktif | JWT ve rol tabanlı yetkilendirme |
+| **⚡ Cache Sistemi** | ✅ Aktif | Yüksek performans önbellekleme |
+| **🏷️ Otorite Kontrolü** | ✅ Aktif | Bibliyografik standartlar |
+| **📋 İş Akışları** | ✅ Aktif | Onay ve talep süreçleri |
+| **🌐 Localization** | 🟡 Geliştiriliyor | Çoklu dil desteği |
+| **📱 Mobile API** | ⏳ Planlanıyor | Mobil uygulama desteği |
 
 ## ⚙️ Getting Started
 
-To get a local copy up and running follow these simple steps.
+MEB Kütüphane Yönetim Sistemi'ni çalıştırmak için aşağıdaki adımları takip edin.
 
-### Prerequisites
+### 📋 Prerequisites
 
-- .NET 7
+- **.NET 8 SDK** - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **Visual Studio 2022** veya **VS Code** - Geliştirme ortamı
+- **SQL Server** veya **PostgreSQL** - Veritabanı (opsiyonel, in-memory database de kullanılabilir)
 
-### Installation
+### 🚀 Installation
 
-1. Clone the repo
-   ```sh
-   git clone --recurse-submodules https://github.com/kodlamaio-projects/nArchitecture.git
-   ```
-2. Configure `appsettings.json` in WebAPI.
-3. Run `Update-Database` command with Package Manager Console in WebAPI to create tables in sql server.
+1. **Projeyi klonlayın:**
+    ```sh
+    git clone <repository-url>
+    cd VisualStudioCode.MEBLibrary
+    ```
 
-- Run the following command to update submodules
-  ```sh
-   git submodule update --remote
-   ```
+2. **Bağımlılıkları yükleyin:**
+    ```sh
+    dotnet restore
+    ```
+
+3. **Veritabanını oluşturun:**
+    ```sh
+    cd src/visualStudioCode.MEBLibrary/WebAPI
+    dotnet ef database update
+    ```
+
+4. **Sistemi çalıştırın:**
+    ```sh
+    dotnet run --project src/visualStudioCode.MEBLibrary/WebAPI
+    ```
+
+5. **Swagger UI'ye erişin:**
+    ```
+    http://localhost:5278/swagger
+    ```
+
+### 🔧 Configuration
+
+`appsettings.json` dosyasında gerekli konfigürasyonları yapın:
+
+```json
+{
+  "ConnectionStrings": {
+    "BaseDb": "Server=localhost;Database=MEBLibraryDb;Trusted_Connection=True;"
+  },
+  "TokenOptions": {
+    "SecurityKey": "YourStrongSecretKeyHere..."
+  }
+}
+```
 
 ## 🚀 Usage
 
-1. Run example WebAPI project `dotnet run --project src\visualStudioCode.MEBLibrary\WebAPI`
+### **🏃‍♂️ API'yi Çalıştırın:**
+```sh
+cd src/visualStudioCode.MEBLibrary/WebAPI
+dotnet run
+```
 
-### Analysis
+API şu adreste erişilebilir: `http://localhost:5278`
 
-1. If not, Install dotnet tool `dotnet tool restore`.
-2. Run anaylsis command `dotnet roslynator analyze`
+### **📖 Swagger Documentation:**
+API documentation ve test arayüzü için: `http://localhost:5278/swagger`
 
-### Format
+### **🧪 Test Kullanıcıları:**
+```json
+// Admin Girişi
+POST /api/Auth/Login
+{
+  "email": "kutuphane.yonetici@example.com",
+  "password": "Library123!"
+}
 
-1. If not, Install dotnet tool `dotnet tool restore`.
-2. Run format command `dotnet csharpier .`
+// Öğrenci Girişi
+POST /api/Auth/Login
+{
+  "email": "ogrenci@example.com",
+  "password": "Library123!"
+}
+```
+
+### **🔍 Örnek API Çağrıları:**
+
+#### **Kütüphaneleri Listele:**
+```sh
+GET /api/Kutuphaneler
+Authorization: Bearer YOUR_TOKEN
+```
+
+#### **Ödünç İşlemlerini Filtrele:**
+```sh
+POST /api/OduncIslemleri/GetListByDynamic
+{
+  "filter": {
+    "field": "Durumu",
+    "operator": "eq",
+    "value": "Aktif"
+  },
+  "sort": [
+    { "field": "AlinmaTarihi", "dir": "desc" }
+  ]
+}
+```
+
+### **🛠️ Development Tools:**
+
+#### **Code Analysis:**
+```sh
+dotnet tool restore
+dotnet roslynator analyze
+```
+
+#### **Code Formatting:**
+```sh
+dotnet tool restore
+dotnet csharpier .
+```
 
 ## 📚 Documentation
 
-- **[📖 Loan Management System Guide](./docs/LoanManagementGuide.md)** - Ödünç işlemleri sistemi detayları
-- **[📋 Domain Model Guide](./docs/DomainModelGuide.md)** - Domain modeli açıklamaları
-- **[📊 Reporting Guide](./docs/ReportingGuide.md)** - Raporlama özellikleri
+### **📖 Kullanıcı Kılavuzları:**
+
+- **[📖 Ödünç İşlemleri Sistemi](./docs/LoanManagementGuide.md)** - Kitap ödünç alma/iade süreçleri
+- **[📋 Domain Model Guide](./docs/DomainModelGuide.md)** - Sistem domain modeli açıklamaları
+- **[📊 Raporlama Rehberi](./docs/ReportingGuide.md)** - Kullanım istatistikleri ve raporlar
+- **[🏷️ Otorite Kontrolü](./docs/README.md)** - Bibliyografik otorite yönetimi
+
+### **🔧 API Documentation:**
+
+- **[🚀 Swagger UI](http://localhost:5278/swagger)** - İnteraktif API dokümantasyonu
+- **[📋 Postman Collection](./docs/MEBLibraryAPI.postman_collection.json)** - API test collection'ı
+
+### **🏗️ Architecture Documentation:**
+
+- **[Clean Architecture](./docs/CleanArchitecture.md)** - Mimari prensipler
+- **[CQRS Pattern](./docs/CQRSPattern.md)** - Komut ve sorgu ayrımı
+- **[Caching Strategy](./docs/CachingStrategy.md)** - Önbellekleme stratejisi
 
 ## 🚧 Roadmap
 
-See the [open issues](https://github.com/kodlamaio-projects/nArchitecture/issues) for a list of proposed features (and known issues).
+### **✅ Tamamlanan Özellikler:**
+- [x] **Clean Architecture** - Katmanlı mimari
+- [x] **CQRS Pattern** - Komut ve sorgu ayrımı
+- [x] **Authentication & Authorization** - JWT ve rol tabanlı güvenlik
+- [x] **Cache Sistemi** - Distributed memory cache
+- [x] **Dinamik Filtreleme** - GetListByDynamic endpoint'leri
+- [x] **İş Akışları** - Yeni katalog talepleri ve onay süreçleri
+- [x] **Otorite Kontrolü** - Bibliyografik standartlar
+- [x] **Raporlama** - Ödünç istatistikleri
+- [x] **Audit Logging** - Tüm işlemlerin loglanması
+
+### **🚀 Planlanan Geliştirmeler:**
+- [ ] **Vue.js Frontend** - Modern kullanıcı arayüzü
+- [ ] **Mobile API** - Mobil uygulama desteği
+- [ ] **Barcode/RFID** - Barkod sistemi entegrasyonu
+- [ ] **Email Notifications** - Ödünç/iade hatırlatmaları
+- [ ] **Advanced Reporting** - PDF/Excel rapor export
+- [ ] **Multi-language** - Çoklu dil desteği
+- [ ] **External API Integration** - KOHA, Z39.50 entegrasyonu
+- [ ] **AI Recommendations** - Kitap öneri sistemi
+
+### **🔧 Teknik İyileştirmeler:**
+- [ ] **Redis Cache** - Distributed cache
+- [ ] **Elasticsearch** - Gelişmiş arama
+- [ ] **Docker** - Containerization
+- [ ] **CI/CD Pipeline** - Otomatik deployment
+- [ ] **Performance Monitoring** - Uygulama gözlemleme
 
 ## 🤝 Contributing
 
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+MEB Kütüphane Yönetim Sistemi'ne katkıda bulunmak için aşağıdaki adımları takip edin:
 
-1. Fork the project and clone your local machine
-2. Create your Feature Branch (`git checkout -b <Feature>/<AmazingFeature>'`)
-3. Develop
-4. Commit your Changes (`git add . && git commit -m '<SemanticCommitType>(<Scope>): <AmazingFeature>'`)
-   💡 Check [Semantic Commit Messages](./docs/Semantic%20Commit%20Messages.md)
-5. Push to the Branch (`git push origin <Feature>/<AmazingFeature>`)
-6. Open a Pull Request
+### 🚀 Nasıl Katkıda Bulunabilirsiniz?
+
+1. **Projeyi Fork Edin:**
+   ```sh
+   git clone <your-fork-url>
+   cd VisualStudioCode.MEBLibrary
+   ```
+
+2. **Feature Branch Oluşturun:**
+   ```sh
+   git checkout -b feature/amazing-feature
+   ```
+
+3. **Geliştirmelerinizi Yapın:**
+   - Yeni özellikler ekleyin
+   - Mevcut kodları iyileştirin
+   - Testler yazın
+   - Dokümantasyon güncelleyin
+
+4. **Değişikliklerinizi Commit Edin:**
+   ```sh
+   git add .
+   git commit -m 'feat: yeni ödünç verme özelliği eklendi'
+   ```
+
+5. **Push Yapın:**
+   ```sh
+   git push origin feature/amazing-feature
+   ```
+
+6. **Pull Request Açın**
+
+### 📝 Commit Message Formatı:
+
+```
+type(scope): description
+
+[optional body]
+
+[optional footer]
+```
+
+**Types:**
+- `feat:` - Yeni özellik
+- `fix:` - Bug fix
+- `docs:` - Dokümantasyon
+- `style:` - Kod formatı
+- `refactor:` - Kod iyileştirmesi
+- `test:` - Test ekleme/düzenleme
+- `chore:` - Genel bakım
+
+**Examples:**
+- `feat: kitap iade endpoint'i eklendi`
+- `fix: ödünç limiti kontrolü düzeltildi`
+- `docs: README güncellendi`
 
 Contributing on Core Packages With This Repo:
 

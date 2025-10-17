@@ -14,7 +14,7 @@ public class GetListKutuphaneQuery : IRequest<GetListResponse<GetListKutuphaneLi
     public required PageRequest PageRequest { get; set; }
 
     public bool BypassCache { get; set; }
-    public string? CacheKey => $"GetListKutuphaneler-{PageRequest.PageIndex}-{PageRequest.PageSize}";
+    public string CacheKey => $"GetListKutuphaneler-{PageRequest.PageIndex}-{PageRequest.PageSize}";
     public string? CacheGroupKey => "GetKutuphaneler";
     public TimeSpan? SlidingExpiration { get; set; }
 

@@ -156,7 +156,107 @@ Bu ak��, otorite kayd�n�n katalog nesneleriyle nas�l zorunlu ve do�r
 
 
 
-## 12. Raporlama EndPointleri ve Dis Aktarim
+## 12. Ödünç İşlemleri (Loan Management)
+Kütüphane ödünç verme, iade, süre uzatma ve takip işlemlerini yöneten kapsamlı bir sistem oluşturuldu. Tüm işlemler business kuralları ve validasyonlarla korunmaktadır.
+
+### Ödünç İşlemleri Özellikleri
+- **Ödünç Verme**: Kullanıcı ve materyal uygunluk kontrolü ile ödünç verme işlemi
+- **İade**: Ödünç iade işlemi ve ceza hesaplaması
+- **Süre Uzatma**: Aktif ödünçlerin süre uzatma işlemi (maksimum 2 kez, 7 güne kadar)
+- **Dinamik Sorgulama**: Ödünç işlemlerinde gelişmiş filtreleme ve sayfalama
+- **İş Kuralları**: Kullanıcı limiti, materyal durumu, ceza kontrolü gibi otomatik kontroller
+
+### Ödünç Verme Politikaları
+- **Standart Ödünç Süresi**: 14 gün (30 güne kadar özelleştirilebilir)
+- **Maksimum Aktif Ödünç**: 3 kitap (kütüphane bazında yapılandırılabilir)
+- **Maksimum Uzatma Sayısı**: 2 kez
+- **Maksimum Uzatma Süresi**: 7 gün
+- **Günlük Ceza Miktarı**: 1.0 TL (gecikme gün sayısı × ceza miktarı)
+
+### Ödünç İşlemleri API Endpoints
+
+#### 1. Ödünç Verme
+```http
+POST /api/OduncIslemleri
+```
+**Request Body:**
+```json
+{
+  "KutuphaneId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "KullaniciId": "3fa85f64-5717-4562-b3fc-2c963f66afa7",
+  "NushaId": "3fa85f64-5717-4562-b3fc-2c963f66afa8",
+  "OduncSuresiGun": 14,
+  "Not": "İlk ödünç verme işlemi"
+}
+```
+
+#### 2. Ödünç İade
+```http
+PUT /api/OduncIslemleri/{id}/iade
+```
+**Request Body:**
+```json
+{
+  "IadeNotu": "Zamanında iade edildi"
+}
+```
+
+#### 3. Ödünç Süresi Uzatma
+```http
+PUT /api/OduncIslemleri/{id}/extend
+```
+**Request Body:**
+```json
+{
+  "EkGun": 7,
+  "UzatmaNedeni": "Kitap henüz bitmedi"
+}
+```
+> **Not**: Extend endpoint henüz controller'da tanımlanmamış, komut implementasyonu mevcut.
+
+#### 4. Ödünç Listesi
+```http
+GET /api/OduncIslemleri?pageIndex=0&pageSize=10
+```
+
+#### 5. Ödünç Detay
+```http
+GET /api/OduncIslemleri/{id}
+```
+
+#### 6. Dinamik Filtreleme
+```http
+POST /api/OduncIslemleri/GetListByDynamic?pageIndex=0&pageSize=20
+```
+**Request Body:**
+```json
+{
+  "filter": {
+    "logic": "and",
+    "filters": [
+      { "field": "Durumu", "operator": "eq", "value": "Aktif" },
+      { "field": "KutuphaneId", "operator": "eq", "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6" }
+    ]
+  },
+  "sort": [
+    { "field": "AlinmaTarihi", "dir": "desc" }
+  ]
+}
+```
+
+### Ödünç İşlemleri İş Kuralları
+- **Nusha Kontrolü**: Nusha mevcut ve ödünç verilebilir durumda olmalı
+- **Kullanıcı Uygunluğu**: Kullanıcının aktif ödünç limiti aşılmamış olmalı
+- **Gecikme Kontrolü**: Gecikmiş ödünç işlemi olan kullanıcı yeni ödünç alamaz
+- **Uzatma Validasyonu**: Sadece aktif ödünçler uzatılabilir, teslim tarihi geçmiş ödünçler uzatılamaz
+
+### Ödünç Durumları
+- **Aktif**: Ödünç verilmiş ve teslim tarihi geçmemiş
+- **Gecikmiş**: Teslim tarihi geçmiş aktif ödünçler
+- **İade Edildi**: İade işlemi tamamlanmış
+- **İptal Edildi**: İptal edilmiş ödünç işlemleri
+
+## 13. Raporlama EndPointleri ve Dis Aktarim
 Detayli kullanim icin bkz. `docs/ReportingGuide.md`.
 - `GET /api/Raporlama/odunc/overdue`: Geciken odunc islemlerini (`KutuphaneId`, `KullaniciId` opsiyonel) filtreleyerek listeler.
 - `GET /api/Raporlama/odunc/usage`: Materyal bazli odunc kullanimi (toplam, aktif, geciken, iade edilen) istatistiklerini dondurur.
