@@ -5,13 +5,11 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Entities.Security;
 using MediatR;
-using NArchitecture.Core.Application.Pipelines.Authorization;
 using NArchitecture.Core.Security.Hashing;
-using static Application.Features.Users.Constants.UsersOperationClaims;
 
 namespace Application.Features.Users.Commands.Create;
 
-public class CreateUserCommand : IRequest<CreatedUserResponse>, ISecuredRequest
+public class CreateUserCommand : IRequest<CreatedUserResponse>
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
@@ -34,7 +32,6 @@ public class CreateUserCommand : IRequest<CreatedUserResponse>, ISecuredRequest
         Password = password;
     }
 
-    public string[] Roles => new[] { Admin, Write, UsersOperationClaims.Create };
 
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, CreatedUserResponse>
     {

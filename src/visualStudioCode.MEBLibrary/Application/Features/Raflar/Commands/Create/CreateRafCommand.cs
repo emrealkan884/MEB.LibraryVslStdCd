@@ -8,7 +8,7 @@ namespace Application.Features.Raflar.Commands.Create;
 
 public class CreateRafCommand : IRequest<CreatedRafResponse>
 {
-    public int KutuphaneBolumuId { get; set; }
+    public Guid KutuphaneBolumuId { get; set; }
     public required string Kod { get; set; }
     public string? Aciklama { get; set; }
 

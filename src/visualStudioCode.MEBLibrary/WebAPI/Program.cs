@@ -102,7 +102,8 @@ if (app.Environment.IsProduction())
 app.UseDbMigrationApplier();
 app.SeedSampleData();
 
-app.UseAuthentication();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();

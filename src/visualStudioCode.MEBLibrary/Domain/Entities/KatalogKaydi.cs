@@ -26,11 +26,12 @@ public class KatalogKaydi : Entity<Guid>
     public bool RdaUyumlu { get; set; } // true, false, false
     public Guid? YeniKatalogTalebiId { get; set; } // 3201, 4502, null
     public DateTime KayitTarihi { get; set; } = DateTime.UtcNow; // 2024-01-15 10:32, 2024-03-01 08:45, 2024-05-20 19:10
+   
+    
+    //Navigation properties
     public Kutuphane? Kutuphane { get; set; }
     public DeweySiniflama? DeweySiniflama { get; set; }
     public YeniKatalogTalebi? YeniKatalogTalebi { get; set; }
-    
-    //Navigation properties
     public ICollection<Materyal> Materyaller { get; set; } = new List<Materyal>();
     public ICollection<KatalogKaydiYazar> KatalogYazarlar { get; set; } = new List<KatalogKaydiYazar>();
     public ICollection<MateryalFormatDetay> FormatDetaylari { get; set; } = new List<MateryalFormatDetay>();

@@ -1,8 +1,10 @@
 using Application.Features.OduncIslemler.Commands.Create;
 using Application.Features.OduncIslemler.Commands.Delete;
+using Application.Features.OduncIslemler.Commands.Return;
 using Application.Features.OduncIslemler.Commands.Update;
 using Application.Features.OduncIslemler.Queries.GetById;
 using Application.Features.OduncIslemler.Queries.GetList;
+using Application.Features.OduncIslemler.Queries.GetListByDynamic;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -57,5 +59,29 @@ public class OduncIslemleriController : BaseController
         GetListResponse<GetListOduncIslemiListItemDto> response = await Mediator.Send(query);
 
         return Ok(response);
+    }
+
+    [HttpPost("GetListByDynamic")]
+    public async Task<ActionResult<GetListResponse<GetListOduncIslemiListItemDto>>> GetListByDynamic([FromQuery] PageRequest pageRequest, [FromBody] dynamic dynamicQuery)
+    {
+        GetListByDynamicOduncIslemiQuery query = new() { PageRequest = pageRequest, DynamicQuery = dynamicQuery };
+
+        GetListResponse<GetListOduncIslemiListItemDto> response = await Mediator.Send(query);
+
+        return Ok(response);
+    }
+
+    [HttpPut("{id}/iade")]
+    public async Task<IActionResult> Return([FromRoute] Guid id, [FromBody] ReturnOduncIslemiCommand command)
+    {
+        if (command == null)
+        {
+            command = new ReturnOduncIslemiCommand();
+        }
+        command.Id = id;
+
+        await Mediator.Send(command);
+
+        return NoContent(); // Başarılı iade için 204 No Content
     }
 }

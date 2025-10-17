@@ -56,7 +56,7 @@ To get a local copy up and running follow these simple steps.
 
 ## 🚀 Usage
 
-1. Run example WebAPI project `dotnet run --project src\rentACar\WebAPI`
+1. Run example WebAPI project `dotnet run --project src\visualStudioCode.MEBLibrary\WebAPI`
 
 ### Analysis
 
@@ -67,6 +67,12 @@ To get a local copy up and running follow these simple steps.
 
 1. If not, Install dotnet tool `dotnet tool restore`.
 2. Run format command `dotnet csharpier .`
+
+## 📚 Documentation
+
+- **[📖 Loan Management System Guide](./docs/LoanManagementGuide.md)** - Ödünç işlemleri sistemi detayları
+- **[📋 Domain Model Guide](./docs/DomainModelGuide.md)** - Domain modeli açıklamaları
+- **[📊 Reporting Guide](./docs/ReportingGuide.md)** - Raporlama özellikleri
 
 ## 🚧 Roadmap
 

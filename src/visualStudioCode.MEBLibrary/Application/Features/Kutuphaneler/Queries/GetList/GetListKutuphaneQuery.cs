@@ -2,15 +2,21 @@ using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using NArchitecture.Core.Application.Pipelines.Caching;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Paging;
 
 namespace Application.Features.Kutuphaneler.Queries.GetList;
 
-public class GetListKutuphaneQuery : IRequest<GetListResponse<GetListKutuphaneListItemDto>>
+public class GetListKutuphaneQuery : IRequest<GetListResponse<GetListKutuphaneListItemDto>>, ICachableRequest
 {
     public required PageRequest PageRequest { get; set; }
+
+    public bool BypassCache { get; set; }
+    public string? CacheKey => $"GetListKutuphaneler-{PageRequest.PageIndex}-{PageRequest.PageSize}";
+    public string? CacheGroupKey => "GetKutuphaneler";
+    public TimeSpan? SlidingExpiration { get; set; }
 
     public class GetListKutuphaneQueryHandler : IRequestHandler<GetListKutuphaneQuery, GetListResponse<GetListKutuphaneListItemDto>>
     {
