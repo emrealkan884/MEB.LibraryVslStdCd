@@ -12,7 +12,7 @@ public class UpdateDeweySiniflamaCommand : IRequest<UpdatedDeweySiniflamaRespons
     public required string Kod { get; set; }
     public required string Baslik { get; set; }
     public string? Aciklama { get; set; }
-    public int? UstSinifId { get; set; }
+    public Guid? UstSinifId { get; set; }
 
     public class UpdateDeweySiniflamaCommandHandler : IRequestHandler<UpdateDeweySiniflamaCommand, UpdatedDeweySiniflamaResponse>
     {

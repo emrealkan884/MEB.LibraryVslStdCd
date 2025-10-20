@@ -70,6 +70,118 @@
 - **xUnit** - Unit testing framework
 - **GitHub Actions** - CI/CD pipelines
 
+## Gereksinim Durum Ozeti
+
+### Genel Gereksinimler
+| # | Gereksinim | Durum | Notlar |
+|---|------------|-------|--------|
+| 1 | MEBBIS / e-Okul ile kimlik dogrulama | Eksik | Mevcut kimlik dogrulama yalnizca JWT + yerel kullanici deposu uzerinden calisiyor. |
+| 2 | Bakanligin diger otomasyonlariyla entegrasyon | Eksik | e-Okul vb. sistemler icin adapter bulunmuyor. |
+| 3 | Rol bazli erisim (kutuphaneci, yonetici, ogrenci, ogretmen) | Kismen | Roller tanimli; endpoint seviyesinde politika uygulanmiyor. |
+| 4 | Kullanim takibi ve raporlama | Kismen | Audit pipeline olaylari kaydediyor, ancak analitik paneller yok. |
+| 5 | Merkez icin tam, okullar icin ozellestirilmis moduller | Kismen | Moduller hazir; kutuphane tipine gore erisim kisiti tanimli degil. |
+| 6 | Oracle / MSSQL / MySQL destekleme | Eksik | EF Core yalnizca SQL Server icin ayarlanmis. |
+| 7 | Web tabanli ve gercek zamanli calisma | Tamamlandi | ASP.NET Core WebAPI + Vue SPA calisiyor. |
+| 8 | Unicode (AL32UTF8) desteği | Kismen | .NET unicode destekli; tohum verilerinde bozulan karakterler var. |
+| 9 | Turkce ve Ingilizce arayuz | Kismen | Lokalizasyon dosyalari mevcut, fakat uygulama genelinde tamamlanmadi. |
+|10 | Ince ayarli yetkilendirme | Kismen | Pipeline hazir, policy attributelari kullanilmiyor. |
+|11 | KOHA kataloglarini toplu aktarim | Eksik | Import modul veya script yok. |
+|12 | Bilgi guvenligi ve menu tabanli is akisi | Kismen | JWT + exception middleware var; dogrudan veri tabani kalkanlari eksik. |
+|13 | Gelismis sorgulama arabirimi | Kismen | `GetListByDynamic` var, fakat kullanici arayuzu sinirli. |
+|14 | Otomatik yedekleme | Eksik | Yedekleme gorevi/belgesi hazirlanmadi. |
+|15 | Mobil / tablet erisimi | Kismen | Vue arayuz responsive; senaryo testleri yapilmadi. |
+|16 | Kullanici karti uretimi ve yazdirma | Eksik | Kart sablonu veya servis yok. |
+|17 | Materyalleri toplu ekleme/silme/guncelleme | Kismen | Repository toplu islemi destekler, dedike API/arayuz eksik. |
+|18 | Etiket / barkod olusturma ve yazdirma | Eksik | Back-end ve front-end tarafinda barkod ozelligi yok. |
+|19 | Resim saklama | Kismen | ImageService altyapisi var; katalog kayitlariyla baglanti eksik. |
+
+### Merkez Kutuphane Ek Gereksinimler
+| # | Gereksinim | Durum | Notlar |
+|---|------------|-------|--------|
+| 1 | AACR2 bibliyografik künye | Eksik | AACR2 formatina gore dogrulama bulunmuyor. |
+| 2 | MARC21 tabanli kataloglama | Eksik | MARC alanlari tutuluyor fakat arayuz/servis yok. |
+| 3 | RDA uyumlu altyapi | Eksik | RDA spesifik veri modeli veya kontrolu bulunmuyor. |
+| 4 | Z39.50 veri degisimi | Eksik | Z39.50 istemcisi uygulanmadi. |
+| 5 | ISBN ile dis kataloglardan veri cekme | Eksik | ISBN zenginlestirme servisi yok. |
+| 6 | Word/PDF vb. dosya yukleme | Kismen | Dosya baglama isi planlanmis; mevcutta isleyen servis yok. |
+| 7 | Multimedya materyal desteği | Kismen | Domain alanlari var; UI/hizmetler kitap odakli. |
+| 8 | Dijital iceriklere dogrudan erisim | Eksik | Depolama veya streaming ucu yok. |
+| 9 | Barkod ile hizli dolaşim | Eksik | Manuel GUID girisi gerekiyor, barkod akisi yok. |
+|10 | RFID destegi | Eksik | RFID ile ilgili alan veya servis yok. |
+
+### Okul Kutuphaneleri Ek Gereksinimler
+| # | Gereksinim | Durum | Notlar |
+|---|------------|-------|--------|
+| 1 | Merkezde kataloglanan kayitlari ekleyebilme | Kismen | Iliskiler mevcut; okula kopyalama akisi hazir degil. |
+| 2 | ISBN/yazar/isim ile hizli ekleme | Eksik | Otomatik doldurma arayuzu yok. |
+| 3 | Yeni Katalog Talebi modülü | Tamamlandi | Workflow onay/red/inceleme adimlari calisiyor. |
+| 4 | Ogrencileri toplu yukle/guncelle/sil | Eksik | CSV/Excel aktarimi yapilmiyor. |
+| 5 | Odunc alma/iade yonetimi | Kismen | Komutlar var; okul odakli UI eksik. |
+| 6 | Etkinlik modulu (takvim, gorsel, rapor) | Kismen | Varliklar var; CRUD/rapor servisleri eksik. |
+| 7 | Dewey Onlu Siniflama | Kismen | Enum mevcut, uygulamada zorunlu degil. |
+| 8 | ISBN ile bilgiye erisim | Eksik | ISBN bilgisi icin dis servis yok. |
+| 9 | ISBN/yazar/kategori filtreleme | Kismen | Dinamik sorgu altyapisi var; UI sinirli. |
+|10 | TC kimlik ile toplu ogrenci kaydi | Eksik | Islev icin servis yok. |
+|11 | Alfabetik siralama | Kismen | Listeleme altyapisi var; acik secenek sunulmuyor. |
+
+### Odunc Alma ve Iade
+| # | Gereksinim | Durum | Notlar |
+|---|------------|-------|--------|
+| 1 | Son tarih icin e-posta hatirlatmasi | Eksik | Zamanlayici veya e-posta sablonu yok. |
+| 2 | Odunc esnasinda bilgilendirme mesajlari | Kismen | BusinessRules hata uretir; arayuz uyarisi yok. |
+| 3 | Barkod/RFID/manuel islem | Eksik | Sadece manuel veri girisi yapiliyor. |
+| 4 | Coklu barkod ile tek seferde odunc | Eksik | Toplu odunc endpointi bulunmuyor. |
+| 5 | Kurala uymayanlari askiya alma | Eksik | Kullanici durumu otomatik degistirilmiyor. |
+| 6 | Kutuphane kimlik karti basimi | Eksik | Ozellik uygulanmadi. |
+| 7 | Islemler sonunda fis yazdirma | Eksik | Servis veya UI bulunmuyor. |
+
+### Kataloglama Modulu
+| # | Gereksinim | Durum | Notlar |
+|---|------------|-------|--------|
+| 1 | Merkez odakli kataloglama | Kismen | CQRS katmani var; okul sinirlari net degil. |
+| 2 | MARC alanlarini kopyala/ekle/duzelt | Eksik | MARC editoru yok. |
+| 3 | Bosluk/buyuk-kucuk/aksan duyarsiz arama | Kismen | Collation iyilestirmesi yapildi; UI uyarlanmadı. |
+| 4 | Tur/alt tur/hizli secim | Kismen | Domain alanlari hazir; arayuzde yok. |
+| 5 | Otomatik MARC dogrulamasi | Eksik | DOGRULAMA servisi bulunmuyor. |
+| 6 | UTF-8 cok dilli veri girisi | Kismen | Platform uygun; bozuk tohum verileri duzeltilmedi. |
+| 7 | Dewey kullanimi | Kismen | Enum mevcut; is kurali zorunlu degil. |
+| 8 | Karakter siniri olmamasi | Tamamlandi | Girdi alanlari sinirsiz string. |
+| 9 | Z39.50 ile kayit al/ver | Eksik | Protokol istemcisi yok. |
+|10 | Fiziksel konum (depo/raf) takibi | Kismen | Alanlar var; UI/ak��� eksik. |
+|11 | Cok alanli arama ve Word/Excel cikti | Eksik | Yalnizca temel liste uclari var. |
+|12 | Materiyal bazinda odunc suresi | Kismen | Alanlar mevcut; cevap modellerine yansimiyor. |
+|13 | Kaydi olusturan/guncelleyen ve istatistik | Kismen | Audit log var; raporlama bulunmuyor. |
+|14 | Silme kaydi ve geri yukleme | Eksik | Soft delete/geri alma mekanizmasi yok. |
+
+### Raporlama
+| # | Gereksinim | Durum | Notlar |
+|---|------------|-------|--------|
+| 1 | Yetkisiz erisim engeli | Kismen | Kimlik dogrulama var; ayrintili roller yok. |
+| 2 | Yas, cinsiyet, il vb. cok boyutlu raporlar | Eksik | Sadece geciken odunc sorgusu mevcut. |
+| 3 | PDF/Excel disari aktarma | Eksik | `IReportExportService` gerceklenmemis. |
+| 4 | Gunluk gecikme kontrol raporu | Kismen | Sorgu var; zamanlama ve cikti eksik. |
+
+### OPAC (Merkez Kullanicisi Arayuzu)
+| # | Gereksinim | Durum | Notlar |
+|---|------------|-------|--------|
+| 1 | Kayıt no, tur, yil, kopya, dil ile arama | Kismen | Arka plan destekli, UI tamamlanmadi. |
+| 2 | Her kutuphaneyi ayri sorgulayabilme | Kismen | Filtre alanlari var; akış tamamlanmadı. |
+| 3 | Tum kutuphaneleri bir arada sorgulama | Kismen | Global sorgu teknik olarak mumkun, UI yok. |
+| 4 | Materyalin yeri, kopya sayisi, durumu | Kismen | Veriler var; ekranlar eksik. |
+| 5 | PDF/dijital kaynaklara erisim | Eksik | Dijital varlik servisi yok. |
+| 6 | Kullanilabilirlik bilgisini gostermek | Kismen | Data mevcut; UI'da gosterim yok. |
+
+### Sistem Modulleri
+| # | Gereksinim | Durum | Notlar |
+|---|------------|-------|--------|
+| 1 | Hiyerarsik rol yapisina sahip kullanici modulu | Kismen | Roller var; hiyerarsi islemez halde. |
+| 2 | Kataloglama modulu (merkez) | Kismen | CQRS yapisi hazir; gelismis araclar yok. |
+| 3 | Materyal yonetimi (odunc/iade takibi) | Kismen | Temel akişlar var; barkod/RFID yok. |
+| 4 | Arama ve filtreleme modulu | Kismen | Back-end saglam, UI gelistirilmeli. |
+| 5 | Yetki seviyesine gore raporlama | Eksik | Bakanlik/il/ilce bazli raporlar yok. |
+| 6 | Etkinlik modulu (takvim, medya, rapor) | Kismen | Varliklar mevcut; kullanici akişi eksik. |
+| 7 | Guvenlik modulu (SSL, 2FA, yedekleme) | Kismen | HTTPS destekli; 2FA ve otomatik yedekleme yok. |
+
 ### 🛠️ Built With
 
 **Backend:**

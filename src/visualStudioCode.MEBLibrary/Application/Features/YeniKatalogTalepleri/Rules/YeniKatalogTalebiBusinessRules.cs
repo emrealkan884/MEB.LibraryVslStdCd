@@ -6,6 +6,7 @@ using Domain.Enums;
 using NArchitecture.Core.Application.Rules;
 using NArchitecture.Core.CrossCuttingConcerns.Exception.Types;
 using NArchitecture.Core.Localization.Abstraction;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.YeniKatalogTalepleri.Rules;
 
@@ -77,14 +78,14 @@ public class YeniKatalogTalebiBusinessRules : BaseBusinessRules
 
     public async Task YeniKatalogTalebiShouldBeUnique(Guid talepEdenKutuphaneId, string baslik, string? isbn, CancellationToken cancellationToken)
     {
-        string normalizedBaslik = baslik.Trim().ToLowerInvariant();
+        string sanitizedBaslik = baslik.Trim();
         string? normalizedIsbn = YeniKatalogTalebiSanitizer.NormalizeIsbn(isbn);
 
         bool exists = await _yeniKatalogTalebiRepository.AnyAsync(
             predicate: x =>
                 x.TalepEdenKutuphaneId == talepEdenKutuphaneId
-                && x.Baslik.ToLower() == normalizedBaslik
-                && (normalizedIsbn == null || (x.Isbn != null && x.Isbn.ToLower() == normalizedIsbn))
+                && EF.Functions.Collate(x.Baslik, "Latin1_General_100_CI_AI") == sanitizedBaslik
+                && (normalizedIsbn == null || (x.Isbn != null && x.Isbn == normalizedIsbn))
                 && x.Durum != TalepDurumu.Reddedildi,
             cancellationToken: cancellationToken
         );

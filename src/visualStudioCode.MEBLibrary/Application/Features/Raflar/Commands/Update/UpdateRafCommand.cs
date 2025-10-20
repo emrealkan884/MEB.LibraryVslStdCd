@@ -9,7 +9,7 @@ namespace Application.Features.Raflar.Commands.Update;
 public class UpdateRafCommand : IRequest<UpdatedRafResponse>
 {
     public Guid Id { get; set; }
-    public int KutuphaneBolumuId { get; set; }
+    public Guid KutuphaneBolumuId { get; set; }
     public required string Kod { get; set; }
     public string? Aciklama { get; set; }
 

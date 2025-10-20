@@ -113,7 +113,7 @@ public static class ApplicationServiceRegistration
             if (addWithLifeCycle == null)
                 services.AddScoped(item);
             else
-                addWithLifeCycle(services, type);
+                addWithLifeCycle(services, item);
         return services;
     }
 }

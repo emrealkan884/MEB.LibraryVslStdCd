@@ -57,19 +57,12 @@ public class YeniKatalogTalebi : Entity<Guid>
     public string? Aciklama { get; set; } // "Fen lisesi mufredati icin gerekli.", "Robotik kulubu kaynak istegi.", null
     public string? RedGerekcesi { get; set; } // "Talep edilen eser katalogda mevcut.", null, null
 
-    public TalepDurumu Durum { get; set; } =
-        TalepDurumu.Beklemede; // TalepDurumu.Beklemede, TalepDurumu.Inceleniyor, TalepDurumu.Onaylandi
+    public TalepDurumu Durum { get; set; } = TalepDurumu.Beklemede; // TalepDurumu.Beklemede, TalepDurumu.Inceleniyor, TalepDurumu.Onaylandi
 
     public DateTime TalepTarihi { get; set; } = DateTime.UtcNow; // 2024-01-15 10:32, 2024-02-03 14:05, 2024-03-21 09:50
     public DateTime? SonGuncellemeTarihi { get; set; } // 2024-01-20 11:10, 2024-02-05 08:45, null
-
-    public Guid?
-        KatalogKaydiId
-    {
-        get;
-        set;
-    } // Guid.Parse("12000000-0000-0000-0000-000000000000"), null, Guid.Parse("35000000-0000-0000-0000-000000000000")
-
+    public Guid? KatalogKaydiId { get; set; }
+    
     public Kutuphane? TalepEdenKutuphane { get; set; }
     public KatalogKaydi? KatalogKaydi { get; set; }
 

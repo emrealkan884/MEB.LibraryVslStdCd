@@ -62,6 +62,7 @@ public static class DataSeedingExtensions
         Guid romanNushaId = Guid.Parse("0A18F4FA-0E2A-41DE-9C77-53F1E4491A3D");
         Guid stemNushaId = Guid.Parse("827D9E70-99B8-4E0D-B198-3E3F7E589243");
         Guid stemNusha2Id = Guid.Parse("6B9C4D32-79C8-4829-9150-8F24C5A70A6E");
+        Guid stemNusha3Id = Guid.Parse("99E2BC17-62E2-47F1-A4E2-0D56E3EB81E7");
 
         Guid romanYazarBagId = Guid.Parse("F6F71988-3C63-4BD5-B83A-41A58427A7A6");
         Guid stemYazarBagId = Guid.Parse("5AA8C527-5F07-420B-8A2D-3C6B620B95C2");
@@ -72,6 +73,7 @@ public static class DataSeedingExtensions
         Guid stemTalepId = Guid.Parse("96CB0C7C-B9FB-41B1-9BBA-5CF6F729B47F");
         Guid stemRezervasyonId = Guid.Parse("6F756107-1E43-4C03-A047-3A8AAC0E762E");
         Guid stemOduncId = Guid.Parse("5446C4F5-A970-41A9-AEA9-BA97FE38E558");
+        Guid stemOverdueOduncId = Guid.Parse("1E1F9F0B-6323-48E9-89A8-3E6A787BC279");
 
         Guid merkezEtkinlikId = Guid.Parse("2CD1FA16-7564-40A7-B828-138950137C71");
         Guid auditLogId = Guid.Parse("8F063057-5AAB-4F4E-B6D5-27A3C7C01A2D");
@@ -521,6 +523,16 @@ public static class DataSeedingExtensions
                 Durumu = NushaDurumu.Oduncta,
                 EklenmeTarihi = lastWeek,
                 CreatedDate = lastWeek
+            },
+            new()
+            {
+                Id = stemNusha3Id,
+                MateryalId = stemMateryalId,
+                RafId = fenStemRafId,
+                Barkod = "STEM-2024-003",
+                Durumu = NushaDurumu.Oduncta,
+                EklenmeTarihi = lastMonth,
+                CreatedDate = lastMonth.AddDays(-10)
             }
         };
         context.Nushas.AddRange(nushalar);
@@ -556,6 +568,19 @@ public static class DataSeedingExtensions
                 UzatmaSayisi = 0,
                 Not = "Atolye calismasi icin ayrildi",
                 CreatedDate = lastWeek
+            },
+            new()
+            {
+                Id = stemOverdueOduncId,
+                KutuphaneId = fenKutuphaneId,
+                KullaniciId = ogrenciUserId,
+                NushaId = stemNusha3Id,
+                AlinmaTarihi = lastWeek.AddDays(-10),
+                SonTeslimTarihi = lastWeek.AddDays(-2),
+                Durumu = OduncDurumu.Aktif,
+                UzatmaSayisi = 1,
+                Not = "Robotik proje arastirmasi icin verildi",
+                CreatedDate = lastWeek.AddDays(-10)
             }
         };
         context.OduncIslemleri.AddRange(oduncIslemleri);

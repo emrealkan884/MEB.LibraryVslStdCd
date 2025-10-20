@@ -35,7 +35,7 @@ public class UserBusinessRules : BaseBusinessRules
     public async Task UserIdShouldBeExistsWhenSelected(Guid id)
     {
         bool doesExist = await _userRepository.AnyAsync(predicate: u => u.Id == id);
-        if (doesExist)
+        if (!doesExist)
             await throwBusinessException(UsersMessages.UserDontExists);
     }
 

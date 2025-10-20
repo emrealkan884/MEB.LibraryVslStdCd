@@ -1,4 +1,5 @@
 using Application.Features.YeniKatalogTalepleri.Rules;
+using Application.Features.YeniKatalogTalepleri.Utilities;
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
@@ -51,12 +52,14 @@ public class UpdateYeniKatalogTalebiCommand : IRequest<UpdatedYeniKatalogTalebiR
             await _yeniKatalogTalebiBusinessRules.YeniKatalogTalebiShouldExistWhenSelected(yeniKatalogTalebi);
             await _yeniKatalogTalebiBusinessRules.YeniKatalogTalebiShouldAllowUpdate(yeniKatalogTalebi!);
 
+            string? normalizedIsbn = YeniKatalogTalebiSanitizer.NormalizeIsbn(request.Isbn);
+
             yeniKatalogTalebi!.TalepEdenKutuphaneId = request.TalepEdenKutuphaneId;
             yeniKatalogTalebi.TalepBilgileriniGuncelle(
                 request.Baslik,
                 request.AltBaslik,
                 request.YazarMetni,
-                request.Isbn,
+                normalizedIsbn,
                 request.Issn,
                 request.MateryalTuru,
                 request.MateryalAltTuru,

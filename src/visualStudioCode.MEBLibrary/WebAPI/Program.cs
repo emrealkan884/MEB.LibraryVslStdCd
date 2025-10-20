@@ -102,18 +102,20 @@ if (app.Environment.IsProduction())
 app.UseDbMigrationApplier();
 app.SeedSampleData();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-app.UseAuthorization();
-
-app.MapControllers();
-
 const string webApiConfigurationSection = "WebAPIConfiguration";
 WebApiConfiguration webApiConfiguration =
     app.Configuration.GetSection(webApiConfigurationSection).Get<WebApiConfiguration>()
     ?? throw new InvalidOperationException($"\"{webApiConfigurationSection}\" section cannot found in configuration.");
+
+app.UseRouting();
+
 app.UseCors(opt => opt.WithOrigins(webApiConfiguration.AllowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials());
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseResponseLocalization();
+
+app.MapControllers();
 
 app.Run();

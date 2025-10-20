@@ -5,6 +5,7 @@ using Domain.Enums;
 using NArchitecture.Core.Application.Rules;
 using NArchitecture.Core.CrossCuttingConcerns.Exception.Types;
 using NArchitecture.Core.Localization.Abstraction;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.OtoriteKayitlari.Rules;
 
@@ -48,10 +49,13 @@ public class OtoriteKaydiBusinessRules : BaseBusinessRules
         Guid? excludeId = null
     )
     {
+        string sanitizedYetkiliBaslik = yetkiliBaslik.Trim();
+        string collation = "Latin1_General_100_CI_AI";
         bool alreadyExists = await _otoriteKaydiRepository.AnyAsync(
             predicate: x =>
                 x.OtoriteTuru == otoriteTuru
-                && x.YetkiliBaslik.ToLower() == yetkiliBaslik.ToLower()
+                && EF.Functions.Collate(x.YetkiliBaslik, collation)
+                    == EF.Functions.Collate(sanitizedYetkiliBaslik, collation)
                 && (!excludeId.HasValue || x.Id != excludeId),
             cancellationToken: cancellationToken
         );

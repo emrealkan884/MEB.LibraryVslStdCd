@@ -25,4 +25,38 @@
 - `YetkiliBaslik` resmi basligi, `AlternatifBasliklar` varyantlari, `BagliTerimler` iliskili kavramlari tutar; `HariciKayitNo` dis sistemlerle eslesmeyi kolaylastirir.
 - `KatalogKonu` ve `KatalogKaydiYazar` varliklari katalog kayitlarini authority kayitlarina baglar; aramalarda tutarlilik saglanir.
 
+## 7. Otorite Kaydi, Yazar ve Konu Baglantisi
+1. Gerekli kisi/kurum/konu icin `POST /api/OtoriteKayitlari` ile authority kaydi olusturun.
+2. Yazar kaydini (`POST /api/Yazarlar`) ekleyin.
+3. Katalog kaydini (`POST /api/KatalogKayitlari`) olusturun.
+4. Yazar-katalog eslesmesini `POST /api/KatalogKaydiYazarlar` ile olustururken `OtoriteKaydiId` alanini doldurun.
+5. Konu baglantisi icin `POST /api/KatalogKonular` uzerinden `KatalogKaydiId` ve `OtoriteKaydiId` bilgilerini gonderin.
+
+Bu adimlar authority kontrolu ile yazar ve konu basliklarinin standart kalmasini saglar.
+
+## 8. MateryalFormatDetay Kullanimi
+- `MateryalFormatDetay` bir katalog kaydinin fiziki veya dijital formatini aciklar: MARC 300/347/538 alanlarinin karsiligidir.
+- `FizikselTanimi`: sayfa/boyut bilgisi.
+- `SureBilgisi`: video, ses, DVD gibi materyallerde sure veya disk sayisi.
+- `FormatBilgisi`: PDF, MP4, ciltli vb.
+- `Dil`: formatin dili, bibliyografik kayit ile farkli olabilir (ceviri baski).
+- `ErisimBilgisi`: URL, intranet notu ya da fiziksel erisim uyarisi.
+- Akis: Ilk olarak katalog kaydi olusturulur, ardindan `POST /api/MateryalFormatDetaylar` ile farkli formatlar eklenir. Gerektiginde GET/PUT/DELETE ile guncellenebilir.
+
+## 9. MateryalEtiket Neden Var?
+- Okul veya merkez kutuphaneleri icin ozgurluk saglayan esnek etiket yapisidir.
+- Sorgulamalarda populer listeler (\"OkumaKulubu\", \"STEM\" gibi) veya kampanya bazli filtreleme yapmak icin kullanilir.
+- Etiketler `POST /api/MateryalEtiketler` ile eklenir, ayni materyale birden fazla etiket baglanabilir.
+
+## 10. KatalogKonu ve KutuphaneBolumu Arasindaki Fark
+- `KatalogKonu`: Kaynagin entelektuel icerigini (konu basligi) tanimlar ve authority kaydi ile baglanabilir.
+- `KutuphaneBolumu`: Kaynagin fiziksel olarak bulundugu lokasyonu belirtir (bolum, salon).
+- Bir kitap \"STEM egitimi\" konusuna sahip olurken fiziksel olarak okulun \"STEM\" bolumundeki raflarda bulunabilir; bu nedenle iki farkli varlikla takip edilir.
+
+## 11. Katalog Kaydina Yazar Baglama Akisi
+- `KatalogKaydi` olusturulduktan sonra her yazar icin `KatalogKaydiYazar` kaydi eklenir.
+- Zorunlu alanlar: `KatalogKaydiId`, `YazarId`, `Rol`, `Sira`. Opsiyonel: `OtoriteKaydiId`.
+- Boylece ayni kayit birden fazla yazar, cevirmen veya editor ile sirali sekilde eslenebilir.
+- Ileride otomatiklestirme icin `CreateKatalogKaydi` komutuna yazar listesi eklenebilir; mevcut mimari, SOLID prensibi geregi bu sorumlulugu bagli servis uzerinde tutar.
+
 
