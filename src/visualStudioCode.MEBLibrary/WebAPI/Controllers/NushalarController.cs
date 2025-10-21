@@ -1,18 +1,21 @@
+using Application.Authorization;
 using Application.Features.Nushalar.Commands.Create;
 using Application.Features.Nushalar.Commands.Delete;
 using Application.Features.Nushalar.Commands.Update;
 using Application.Features.Nushalar.Queries.GetById;
 using Application.Features.Nushalar.Queries.GetList;
 using Application.Features.Nushalar.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
 public class NushalarController : BaseController
 {
     [HttpPost]

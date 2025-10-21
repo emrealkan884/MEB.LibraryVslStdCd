@@ -30,18 +30,26 @@ public class CreateKatalogKaydiCommand : IRequest<CreatedKatalogKaydiResponse>
     public string? Marc21Verisi { get; set; }
     public bool RdaUyumlu { get; set; }
     public DateTime KayitTarihi { get; set; }
+    public IList<CreateKatalogKaydiYazarDto>? Yazarlar { get; set; }
+    public IList<CreateKatalogKaydiKonuDto>? Konular { get; set; }
 
     public class CreateKatalogKaydiCommandHandler : IRequestHandler<CreateKatalogKaydiCommand, CreatedKatalogKaydiResponse>
     {
         private readonly IMapper _mapper;
         private readonly IKatalogKaydiRepository _katalogKaydiRepository;
+        private readonly IKatalogKaydiYazarRepository _katalogKaydiYazarRepository;
+        private readonly IKatalogKonuRepository _katalogKonuRepository;
         private readonly KatalogKaydiBusinessRules _katalogKaydiBusinessRules;
 
         public CreateKatalogKaydiCommandHandler(IMapper mapper, IKatalogKaydiRepository katalogKaydiRepository,
+                                             IKatalogKaydiYazarRepository katalogKaydiYazarRepository,
+                                             IKatalogKonuRepository katalogKonuRepository,
                                              KatalogKaydiBusinessRules katalogKaydiBusinessRules)
         {
             _mapper = mapper;
             _katalogKaydiRepository = katalogKaydiRepository;
+            _katalogKaydiYazarRepository = katalogKaydiYazarRepository;
+            _katalogKonuRepository = katalogKonuRepository;
             _katalogKaydiBusinessRules = katalogKaydiBusinessRules;
         }
 
@@ -49,10 +57,66 @@ public class CreateKatalogKaydiCommand : IRequest<CreatedKatalogKaydiResponse>
         {
             KatalogKaydi katalogKaydi = _mapper.Map<KatalogKaydi>(request);
 
-            await _katalogKaydiRepository.AddAsync(katalogKaydi);
+            katalogKaydi = await _katalogKaydiRepository.AddAsync(katalogKaydi);
+
+            List<KatalogKaydiYazar> createdYazarlar = new();
+            if (request.Yazarlar != null)
+            {
+                foreach (CreateKatalogKaydiYazarDto yazarDto in request.Yazarlar)
+                {
+                    KatalogKaydiYazar katalogKaydiYazar = new()
+                    {
+                        Id = Guid.NewGuid(),
+                        KatalogKaydiId = katalogKaydi.Id,
+                        YazarId = yazarDto.YazarId,
+                        Rol = yazarDto.Rol,
+                        Sira = yazarDto.Sira,
+                        OtoriteKaydiId = yazarDto.OtoriteKaydiId
+                    };
+                    await _katalogKaydiYazarRepository.AddAsync(katalogKaydiYazar);
+                    createdYazarlar.Add(katalogKaydiYazar);
+                }
+            }
+
+            List<KatalogKonu> createdKonular = new();
+            if (request.Konular != null)
+            {
+                foreach (CreateKatalogKaydiKonuDto konuDto in request.Konular)
+                {
+                    KatalogKonu katalogKonu = new()
+                    {
+                        Id = Guid.NewGuid(),
+                        KatalogKaydiId = katalogKaydi.Id,
+                        KonuBasligi = konuDto.KonuBasligi,
+                        OtoriteKaydiId = konuDto.OtoriteKaydiId
+                    };
+                    await _katalogKonuRepository.AddAsync(katalogKonu);
+                    createdKonular.Add(katalogKonu);
+                }
+            }
 
             CreatedKatalogKaydiResponse response = _mapper.Map<CreatedKatalogKaydiResponse>(katalogKaydi);
+            response.Yazarlar = createdYazarlar
+                .Select(y => new CreatedKatalogKaydiYazarDto(y.Id, y.YazarId, y.Rol, y.Sira, y.OtoriteKaydiId))
+                .ToList();
+            response.Konular = createdKonular
+                .Select(k => new CreatedKatalogKaydiKonuDto(k.Id, k.KonuBasligi, k.OtoriteKaydiId))
+                .ToList();
             return response;
         }
+    }
+
+    public class CreateKatalogKaydiYazarDto
+    {
+        public Guid YazarId { get; set; }
+        public YazarRolu Rol { get; set; } = YazarRolu.Yazar;
+        public int Sira { get; set; } = 1;
+        public Guid? OtoriteKaydiId { get; set; }
+    }
+
+    public class CreateKatalogKaydiKonuDto
+    {
+        public required string KonuBasligi { get; set; }
+        public Guid? OtoriteKaydiId { get; set; }
     }
 }

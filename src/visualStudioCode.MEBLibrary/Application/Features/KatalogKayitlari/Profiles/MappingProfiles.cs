@@ -14,8 +14,12 @@ public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
-        CreateMap<CreateKatalogKaydiCommand, KatalogKaydi>();
-        CreateMap<KatalogKaydi, CreatedKatalogKaydiResponse>();
+        CreateMap<CreateKatalogKaydiCommand, KatalogKaydi>()
+            .ForMember(dest => dest.KatalogYazarlar, opt => opt.Ignore())
+            .ForMember(dest => dest.Konular, opt => opt.Ignore());
+        CreateMap<KatalogKaydi, CreatedKatalogKaydiResponse>()
+            .ForMember(dest => dest.Yazarlar, opt => opt.Ignore())
+            .ForMember(dest => dest.Konular, opt => opt.Ignore());
 
         CreateMap<UpdateKatalogKaydiCommand, KatalogKaydi>();
         CreateMap<KatalogKaydi, UpdatedKatalogKaydiResponse>();

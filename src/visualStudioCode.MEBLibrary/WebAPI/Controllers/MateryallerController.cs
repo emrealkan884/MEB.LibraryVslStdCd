@@ -1,18 +1,21 @@
+using Application.Authorization;
 using Application.Features.Materyaller.Commands.Create;
 using Application.Features.Materyaller.Commands.Delete;
 using Application.Features.Materyaller.Commands.Update;
 using Application.Features.Materyaller.Queries.GetById;
 using Application.Features.Materyaller.Queries.GetList;
 using Application.Features.Materyaller.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
 public class MateryallerController : BaseController
 {
     [HttpPost]

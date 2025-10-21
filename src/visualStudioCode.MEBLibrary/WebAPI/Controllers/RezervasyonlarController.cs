@@ -1,18 +1,21 @@
+using Application.Authorization;
 using Application.Features.Rezervasyonlar.Commands.Create;
 using Application.Features.Rezervasyonlar.Commands.Delete;
 using Application.Features.Rezervasyonlar.Commands.Update;
 using Application.Features.Rezervasyonlar.Queries.GetById;
 using Application.Features.Rezervasyonlar.Queries.GetList;
 using Application.Features.Rezervasyonlar.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
 public class RezervasyonlarController : BaseController
 {
     [HttpPost]

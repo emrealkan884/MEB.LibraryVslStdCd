@@ -1,18 +1,21 @@
+using Application.Authorization;
 using Application.Features.Etkinlikler.Commands.Create;
 using Application.Features.Etkinlikler.Commands.Delete;
 using Application.Features.Etkinlikler.Commands.Update;
 using Application.Features.Etkinlikler.Queries.GetById;
 using Application.Features.Etkinlikler.Queries.GetList;
 using Application.Features.Etkinlikler.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
 public class EtkinliklerController : BaseController
 {
     [HttpPost]

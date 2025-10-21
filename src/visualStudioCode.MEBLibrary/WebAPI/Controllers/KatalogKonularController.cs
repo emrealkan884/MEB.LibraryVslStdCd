@@ -1,16 +1,19 @@
+using Application.Authorization;
 using Application.Features.KatalogKonulari.Commands.Create;
 using Application.Features.KatalogKonulari.Commands.Delete;
 using Application.Features.KatalogKonulari.Commands.Update;
 using Application.Features.KatalogKonulari.Queries.GetById;
 using Application.Features.KatalogKonulari.Queries.GetList;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireMinistry)]
 public class KatalogKonularController : BaseController
 {
     [HttpPost]

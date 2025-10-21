@@ -59,4 +59,14 @@ Bu adimlar authority kontrolu ile yazar ve konu basliklarinin standart kalmasini
 - Boylece ayni kayit birden fazla yazar, cevirmen veya editor ile sirali sekilde eslenebilir.
 - Ileride otomatiklestirme icin `CreateKatalogKaydi` komutuna yazar listesi eklenebilir; mevcut mimari, SOLID prensibi geregi bu sorumlulugu bagli servis uzerinde tutar.
 
+## 12. Rol Hiyerarsisi ve Policy Kullanimı
+- Tanımlı roller: `Role.BakanlikYetkilisi`, `Role.IlYetkilisi`, `Role.IlceYetkilisi`, `Role.OkulKutuphaneYoneticisi`.
+- Politika isimleri `AuthorizationPolicies` altında tutulur ve şu eşleşmeleri kullanır:
+  - `RequireMinistry`: yalnızca `Role.BakanlikYetkilisi`.
+  - `RequireProvinceOrAbove`: Bakanlık veya İl yetkilileri.
+  - `RequireDistrictOrAbove`: Bakanlık, İl, İlçe.
+  - `RequireSchoolOrAbove`: tüm roller.
+- `Program.cs` içinde `AddLibraryAuthorization()` çağrısı ile politikalar kaydedilir; controller'larda `[Authorize(Policy = ...)]` ile uygulanır.
+- Seed edilen `kutuphane.yonetici@example.com` kullanıcısı hem `Role.BakanlikYetkilisi` hem de `Role.OkulKutuphaneYoneticisi` claim'lerine sahiptir; gereksinime göre ek kullanıcı-rol eşleştirmeleri yapılabilir.
+
 

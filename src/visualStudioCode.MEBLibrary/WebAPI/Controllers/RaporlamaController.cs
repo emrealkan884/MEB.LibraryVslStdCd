@@ -1,14 +1,17 @@
+using Application.Authorization;
 using Application.Features.Raporlama.Queries.GetLoanUsageStatistics;
 using Application.Features.Raporlama.Queries.GetOverdueLoans;
 using Application.Services.Reporting;
 using Application.Services.Reporting.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireProvinceOrAbove)]
 public class RaporlamaController : BaseController
 {
     private readonly IReportExportService _reportExportService;

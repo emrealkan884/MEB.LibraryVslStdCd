@@ -1,3 +1,4 @@
+using Application.Authorization;
 using Application.Features.OduncIslemler.Commands.Create;
 using Application.Features.OduncIslemler.Commands.Delete;
 using Application.Features.OduncIslemler.Commands.Extend;
@@ -6,15 +7,17 @@ using Application.Features.OduncIslemler.Commands.Update;
 using Application.Features.OduncIslemler.Queries.GetById;
 using Application.Features.OduncIslemler.Queries.GetList;
 using Application.Features.OduncIslemler.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
 public class OduncIslemleriController : BaseController
 {
     [HttpPost]

@@ -1,3 +1,4 @@
+using Application.Authorization;
 using Application.Features.Auth.Constants;
 using Application.Features.OperationClaims.Constants;
 using Application.Features.UserOperationClaims.Constants;
@@ -94,6 +95,17 @@ public class OperationClaimConfiguration : IEntityTypeConfiguration<OperationCla
                 new() { Id = ++lastId, Name = UsersOperationClaims.Create },
                 new() { Id = ++lastId, Name = UsersOperationClaims.Update },
                 new() { Id = ++lastId, Name = UsersOperationClaims.Delete },
+            ]
+        );
+        #endregion
+
+        #region SystemRoles
+        featureOperationClaims.AddRange(
+            [
+                new() { Id = ++lastId, Name = ApplicationRoles.BakanlikYetkilisi },
+                new() { Id = ++lastId, Name = ApplicationRoles.IlYetkilisi },
+                new() { Id = ++lastId, Name = ApplicationRoles.IlceYetkilisi },
+                new() { Id = ++lastId, Name = ApplicationRoles.OkulKutuphaneYoneticisi },
             ]
         );
         #endregion

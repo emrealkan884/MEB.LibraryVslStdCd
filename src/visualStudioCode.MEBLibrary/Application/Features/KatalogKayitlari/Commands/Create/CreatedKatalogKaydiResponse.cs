@@ -27,4 +27,10 @@ public class CreatedKatalogKaydiResponse : IResponse
     public string? Marc21Verisi { get; set; }
     public bool RdaUyumlu { get; set; }
     public DateTime KayitTarihi { get; set; }
+    public IList<CreatedKatalogKaydiYazarDto> Yazarlar { get; set; } = new List<CreatedKatalogKaydiYazarDto>();
+    public IList<CreatedKatalogKaydiKonuDto> Konular { get; set; } = new List<CreatedKatalogKaydiKonuDto>();
 }
+
+public record CreatedKatalogKaydiYazarDto(Guid Id, Guid YazarId, YazarRolu Rol, int Sira, Guid? OtoriteKaydiId);
+
+public record CreatedKatalogKaydiKonuDto(Guid Id, string KonuBasligi, Guid? OtoriteKaydiId);

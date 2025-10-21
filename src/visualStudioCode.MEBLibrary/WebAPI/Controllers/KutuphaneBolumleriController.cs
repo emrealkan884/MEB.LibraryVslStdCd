@@ -1,18 +1,21 @@
+using Application.Authorization;
 using Application.Features.KutuphaneBolumleri.Commands.Create;
 using Application.Features.KutuphaneBolumleri.Commands.Delete;
 using Application.Features.KutuphaneBolumleri.Commands.Update;
 using Application.Features.KutuphaneBolumleri.Queries.GetById;
 using Application.Features.KutuphaneBolumleri.Queries.GetList;
 using Application.Features.KutuphaneBolumleri.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
 public class KutuphaneBolumleriController : BaseController
 {
     [HttpPost]

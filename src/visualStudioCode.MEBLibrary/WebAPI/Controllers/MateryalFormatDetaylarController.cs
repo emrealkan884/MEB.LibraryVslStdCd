@@ -1,16 +1,19 @@
+using Application.Authorization;
 using Application.Features.MateryalFormatDetaylari.Commands.Create;
 using Application.Features.MateryalFormatDetaylari.Commands.Delete;
 using Application.Features.MateryalFormatDetaylari.Commands.Update;
 using Application.Features.MateryalFormatDetaylari.Queries.GetById;
 using Application.Features.MateryalFormatDetaylari.Queries.GetList;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
 public class MateryalFormatDetaylarController : BaseController
 {
     [HttpPost]

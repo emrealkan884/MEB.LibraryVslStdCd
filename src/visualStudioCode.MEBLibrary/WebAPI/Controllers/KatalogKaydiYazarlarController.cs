@@ -1,18 +1,21 @@
+using Application.Authorization;
 using Application.Features.KatalogKaydiYazarlar.Commands.Create;
 using Application.Features.KatalogKaydiYazarlar.Commands.Delete;
 using Application.Features.KatalogKaydiYazarlar.Commands.Update;
 using Application.Features.KatalogKaydiYazarlar.Queries.GetById;
 using Application.Features.KatalogKaydiYazarlar.Queries.GetList;
 using Application.Features.KatalogKaydiYazarlar.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireMinistry)]
 public class KatalogKaydiYazarlarController : BaseController
 {
     [HttpPost]

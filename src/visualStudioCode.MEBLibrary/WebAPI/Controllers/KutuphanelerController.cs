@@ -1,18 +1,21 @@
+using Application.Authorization;
 using Application.Features.Kutuphaneler.Commands.Create;
 using Application.Features.Kutuphaneler.Commands.Delete;
 using Application.Features.Kutuphaneler.Commands.Update;
 using Application.Features.Kutuphaneler.Queries.GetById;
 using Application.Features.Kutuphaneler.Queries.GetList;
 using Application.Features.Kutuphaneler.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireProvinceOrAbove)]
 public class KutuphanelerController : BaseController
 {
     [HttpPost]

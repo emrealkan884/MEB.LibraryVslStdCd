@@ -1,9 +1,11 @@
+using Application.Authorization;
 using Application.Features.UserOperationClaims.Commands.Create;
 using Application.Features.UserOperationClaims.Commands.Delete;
 using Application.Features.UserOperationClaims.Commands.Update;
 using Application.Features.UserOperationClaims.Queries.GetById;
 using Application.Features.UserOperationClaims.Queries.GetList;
 using Application.Features.UserOperationClaims.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
@@ -13,6 +15,7 @@ namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireMinistry)]
 public class UserOperationClaimsController : BaseController
 {
     [HttpGet("{Id}")]

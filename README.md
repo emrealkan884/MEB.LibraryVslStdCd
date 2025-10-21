@@ -77,14 +77,14 @@
 |---|------------|-------|--------|
 | 1 | MEBBIS / e-Okul ile kimlik dogrulama | Eksik | Mevcut kimlik dogrulama yalnizca JWT + yerel kullanici deposu uzerinden calisiyor. |
 | 2 | Bakanligin diger otomasyonlariyla entegrasyon | Eksik | e-Okul vb. sistemler icin adapter bulunmuyor. |
-| 3 | Rol bazli erisim (kutuphaneci, yonetici, ogrenci, ogretmen) | Kismen | Roller tanimli; endpoint seviyesinde politika uygulanmiyor. |
+| 3 | Rol bazli erisim (kutuphaneci, yonetici, ogrenci, ogretmen) | Tamamlandi | ASP.NET Core policy'leri ile controller seviyesinde `[Authorize]` uygulandi. |
 | 4 | Kullanim takibi ve raporlama | Kismen | Audit pipeline olaylari kaydediyor, ancak analitik paneller yok. |
 | 5 | Merkez icin tam, okullar icin ozellestirilmis moduller | Kismen | Moduller hazir; kutuphane tipine gore erisim kisiti tanimli degil. |
 | 6 | Oracle / MSSQL / MySQL destekleme | Eksik | EF Core yalnizca SQL Server icin ayarlanmis. |
 | 7 | Web tabanli ve gercek zamanli calisma | Tamamlandi | ASP.NET Core WebAPI + Vue SPA calisiyor. |
 | 8 | Unicode (AL32UTF8) desteği | Kismen | .NET unicode destekli; tohum verilerinde bozulan karakterler var. |
 | 9 | Turkce ve Ingilizce arayuz | Kismen | Lokalizasyon dosyalari mevcut, fakat uygulama genelinde tamamlanmadi. |
-|10 | Ince ayarli yetkilendirme | Kismen | Pipeline hazir, policy attributelari kullanilmiyor. |
+|10 | Ince ayarli yetkilendirme | Kismen | Policy bazli roller tanimlandi; SSO/harici entegrasyon bekleniyor. |
 |11 | KOHA kataloglarini toplu aktarim | Eksik | Import modul veya script yok. |
 |12 | Bilgi guvenligi ve menu tabanli is akisi | Kismen | JWT + exception middleware var; dogrudan veri tabani kalkanlari eksik. |
 |13 | Gelismis sorgulama arabirimi | Kismen | `GetListByDynamic` var, fakat kullanici arayuzu sinirli. |

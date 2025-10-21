@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Application.Authorization;
 using Domain.Entities;
 using Domain.Entities.Security;
 using Domain.Enums;
@@ -81,6 +82,8 @@ public static class DataSeedingExtensions
         Guid ogrenciUserId = Guid.Parse("1C77CE41-5A1C-4C07-BD81-9B88C3F3A807");
         Guid personelUserId = Guid.Parse("8FE171E5-3C60-441E-9F8B-64B3EABFA86C");
         Guid personelClaimLinkId = Guid.Parse("5D7460EE-0F95-483C-96CF-6F7934F7F96E");
+        Guid personelMinistryRoleClaimLinkId = Guid.Parse("EAA3AAE5-0E6C-4397-AFAA-4B26F72C2719");
+        Guid personelSchoolRoleClaimLinkId = Guid.Parse("8F0DFD7F-9D0F-4B36-A7B7-2F2D42ED9DAE");
 
         HashingHelper.CreatePasswordHash("Library123!", out byte[] studentHash, out byte[] studentSalt);
         HashingHelper.CreatePasswordHash("Library123!", out byte[] staffHash, out byte[] staffSalt);
@@ -114,6 +117,10 @@ public static class DataSeedingExtensions
 
         int? adminClaimId = context.OperationClaims.AsNoTracking()
             .FirstOrDefault(claim => claim.Name == GeneralOperationClaims.Admin)?.Id;
+        int? ministryRoleClaimId = context.OperationClaims.AsNoTracking()
+            .FirstOrDefault(claim => claim.Name == ApplicationRoles.BakanlikYetkilisi)?.Id;
+        int? schoolRoleClaimId = context.OperationClaims.AsNoTracking()
+            .FirstOrDefault(claim => claim.Name == ApplicationRoles.OkulKutuphaneYoneticisi)?.Id;
 
         if (adminClaimId.HasValue)
         {
@@ -123,6 +130,30 @@ public static class DataSeedingExtensions
                     Id = personelClaimLinkId,
                     UserId = personelUserId,
                     OperationClaimId = adminClaimId.Value,
+                    CreatedDate = lastMonth
+                });
+        }
+
+        if (ministryRoleClaimId.HasValue)
+        {
+            context.UserOperationClaims.Add(
+                new UserOperationClaim
+                {
+                    Id = personelMinistryRoleClaimLinkId,
+                    UserId = personelUserId,
+                    OperationClaimId = ministryRoleClaimId.Value,
+                    CreatedDate = lastMonth
+                });
+        }
+
+        if (schoolRoleClaimId.HasValue)
+        {
+            context.UserOperationClaims.Add(
+                new UserOperationClaim
+                {
+                    Id = personelSchoolRoleClaimLinkId,
+                    UserId = personelUserId,
+                    OperationClaimId = schoolRoleClaimId.Value,
                     CreatedDate = lastMonth
                 });
         }

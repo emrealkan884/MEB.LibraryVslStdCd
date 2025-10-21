@@ -1,16 +1,19 @@
+using Application.Authorization;
 using Application.Features.DeweySiniflamalari.Commands.Create;
 using Application.Features.DeweySiniflamalari.Commands.Delete;
 using Application.Features.DeweySiniflamalari.Commands.Update;
 using Application.Features.DeweySiniflamalari.Queries.GetById;
 using Application.Features.DeweySiniflamalari.Queries.GetList;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireMinistry)]
 public class DeweySiniflamalarController : BaseController
 {
     [HttpPost]

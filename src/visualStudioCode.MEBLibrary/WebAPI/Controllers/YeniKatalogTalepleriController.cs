@@ -1,3 +1,4 @@
+using Application.Authorization;
 using Application.Features.YeniKatalogTalepleri.Commands.Approve;
 using Application.Features.YeniKatalogTalepleri.Commands.Create;
 using Application.Features.YeniKatalogTalepleri.Commands.Delete;
@@ -8,15 +9,17 @@ using Application.Features.YeniKatalogTalepleri.Queries.GetById;
 using Application.Features.YeniKatalogTalepleri.Queries.GetList;
 using Application.Features.YeniKatalogTalepleri.Queries.GetListByDynamic;
 using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
-using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Persistence.Dynamic;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
 public class YeniKatalogTalepleriController : BaseController
 {
     [HttpPost]

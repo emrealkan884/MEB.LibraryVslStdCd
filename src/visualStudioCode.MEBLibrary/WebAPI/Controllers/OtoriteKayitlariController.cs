@@ -1,18 +1,21 @@
+using Application.Authorization;
 using Application.Features.OtoriteKayitlari.Commands.Create;
 using Application.Features.OtoriteKayitlari.Commands.Delete;
 using Application.Features.OtoriteKayitlari.Commands.Update;
 using Application.Features.OtoriteKayitlari.Queries.GetById;
 using Application.Features.OtoriteKayitlari.Queries.GetList;
 using Application.Features.OtoriteKayitlari.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireMinistry)]
 public class OtoriteKayitlariController : BaseController
 {
     [HttpPost]

@@ -16,6 +16,7 @@ using Persistence;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using WebAPI;
 using WebAPI.Extensions;
+using WebAPI.Configurations;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,7 @@ builder.Services.AddApplicationServices(
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddInfrastructureServices();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddLibraryAuthorization();
 
 const string tokenOptionsConfigurationSection = "TokenOptions";
 TokenOptions tokenOptions =

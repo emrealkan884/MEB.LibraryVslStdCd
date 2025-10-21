@@ -1,16 +1,19 @@
+using Application.Authorization;
 using Application.Features.MateryalEtiketleri.Commands.Create;
 using Application.Features.MateryalEtiketleri.Commands.Delete;
 using Application.Features.MateryalEtiketleri.Commands.Update;
 using Application.Features.MateryalEtiketleri.Queries.GetById;
 using Application.Features.MateryalEtiketleri.Queries.GetList;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
 public class MateryalEtiketlerController : BaseController
 {
     [HttpPost]

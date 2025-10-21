@@ -1,18 +1,21 @@
+using Application.Authorization;
 using Application.Features.Raflar.Commands.Create;
 using Application.Features.Raflar.Commands.Delete;
 using Application.Features.Raflar.Commands.Update;
 using Application.Features.Raflar.Queries.GetById;
 using Application.Features.Raflar.Queries.GetList;
 using Application.Features.Raflar.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
 public class RaflarController : BaseController
 {
     [HttpPost]
