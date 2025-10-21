@@ -4,5 +4,5 @@ namespace Application.Services.Reporting;
 
 public interface IReportExportService
 {
-    ReportExportResult ExportToCsv<T>(IEnumerable<T> data, string fileNamePrefix);
+    ReportExportResult Export<T>(IEnumerable<T> data, string fileNamePrefix, ReportFormat format, string? title = null);
 }

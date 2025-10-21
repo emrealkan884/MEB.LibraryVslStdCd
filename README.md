@@ -77,409 +77,166 @@
 |---|------------|-------|--------|
 | 1 | MEBBIS / e-Okul ile kimlik dogrulama | Eksik | Mevcut kimlik dogrulama yalnizca JWT + yerel kullanici deposu uzerinden calisiyor. |
 | 2 | Bakanligin diger otomasyonlariyla entegrasyon | Eksik | e-Okul vb. sistemler icin adapter bulunmuyor. |
-| 3 | Rol bazli erisim (kutuphaneci, yonetici, ogrenci, ogretmen) | Tamamlandi | ASP.NET Core policy'leri ile controller seviyesinde `[Authorize]` uygulandi. |
+| 3 | Rol bazli erisim (kutuphaneci, yonetici, ogrenci, ogretmen) | Kismen | Roller tanimli; endpoint seviyesinde politika uygulanmiyor. |
 | 4 | Kullanim takibi ve raporlama | Kismen | Audit pipeline olaylari kaydediyor, ancak analitik paneller yok. |
 | 5 | Merkez icin tam, okullar icin ozellestirilmis moduller | Kismen | Moduller hazir; kutuphane tipine gore erisim kisiti tanimli degil. |
 | 6 | Oracle / MSSQL / MySQL destekleme | Eksik | EF Core yalnizca SQL Server icin ayarlanmis. |
 | 7 | Web tabanli ve gercek zamanli calisma | Tamamlandi | ASP.NET Core WebAPI + Vue SPA calisiyor. |
 | 8 | Unicode (AL32UTF8) desteği | Kismen | .NET unicode destekli; tohum verilerinde bozulan karakterler var. |
 | 9 | Turkce ve Ingilizce arayuz | Kismen | Lokalizasyon dosyalari mevcut, fakat uygulama genelinde tamamlanmadi. |
-|10 | Ince ayarli yetkilendirme | Kismen | Policy bazli roller tanimlandi; SSO/harici entegrasyon bekleniyor. |
-|11 | KOHA kataloglarini toplu aktarim | Eksik | Import modul veya script yok. |
-|12 | Bilgi guvenligi ve menu tabanli is akisi | Kismen | JWT + exception middleware var; dogrudan veri tabani kalkanlari eksik. |
-|13 | Gelismis sorgulama arabirimi | Kismen | `GetListByDynamic` var, fakat kullanici arayuzu sinirli. |
-|14 | Otomatik yedekleme | Eksik | Yedekleme gorevi/belgesi hazirlanmadi. |
-|15 | Mobil / tablet erisimi | Kismen | Vue arayuz responsive; senaryo testleri yapilmadi. |
-|16 | Kullanici karti uretimi ve yazdirma | Eksik | Kart sablonu veya servis yok. |
-|17 | Materyalleri toplu ekleme/silme/guncelleme | Kismen | Repository toplu islemi destekler, dedike API/arayuz eksik. |
-|18 | Etiket / barkod olusturma ve yazdirma | Eksik | Back-end ve front-end tarafinda barkod ozelligi yok. |
-|19 | Resim saklama | Kismen | ImageService altyapisi var; katalog kayitlariyla baglanti eksik. |
+|10 | Ince ayarli yetkilendirme | Kismen | Pipeline hazir, policy attributeler eksik |
+|11 | KOHA katalog kayitlarinin aktarimi | Eksik | CSV/JSON import pipeline hazir degil. |
+|12 | Menü tabanlı güvenlik | Kismen | API seviyesinde güvenlik var, UI guardlar gelistirilecek. |
+|13 | Arayuzde sorgulama destegi | Tamamlandi | Dinamik filtreleme altyapisi hazir. |
+|14 | Veri tabani yedekleme | Eksik | Scheduled job veya otomasyon hazirlanacak. |
+|15 | Mobil / tablet giris destegi | Kismen | Responsive taslak var, native destek planlanıyor. |
+|16 | Kullanici karti üretimi | Eksik | PDF/sablon altyapisi oluşturulacak. |
+|17 | Toplu materyal islemleri | Kismen | Komutlar hazir, UI ve dosya import bekleniyor. |
+|18 | Barkod / RFID destegi | Eksik | Donanım entegrasyonu yapılmadı. |
+|19 | Resim saklama | Tamamlandi | Cloudinary adapter aktif.
 
-### Merkez Kutuphane Ek Gereksinimler
+### Merkez Kütüphane Ek Gereksinimler
 | # | Gereksinim | Durum | Notlar |
 |---|------------|-------|--------|
-| 1 | AACR2 bibliyografik künye | Eksik | AACR2 formatina gore dogrulama bulunmuyor. |
-| 2 | MARC21 tabanli kataloglama | Eksik | MARC alanlari tutuluyor fakat arayuz/servis yok. |
-| 3 | RDA uyumlu altyapi | Eksik | RDA spesifik veri modeli veya kontrolu bulunmuyor. |
-| 4 | Z39.50 veri degisimi | Eksik | Z39.50 istemcisi uygulanmadi. |
-| 5 | ISBN ile dis kataloglardan veri cekme | Eksik | ISBN zenginlestirme servisi yok. |
-| 6 | Word/PDF vb. dosya yukleme | Kismen | Dosya baglama isi planlanmis; mevcutta isleyen servis yok. |
-| 7 | Multimedya materyal desteği | Kismen | Domain alanlari var; UI/hizmetler kitap odakli. |
-| 8 | Dijital iceriklere dogrudan erisim | Eksik | Depolama veya streaming ucu yok. |
-| 9 | Barkod ile hizli dolaşim | Eksik | Manuel GUID girisi gerekiyor, barkod akisi yok. |
-|10 | RFID destegi | Eksik | RFID ile ilgili alan veya servis yok. |
+| 1 | AACR2 uyumlu katalog | Kismen | KatalogKaydi varlığında alanlar mevcut, validasyon eksik. |
+| 2 | MARC21 desteği | Kismen | Marc json alanı var, editör henüz yok. |
+| 3 | RDA uyumluluğu | Eksik | RDA flag schema’da var, kurallar eklenmeli. |
+| 4 | Z39.50 entegrasyonu | Eksik | Servis adapter taslak halinda. |
+| 5 | ISBN ile otomatik veri çekme | Eksik | API bağlantısı yok. |
+| 6 | Dijital içerik yükleme | Kismen | Materyal format detayları var, dosya yükleme pipeline eksik. |
+| 7 | Çoklu materyal türü desteği | Tamamlandı | MateryalTuru enum kapsamlı. |
+| 8 | Dijital erişim | Kismen | Dosya yolu alanı var, download servisi yok. |
+| 9 | Barkod ile hızlı işlem | Eksik | Barcode service yazılacak. |
+|10 | RFID desteği | Eksik | Donanım düzeyinde planlanacak. |
 
-### Okul Kutuphaneleri Ek Gereksinimler
+### Okul Kütüphaneleri Ek Gereksinimler
 | # | Gereksinim | Durum | Notlar |
 |---|------------|-------|--------|
-| 1 | Merkezde kataloglanan kayitlari ekleyebilme | Kismen | Iliskiler mevcut; okula kopyalama akisi hazir degil. |
-| 2 | ISBN/yazar/isim ile hizli ekleme | Eksik | Otomatik doldurma arayuzu yok. |
-| 3 | Yeni Katalog Talebi modülü | Tamamlandi | Workflow onay/red/inceleme adimlari calisiyor. |
-| 4 | Ogrencileri toplu yukle/guncelle/sil | Eksik | CSV/Excel aktarimi yapilmiyor. |
-| 5 | Odunc alma/iade yonetimi | Kismen | Komutlar var; okul odakli UI eksik. |
-| 6 | Etkinlik modulu (takvim, gorsel, rapor) | Kismen | Varliklar var; CRUD/rapor servisleri eksik. |
-| 7 | Dewey Onlu Siniflama | Kismen | Enum mevcut, uygulamada zorunlu degil. |
-| 8 | ISBN ile bilgiye erisim | Eksik | ISBN bilgisi icin dis servis yok. |
-| 9 | ISBN/yazar/kategori filtreleme | Kismen | Dinamik sorgu altyapisi var; UI sinirli. |
-|10 | TC kimlik ile toplu ogrenci kaydi | Eksik | Islev icin servis yok. |
-|11 | Alfabetik siralama | Kismen | Listeleme altyapisi var; acik secenek sunulmuyor. |
+| 1 | Merkezden katalog devralma | Tamamlandı | Materyal oluştururken merkez katalog seçimi yapılabiliyor. |
+| 2 | Hızlı ISBN araması | Kismen | Backend tarafında normalize ISBN desteği var; UI eksik. |
+| 3 | Yeni katalog talebi modülü | Tamamlandı | Workflow servisleri aktif. |
+| 4 | Öğrenci listelerini toplu yükleme | Eksik | Import komutları yazılmadı. |
+| 5 | Ödünç/iade yönetimi | Tamamlandı | Komutlar + kurallar hazır. |
+| 6 | Etkinlik modülü | Tamamlandı | Etkinlik entity + CRUD aktif. |
+| 7 | Dewey sınıflama | Tamamlandı | DeweySiniflama entity + API mevcut. |
+| 8 | ISBN ile künyeye ulaşma | Kismen | Backend normalize kontrol yapıyor; lookup servisi eksik. |
+| 9 | Filtrelenebilir kaynak listesi | Tamamlandı | Dynamic filtering endpoints mevcut. |
+|10 | TC ile öğrenci kaydı | Eksik | MEBBIS entegrasyonu bekliyor. |
+|11 | Alfabetik sıralama | Tamamlandı | Dynamic sort destekleniyor. |
 
-### Odunc Alma ve Iade
+### Ödünç Alma ve İade Gereksinimleri
 | # | Gereksinim | Durum | Notlar |
 |---|------------|-------|--------|
-| 1 | Son tarih icin e-posta hatirlatmasi | Eksik | Zamanlayici veya e-posta sablonu yok. |
-| 2 | Odunc esnasinda bilgilendirme mesajlari | Kismen | BusinessRules hata uretir; arayuz uyarisi yok. |
-| 3 | Barkod/RFID/manuel islem | Eksik | Sadece manuel veri girisi yapiliyor. |
-| 4 | Coklu barkod ile tek seferde odunc | Eksik | Toplu odunc endpointi bulunmuyor. |
-| 5 | Kurala uymayanlari askiya alma | Eksik | Kullanici durumu otomatik degistirilmiyor. |
-| 6 | Kutuphane kimlik karti basimi | Eksik | Ozellik uygulanmadi. |
-| 7 | Islemler sonunda fis yazdirma | Eksik | Servis veya UI bulunmuyor. |
+| 1 | Otomatik e-posta hatırlatmaları | Eksik | IMailService var; cron job eklenecek. |
+| 2 | İşlem sırasında bilgilendirme mesajları | Kismen | API response’ları var, UI geliştirmesi lazım. |
+| 3 | Barkod/manuel/RFID ile işlem | Eksik | Barkod/RFID servisleri yazılacak. |
+| 4 | Toplu ödünç verme | Kismen | Komut tek materyal destekli; batch sürümü planlanıyor. |
+| 5 | Kurallara uymayan üyeyi askıya alma | Tamamlandı | Kullanıcı status alanı + iş kuralı var. |
+| 6 | Kimlik kartı basma | Eksik | PDF şablon planlanıyor. |
+| 7 | İşlem sonunda fiş | Eksik | Printer entegrasyonu yok. |
 
-### Kataloglama Modulu
-| # | Gereksinim | Durum | Notlar |
-|---|------------|-------|--------|
-| 1 | Merkez odakli kataloglama | Kismen | CQRS katmani var; okul sinirlari net degil. |
-| 2 | MARC alanlarini kopyala/ekle/duzelt | Eksik | MARC editoru yok. |
-| 3 | Bosluk/buyuk-kucuk/aksan duyarsiz arama | Kismen | Collation iyilestirmesi yapildi; UI uyarlanmadı. |
-| 4 | Tur/alt tur/hizli secim | Kismen | Domain alanlari hazir; arayuzde yok. |
-| 5 | Otomatik MARC dogrulamasi | Eksik | DOGRULAMA servisi bulunmuyor. |
-| 6 | UTF-8 cok dilli veri girisi | Kismen | Platform uygun; bozuk tohum verileri duzeltilmedi. |
-| 7 | Dewey kullanimi | Kismen | Enum mevcut; is kurali zorunlu degil. |
-| 8 | Karakter siniri olmamasi | Tamamlandi | Girdi alanlari sinirsiz string. |
-| 9 | Z39.50 ile kayit al/ver | Eksik | Protokol istemcisi yok. |
-|10 | Fiziksel konum (depo/raf) takibi | Kismen | Alanlar var; UI/ak��� eksik. |
-|11 | Cok alanli arama ve Word/Excel cikti | Eksik | Yalnizca temel liste uclari var. |
-|12 | Materiyal bazinda odunc suresi | Kismen | Alanlar mevcut; cevap modellerine yansimiyor. |
-|13 | Kaydi olusturan/guncelleyen ve istatistik | Kismen | Audit log var; raporlama bulunmuyor. |
-|14 | Silme kaydi ve geri yukleme | Eksik | Soft delete/geri alma mekanizmasi yok. |
+## 📚 Modül Bazlı Durum
 
-### Raporlama
-| # | Gereksinim | Durum | Notlar |
-|---|------------|-------|--------|
-| 1 | Yetkisiz erisim engeli | Kismen | Kimlik dogrulama var; ayrintili roller yok. |
-| 2 | Yas, cinsiyet, il vb. cok boyutlu raporlar | Eksik | Sadece geciken odunc sorgusu mevcut. |
-| 3 | PDF/Excel disari aktarma | Eksik | `IReportExportService` gerceklenmemis. |
-| 4 | Gunluk gecikme kontrol raporu | Kismen | Sorgu var; zamanlama ve cikti eksik. |
+| Modül | Backend | Frontend | Açıklama |
+|-------|---------|----------|----------|
+| Authentication | ✅ | 🟡 | JWT + Refresh token hazır, MEBBIS entegrasyonu planlanıyor. |
+| Kullanıcı Yönetimi | ✅ | 🟡 | CRUD + roller tamam, UI mock durumda. |
+| Kataloglama | ✅ | 🟡 | Komutlar, workflow, authority yönetimi hazır; UI prototip. |
+| Materyal Yönetimi | ✅ | 🟡 | Materyal, nusha, raf yönetimi aktif; UI listeleri mock. |
+| Ödünç İşlemleri | ✅ | 🟡 | Loan/Return/Extend komutları mevcut; UI formu hazırlanacak. |
+| Raporlama | ✅ | 🟡 | JSON ve CSV çıktı destekli; PDF/Excel kurgulanıyor. |
+| Etkinlikler | ✅ | 🟡 | CRUD + afiş alanı mevcut, UI entegrasyonu yapılacak. |
+| Arama & Filtreleme | ✅ | 🟡 | DynamicQuery alt yapısı var, frontend bileşenleri oluşturulacak. |
+| Güvenlik | ✅ | 🟡 | Audit logging, policies hazır; UI guardlar eksik. |
 
-### OPAC (Merkez Kullanicisi Arayuzu)
-| # | Gereksinim | Durum | Notlar |
-|---|------------|-------|--------|
-| 1 | Kayıt no, tur, yil, kopya, dil ile arama | Kismen | Arka plan destekli, UI tamamlanmadi. |
-| 2 | Her kutuphaneyi ayri sorgulayabilme | Kismen | Filtre alanlari var; akış tamamlanmadı. |
-| 3 | Tum kutuphaneleri bir arada sorgulama | Kismen | Global sorgu teknik olarak mumkun, UI yok. |
-| 4 | Materyalin yeri, kopya sayisi, durumu | Kismen | Veriler var; ekranlar eksik. |
-| 5 | PDF/dijital kaynaklara erisim | Eksik | Dijital varlik servisi yok. |
-| 6 | Kullanilabilirlik bilgisini gostermek | Kismen | Data mevcut; UI'da gosterim yok. |
+✅ Tamamlandı | 🟡 Devam ediyor | ❌ Başlanmadı
 
-### Sistem Modulleri
-| # | Gereksinim | Durum | Notlar |
-|---|------------|-------|--------|
-| 1 | Hiyerarsik rol yapisina sahip kullanici modulu | Kismen | Roller var; hiyerarsi islemez halde. |
-| 2 | Kataloglama modulu (merkez) | Kismen | CQRS yapisi hazir; gelismis araclar yok. |
-| 3 | Materyal yonetimi (odunc/iade takibi) | Kismen | Temel akişlar var; barkod/RFID yok. |
-| 4 | Arama ve filtreleme modulu | Kismen | Back-end saglam, UI gelistirilmeli. |
-| 5 | Yetki seviyesine gore raporlama | Eksik | Bakanlik/il/ilce bazli raporlar yok. |
-| 6 | Etkinlik modulu (takvim, medya, rapor) | Kismen | Varliklar mevcut; kullanici akişi eksik. |
-| 7 | Guvenlik modulu (SSL, 2FA, yedekleme) | Kismen | HTTPS destekli; 2FA ve otomatik yedekleme yok. |
+## 🔌 Entegrasyon Planı
 
-### 🛠️ Built With
+| Sistem | Beklenen İşlev | Durum |
+|--------|----------------|-------|
+| MEBBIS | Kullanıcı senkronizasyonu ve kimlik doğrulama | Analiz aşamasında |
+| e-Okul | Öğrenci listelerinin toplu aktarımı | Analiz aşamasında |
+| KOHA | Mevcut katalog verisinin migrasyonu | Analiz aşamasında |
+| Z39.50 | Bibliyografik veri çekme | Analiz aşamasında |
+| ISBN API | ISBN ile otomatik künyeleme | Araştırma aşamasında |
+| Cloudinary | Etkinlik afişleri / materyal medyası | ✅ Entegre |
+| SMTP | E-posta hatırlatmaları | Konfigürasyon bekliyor |
 
-**Backend:**
-[![](https://img.shields.io/badge/.NET%208-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://learn.microsoft.com/tr-tr/dotnet/welcome)
-[![](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)](https://learn.microsoft.com/tr-tr/dotnet/csharp/)
-[![](https://img.shields.io/badge/Entity%20Framework-512BD4?style=for-the-badge&logo=entity-framework&logoColor=white)](https://docs.microsoft.com/tr-tr/ef/)
+## 🚀 Mevcut Sprint Notları
 
-**Architecture & Patterns:**
-[![](https://img.shields.io/badge/Clean%20Architecture-000?style=for-the-badge&logo=architectural-patterns&logoColor=white)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-[![](https://img.shields.io/badge/CQRS-000?style=for-the-badge&logo=architectural-patterns&logoColor=white)](https://martinfowler.com/bliki/CQRS.html)
-[![](https://img.shields.io/badge/MediatR-512BD4?style=for-the-badge&logo=mediatr&logoColor=white)](https://github.com/jbogard/MediatR)
+- Yeni katalog talebi workflow’una `review` adımı eklendi.
+- Dewey sınıflama API’si için validasyon kuralları yazıldı.
+- Audit log pipeline’ı tüm command’lar için aktif hale getirildi.
+- Seed datada merkez ve okul kütüphaneleri için örnek kayıtlar oluşturuldu.
+- Raporlama modülü için gecikmiş ödünç raporu yayınlandı.
+- Vue arayüzünde merkez/okul layout’ları prototip olarak çizildi.
+- i18n store ile TR/EN mesaj setleri hazırlandı (komponent entegrasyonu bekleniyor).
+- PrimeVue component altyapısı kuruldu; tema olarak Aura seçildi.
+- Login ekranı için MEBBIS/e-Okul giriş seçenekleri placeholder olarak eklendi.
 
-**Security & Auth:**
-[![](https://img.shields.io/badge/JWT-000?style=for-the-badge&logo=json-web-tokens&logoColor=white)](https://jwt.io/)
-[![](https://img.shields.io/badge/ASP.NET%20Core%20Identity-512BD4?style=for-the-badge&logo=asp.net&logoColor=white)](https://docs.microsoft.com/tr-tr/aspnet/core/security/)
+## 🧭 Sonraki Adımlar
 
-**Development Tools:**
-[![](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/)
-[![](https://img.shields.io/badge/xUnit-512BD4?style=for-the-badge&logo=xunit&logoColor=white)](https://xunit.net/)
-[![](https://img.shields.io/badge/Serilog-512BD4?style=for-the-badge&logo=serilog&logoColor=white)](https://serilog.net/)
+1. Authentication servisini MEBBIS/e-Okul entegrasyonu ile genişletmek.
+2. Barcode/RFID servis arayüzlerini yazıp ödünç iade süreçlerine entegre etmek.
+3. Vue tarafında dynamic filter builder bileşeni geliştirmek.
+4. KOHA veri migrasyonu için import scriptlerini hazırlamak.
+5. PDF/Excel rapor export yeteneklerini uygulamak.
+6. Kullanıcı kartı basımı ve işlem fişi çıktıları için PDF şablonları oluşturmak.
+7. Swagger dökümanlarını TR/EN açıklamalarla güncellemek.
+8. Raporlama modülüne dashboard ve grafikler eklemek.
+9. Mobil uyum için responsive layout’ları üretim senaryolarına göre test etmek.
+10. Audit log verilerini raporlamak için admin paneli tasarlamak.
 
-### 📊 System Features
+## 🧪 Test Durumu
 
-| Module | Status | Description |
-|--------|--------|-------------|
-| **📚 Katalog Yönetimi** | ✅ Aktif | Kitap ve materyal kataloglama |
-| **👥 Kullanıcı Yönetimi** | ✅ Aktif | Öğrenci ve yönetici rolleri |
-| **📖 Ödünç İşlemleri** | ✅ Aktif | Kitap ödünç alma/iade |
-| **🏛️ Kütüphane Yönetimi** | ✅ Aktif | Çoklu kütüphane desteği |
-| **🔍 Arama ve Filtreleme** | ✅ Aktif | Dinamik sorgu desteği |
-| **📊 Raporlama** | ✅ Aktif | İstatistik ve raporlar |
-| **🔐 Güvenlik** | ✅ Aktif | JWT ve rol tabanlı yetkilendirme |
-| **⚡ Cache Sistemi** | ✅ Aktif | Yüksek performans önbellekleme |
-| **🏷️ Otorite Kontrolü** | ✅ Aktif | Bibliyografik standartlar |
-| **📋 İş Akışları** | ✅ Aktif | Onay ve talep süreçleri |
-| **🌐 Localization** | 🟡 Geliştiriliyor | Çoklu dil desteği |
-| **📱 Mobile API** | ⏳ Planlanıyor | Mobil uygulama desteği |
+- Unit testler: Kullanıcı oluşturma, login, refresh token senaryoları kapsanıyor.
+- Workflow testleri: Yeni katalog talebi approve/reject senaryoları için yazıldı.
+- Eksik testler: Katalog kaydı CRUD, Materyal yönetimi, Ödünç işlemleri.
 
-## ⚙️ Getting Started
+## 🗂️ Dizin Yapısı (Özet)
 
-MEB Kütüphane Yönetim Sistemi'ni çalıştırmak için aşağıdaki adımları takip edin.
-
-### 📋 Prerequisites
-
-- **.NET 8 SDK** - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
-- **Visual Studio 2022** veya **VS Code** - Geliştirme ortamı
-- **SQL Server** veya **PostgreSQL** - Veritabanı (opsiyonel, in-memory database de kullanılabilir)
-
-### 🚀 Installation
-
-1. **Projeyi klonlayın:**
-    ```sh
-    git clone <repository-url>
-    cd VisualStudioCode.MEBLibrary
-    ```
-
-2. **Bağımlılıkları yükleyin:**
-    ```sh
-    dotnet restore
-    ```
-
-3. **Veritabanını oluşturun:**
-    ```sh
-    cd src/visualStudioCode.MEBLibrary/WebAPI
-    dotnet ef database update
-    ```
-
-4. **Sistemi çalıştırın:**
-    ```sh
-    dotnet run --project src/visualStudioCode.MEBLibrary/WebAPI
-    ```
-
-5. **Swagger UI'ye erişin:**
-    ```
-    http://localhost:5278/swagger
-    ```
-
-### 🔧 Configuration
-
-`appsettings.json` dosyasında gerekli konfigürasyonları yapın:
-
-```json
-{
-  "ConnectionStrings": {
-    "BaseDb": "Server=localhost;Database=MEBLibraryDb;Trusted_Connection=True;"
-  },
-  "TokenOptions": {
-    "SecurityKey": "YourStrongSecretKeyHere..."
-  }
-}
+```bash
+src/
+  visualStudioCode.MEBLibrary/
+    Application/        # CQRS komutları, kurallar, validatorler
+    Domain/             # Varlıklar ve enum’lar
+    Infrastructure/     # Adaptörler (Cloudinary, Cache, vs.)
+    Persistence/        # DbContext, repository implementasyonları
+    WebAPI/             # Controllerlar, DI kayıtları, program giriş noktası
+frontend/
+  meb-library-ui/       # Vue 3 + TypeScript arayüz
+tests/
+  VisualStudioCode.MEBLibrary.Application.Tests/  # xUnit testleri
+docs/
+  README.md             # Detaylı domain ve roadmap notları
 ```
 
-## 🚀 Usage
+## 📦 Kurulum
 
-### **🏃‍♂️ API'yi Çalıştırın:**
-```sh
-cd src/visualStudioCode.MEBLibrary/WebAPI
-dotnet run
+### Backend
+```bash
+dotnet restore
+dotnet run --project src/visualStudioCode.MEBLibrary/WebAPI/WebAPI.csproj
 ```
+Swagger: `https://localhost:5278/swagger`
 
-API şu adreste erişilebilir: `http://localhost:5278`
-
-### **📖 Swagger Documentation:**
-API documentation ve test arayüzü için: `http://localhost:5278/swagger`
-
-### **🧪 Test Kullanıcıları:**
-```json
-// Admin Girişi
-POST /api/Auth/Login
-{
-  "email": "kutuphane.yonetici@example.com",
-  "password": "Library123!"
-}
-
-// Öğrenci Girişi
-POST /api/Auth/Login
-{
-  "email": "ogrenci@example.com",
-  "password": "Library123!"
-}
+### Frontend
+```bash
+cd frontend/meb-library-ui
+npm install
+npm run dev
 ```
+Uygulama: `http://localhost:5173`
 
-### **🔍 Örnek API Çağrıları:**
+### Giriş Bilgileri
+- Merkez yetkilisi: `kutuphane.yonetici@example.com / Library123!`
+- Öğrenci: `ogrenci@example.com / Library123!`
 
-#### **Kütüphaneleri Listele:**
-```sh
-GET /api/Kutuphaneler
-Authorization: Bearer YOUR_TOKEN
-```
-
-#### **Ödünç İşlemlerini Filtrele:**
-```sh
-POST /api/OduncIslemleri/GetListByDynamic
-{
-  "filter": {
-    "field": "Durumu",
-    "operator": "eq",
-    "value": "Aktif"
-  },
-  "sort": [
-    { "field": "AlinmaTarihi", "dir": "desc" }
-  ]
-}
-```
-
-### **🛠️ Development Tools:**
-
-#### **Code Analysis:**
-```sh
-dotnet tool restore
-dotnet roslynator analyze
-```
-
-#### **Code Formatting:**
-```sh
-dotnet tool restore
-dotnet csharpier .
-```
-
-## 📚 Documentation
-
-### **📖 Kullanıcı Kılavuzları:**
-
-- **[📖 Ödünç İşlemleri Sistemi](./docs/LoanManagementGuide.md)** - Kitap ödünç alma/iade süreçleri
-- **[📋 Domain Model Guide](./docs/DomainModelGuide.md)** - Sistem domain modeli açıklamaları
-- **[📊 Raporlama Rehberi](./docs/ReportingGuide.md)** - Kullanım istatistikleri ve raporlar
-- **[🏷️ Otorite Kontrolü](./docs/README.md)** - Bibliyografik otorite yönetimi
-
-### **🔧 API Documentation:**
-
-- **[🚀 Swagger UI](http://localhost:5278/swagger)** - İnteraktif API dokümantasyonu
-- **[📋 Postman Collection](./docs/MEBLibraryAPI.postman_collection.json)** - API test collection'ı
-
-### **🏗️ Architecture Documentation:**
-
-- **[Clean Architecture](./docs/CleanArchitecture.md)** - Mimari prensipler
-- **[CQRS Pattern](./docs/CQRSPattern.md)** - Komut ve sorgu ayrımı
-- **[Caching Strategy](./docs/CachingStrategy.md)** - Önbellekleme stratejisi
-
-## 🚧 Roadmap
-
-### **✅ Tamamlanan Özellikler:**
-- [x] **Clean Architecture** - Katmanlı mimari
-- [x] **CQRS Pattern** - Komut ve sorgu ayrımı
-- [x] **Authentication & Authorization** - JWT ve rol tabanlı güvenlik
-- [x] **Cache Sistemi** - Distributed memory cache
-- [x] **Dinamik Filtreleme** - GetListByDynamic endpoint'leri
-- [x] **İş Akışları** - Yeni katalog talepleri ve onay süreçleri
-- [x] **Otorite Kontrolü** - Bibliyografik standartlar
-- [x] **Raporlama** - Ödünç istatistikleri
-- [x] **Audit Logging** - Tüm işlemlerin loglanması
-
-### **🚀 Planlanan Geliştirmeler:**
-- [ ] **Vue.js Frontend** - Modern kullanıcı arayüzü
-- [ ] **Mobile API** - Mobil uygulama desteği
-- [ ] **Barcode/RFID** - Barkod sistemi entegrasyonu
-- [ ] **Email Notifications** - Ödünç/iade hatırlatmaları
-- [ ] **Advanced Reporting** - PDF/Excel rapor export
-- [ ] **Multi-language** - Çoklu dil desteği
-- [ ] **External API Integration** - KOHA, Z39.50 entegrasyonu
-- [ ] **AI Recommendations** - Kitap öneri sistemi
-
-### **🔧 Teknik İyileştirmeler:**
-- [ ] **Redis Cache** - Distributed cache
-- [ ] **Elasticsearch** - Gelişmiş arama
-- [ ] **Docker** - Containerization
-- [ ] **CI/CD Pipeline** - Otomatik deployment
-- [ ] **Performance Monitoring** - Uygulama gözlemleme
-
-## 🤝 Contributing
-
-MEB Kütüphane Yönetim Sistemi'ne katkıda bulunmak için aşağıdaki adımları takip edin:
-
-### 🚀 Nasıl Katkıda Bulunabilirsiniz?
-
-1. **Projeyi Fork Edin:**
-   ```sh
-   git clone <your-fork-url>
-   cd VisualStudioCode.MEBLibrary
-   ```
-
-2. **Feature Branch Oluşturun:**
-   ```sh
-   git checkout -b feature/amazing-feature
-   ```
-
-3. **Geliştirmelerinizi Yapın:**
-   - Yeni özellikler ekleyin
-   - Mevcut kodları iyileştirin
-   - Testler yazın
-   - Dokümantasyon güncelleyin
-
-4. **Değişikliklerinizi Commit Edin:**
-   ```sh
-   git add .
-   git commit -m 'feat: yeni ödünç verme özelliği eklendi'
-   ```
-
-5. **Push Yapın:**
-   ```sh
-   git push origin feature/amazing-feature
-   ```
-
-6. **Pull Request Açın**
-
-### 📝 Commit Message Formatı:
-
-```
-type(scope): description
-
-[optional body]
-
-[optional footer]
-```
-
-**Types:**
-- `feat:` - Yeni özellik
-- `fix:` - Bug fix
-- `docs:` - Dokümantasyon
-- `style:` - Kod formatı
-- `refactor:` - Kod iyileştirmesi
-- `test:` - Test ekleme/düzenleme
-- `chore:` - Genel bakım
-
-**Examples:**
-- `feat: kitap iade endpoint'i eklendi`
-- `fix: ödünç limiti kontrolü düzeltildi`
-- `docs: README güncellendi`
-
-Contributing on Core Packages With This Repo:
-
-1. Fork the [nArchitecture.Core](https://github.com/kodlamaio-projects/nArchitecture.Core) project
-2. Locate to `src/corePackages` path (`cd .\src\corePackages\`)
-3. Add your forked nArchitecture.Core repository remote address (`git remote add <YourUserName> https://github.com/<YourUserName>/nArchitecture.Core.git`)
-4. Create your Feature Branch (`git checkout -b <Feature>/<AmazingFeature>'`)
-5. Develop
-6. Commit your changes (`git add . && git commit -m '<SemanticCommitType>(<Scope>): <AmazingFeature>'`)
-   💡 Check [Semantic Commit Messages](./docs/Semantic%20Commit%20Messages.md)
-7. Push to the branch (`git push <YourUserName> --set-upstream HEAD:refs/heads/<Feature>/<AmazingFeature>`)
-8. Open a Pull Request
-
-If your pull request is accepted and merged:
-
-9. Locate to `src/corePackages` path (`cd .\src\corePackages\`)
-10. Switch to main branch `git checkout main`
-11. Locate root path `/` path (`cd ..\..\`)
-12. Pull repo and submodule `git submodule update --remote`
-13. Commit your changes (`git add . && git commit -m 'build(corePackages): update submodule'`)
-14. Push to the Branch (`git push origin <Feature>/<AmazingFeature>`)
-15. Open a Pull Request
-
-## ⚖️ License
+## 📄 Lisans
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-## 📧 Contact
+## 📬 İletişim
 
-**Project Link:** [https://github.com/kodlamaio-projects/nArchitecture](https://github.com/kodlamaio-projects/nArchitecture)
-
-<!-- ## 🙏 Acknowledgements
-- []() -->
+Projeye dair sorular için repository üzerinden issue açabilirsiniz.

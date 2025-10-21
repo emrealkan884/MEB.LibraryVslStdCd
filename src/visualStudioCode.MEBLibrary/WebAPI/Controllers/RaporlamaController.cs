@@ -40,18 +40,34 @@ public class RaporlamaController : BaseController
     }
 
     [HttpPost("odunc/overdue/export")]
-    public async Task<ActionResult> ExportOverdueLoans([FromBody] GetOverdueLoansReportQuery query)
+    public async Task<ActionResult> ExportOverdueLoans(
+        [FromBody] GetOverdueLoansReportQuery query,
+        [FromQuery] ReportFormat format = ReportFormat.Csv
+    )
     {
         List<OverdueLoanReportDto> data = await Mediator.Send(query);
-        ReportExportResult exportResult = _reportExportService.ExportToCsv(data, "overdue-loans");
+        ReportExportResult exportResult = _reportExportService.Export(
+            data,
+            "overdue-loans",
+            format,
+            "Overdue Loans"
+        );
         return File(exportResult.Content, exportResult.ContentType, exportResult.FileName);
     }
 
     [HttpPost("odunc/usage/export")]
-    public async Task<ActionResult> ExportUsageStatistics([FromBody] GetLoanUsageStatisticsQuery query)
+    public async Task<ActionResult> ExportUsageStatistics(
+        [FromBody] GetLoanUsageStatisticsQuery query,
+        [FromQuery] ReportFormat format = ReportFormat.Csv
+    )
     {
         List<LoanUsageStatisticsDto> data = await Mediator.Send(query);
-        ReportExportResult exportResult = _reportExportService.ExportToCsv(data, "loan-usage");
+        ReportExportResult exportResult = _reportExportService.Export(
+            data,
+            "loan-usage",
+            format,
+            "Loan Usage Statistics"
+        );
         return File(exportResult.Content, exportResult.ContentType, exportResult.FileName);
     }
 }

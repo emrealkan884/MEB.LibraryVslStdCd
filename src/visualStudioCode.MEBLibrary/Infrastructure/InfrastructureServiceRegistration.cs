@@ -11,7 +11,7 @@ public static class InfrastructureServiceRegistration
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddScoped<ImageServiceBase, CloudinaryImageServiceAdapter>();
-        services.AddSingleton<IReportExportService, CsvReportExportService>();
+        services.AddSingleton<IReportExportService, ReportExportService>();
 
         return services;
     }
