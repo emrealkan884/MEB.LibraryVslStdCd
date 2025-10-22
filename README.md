@@ -37,7 +37,7 @@
 - **📖 Ödünç İşlemleri** - Kitap ödünç alma/iade süreçleri
 - **🏛️ Çoklu Kütüphane Desteği** - Merkez ve okul kütüphaneleri
 - **🔍 Gelişmiş Arama** - Dinamik filtreleme ve akıllı öneri sistemi
-- **📊 Raporlama** - Ödünç istatistikleri ve kullanım raporları
+- **Raporlama** - Dinamik gecikmis/kullanim/toplam raporlari ve cok formatli (CSV/Excel/PDF) disa aktarim
 - **🔐 Güvenlik** - JWT authentication ve rol tabanlı yetkilendirme
 - **⚡ Cache Sistemi** - Yüksek performans için gelişmiş önbellekleme
 - **📋 İş Akışları** - Yeni katalog talepleri ve onay süreçleri
@@ -78,7 +78,7 @@
 | 1 | MEBBIS / e-Okul ile kimlik dogrulama | Eksik | Mevcut kimlik dogrulama yalnizca JWT + yerel kullanici deposu uzerinden calisiyor. |
 | 2 | Bakanligin diger otomasyonlariyla entegrasyon | Eksik | e-Okul vb. sistemler icin adapter bulunmuyor. |
 | 3 | Rol bazli erisim (kutuphaneci, yonetici, ogrenci, ogretmen) | Kismen | Roller tanimli; endpoint seviyesinde politika uygulanmiyor. |
-| 4 | Kullanim takibi ve raporlama | Kismen | Audit pipeline olaylari kaydediyor, ancak analitik paneller yok. |
+| 4 | Kullanim takibi ve raporlama | Kismen | Audit pipeline aktif, gecikmis/kullanim/aggregasyon raporlari CSV/Excel/PDF disa aktarimi destekliyor; analitik paneller henuz yok. |
 | 5 | Merkez icin tam, okullar icin ozellestirilmis moduller | Kismen | Moduller hazir; kutuphane tipine gore erisim kisiti tanimli degil. |
 | 6 | Oracle / MSSQL / MySQL destekleme | Eksik | EF Core yalnizca SQL Server icin ayarlanmis. |
 | 7 | Web tabanli ve gercek zamanli calisma | Tamamlandi | ASP.NET Core WebAPI + Vue SPA calisiyor. |
@@ -144,7 +144,7 @@
 | Kataloglama | ✅ | 🟡 | Komutlar, workflow, authority yönetimi hazır; UI prototip. |
 | Materyal Yönetimi | ✅ | 🟡 | Materyal, nusha, raf yönetimi aktif; UI listeleri mock. |
 | Ödünç İşlemleri | ✅ | 🟡 | Loan/Return/Extend komutları mevcut; UI formu hazırlanacak. |
-| Raporlama | ✅ | 🟡 | JSON ve CSV çıktı destekli; PDF/Excel kurgulanıyor. |
+| Raporlama | Devam ediyor | Devam ediyor | Dinamik gecikmis/kullanim/toplam raporlari ve CSV/Excel/PDF disa aktarimi hazir; dashboard ve gelismis raporlar beklemede. |
 | Etkinlikler | ✅ | 🟡 | CRUD + afiş alanı mevcut, UI entegrasyonu yapılacak. |
 | Arama & Filtreleme | ✅ | 🟡 | DynamicQuery alt yapısı var, frontend bileşenleri oluşturulacak. |
 | Güvenlik | ✅ | 🟡 | Audit logging, policies hazır; UI guardlar eksik. |
@@ -169,7 +169,8 @@
 - Dewey sınıflama API’si için validasyon kuralları yazıldı.
 - Audit log pipeline’ı tüm command’lar için aktif hale getirildi.
 - Seed datada merkez ve okul kütüphaneleri için örnek kayıtlar oluşturuldu.
-- Raporlama modülü için gecikmiş ödünç raporu yayınlandı.
+- Raporlama modulu icin gecikmis odunc raporu yayina alindi.
+- Raporlama uclari Turkcelestirildi; gecikmis/kullanim/toplam raporlarinda CSV/Excel/PDF disa aktarim saglandi.
 - Vue arayüzünde merkez/okul layout’ları prototip olarak çizildi.
 - i18n store ile TR/EN mesaj setleri hazırlandı (komponent entegrasyonu bekleniyor).
 - PrimeVue component altyapısı kuruldu; tema olarak Aura seçildi.
@@ -181,12 +182,12 @@
 2. Barcode/RFID servis arayüzlerini yazıp ödünç iade süreçlerine entegre etmek.
 3. Vue tarafında dynamic filter builder bileşeni geliştirmek.
 4. KOHA veri migrasyonu için import scriptlerini hazırlamak.
-5. PDF/Excel rapor export yeteneklerini uygulamak.
+5. Rapor katalogunu genisletmek (toplam kitap, kayip nusha, en cok odunc alan kullanicilar, dashboard).
 6. Kullanıcı kartı basımı ve işlem fişi çıktıları için PDF şablonları oluşturmak.
 7. Swagger dökümanlarını TR/EN açıklamalarla güncellemek.
-8. Raporlama modülüne dashboard ve grafikler eklemek.
+8. Raporlama modulune dashboard ve grafikler eklemek.
 9. Mobil uyum için responsive layout’ları üretim senaryolarına göre test etmek.
-10. Audit log verilerini raporlamak için admin paneli tasarlamak.
+10. Audit log verilerini raporlamak icin admin paneli tasarlamak.
 
 ## 🧪 Test Durumu
 
@@ -240,3 +241,20 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## 📬 İletişim
 
 Projeye dair sorular için repository üzerinden issue açabilirsiniz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

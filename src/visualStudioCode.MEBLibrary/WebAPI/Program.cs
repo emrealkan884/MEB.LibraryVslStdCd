@@ -1,8 +1,11 @@
 using Application;
+using Application.Features.Raporlama.Queries.GetLoanAggregates;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Any;
+using System.Collections.Generic;
 using NArchitecture.Core.CrossCuttingConcerns.Exception.WebApi.Extensions;
 using NArchitecture.Core.CrossCuttingConcerns.Logging.Configurations;
 using NArchitecture.Core.ElasticSearch.Models;
@@ -80,10 +83,20 @@ builder.Services.AddSwaggerGen(opt =>
             In = ParameterLocation.Header,
             Description =
                 "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer YOUR_TOKEN\". \r\n\r\n"
-                + "`Enter your token in the text input below.`"
+                + "Enter your token in the text input below."
         }
     );
     opt.OperationFilter<BearerSecurityRequirementOperationFilter>();
+    opt.MapType<LoanAggregateDimension>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Enum = new List<IOpenApiAny>
+        {
+            new OpenApiString(nameof(LoanAggregateDimension.Book)),
+            new OpenApiString(nameof(LoanAggregateDimension.Author)),
+            new OpenApiString(nameof(LoanAggregateDimension.Library))
+        }
+    });
 });
 
 WebApplication app = builder.Build();
