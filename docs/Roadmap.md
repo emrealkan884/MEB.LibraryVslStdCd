@@ -1,31 +1,68 @@
-# Yol Haritasi (Onceliklendirilmis Sprint Plani)
+# Yol Haritası (Önceliklendirilmiş Sprint Planı)
 
-## Sprint 1 – Guvenlik ve Yetkilendirme
-- **Tamamlandi:** ASP.NET Core authorization policy'leri ile rol hiyerarsisi uygulandi. Controller'lar ilgili policy'lerle korundu, seed kullanicilarina ornek rol claim'leri eklendi.
-- MEBBIS / e-Okul SSO entegrasyonu icin adapter tasarimi. _(Bekliyor)_
-- HTTPS/SSL zorunlulugu, 2FA altyapisi (AuthenticatorService) aktivasyonu. _(Kismen hazir: OTP altyapisi var, uygulama zorlamasi yapilacak)_
-- Otomatik yedekleme (cron tabanli job veya SQL Agent scripti) icin PoC. _(Planlandi)_
+Bu belge, proje için planlanan sprintleri ve sürekli yapılacak çalışmaları özetler. Tarihler örnek olup, sprint uzunluğu 2 hafta varsayılmıştır.
+
+---
+
+## Sprint 1 – Güvenlik ve Yetkilendirme
+
+- ASP.NET Core authorization policy’leri (`RequireMinistry`, `RequireSchoolOrAbove` vb.) tamamlandı.
+- Seed kullanıcılarına örnek rol claim’leri atandı.
+- Yapılacaklar:
+  - MEBBİS / e-Okul SSO entegrasyon adaptörünün tasarlanması.
+  - HTTPS/SSL zorunluluğu ve 2FA altyapısının etkinleştirilmesi.
+  - Otomatik yedekleme için planlama (cron job veya SQL Agent).
+
+---
 
 ## Sprint 2 – Kataloglama ve Authority
-- **Tamamlandi:** Katalog kaydi olustururken yazar/konu bilgilerini payload ile alip otomatik iliskilendirme akisi.
-- MARC21 & RDA dogrulama servisleri (`IMarcValidationService`, `IRdaValidationService`). _(Bekliyor)_
-- Dewey siniflamasi icin is kurallarinin zorlayici hale getirilmesi.
-- Z39.50 / WorldCat / KOHA import adapter'larinin tasarimi ve temel entegrasyonu.
 
-## Sprint 3 – Dolasim & Barkod/RFID
-- Barkod/RFID entegrasyonu icin servisler, coklu barkodla toplu odunc akisi. _(Planlandi)_
-- Odunc/iade hatirlatma e-postalari icin background job (Hangfire, Quartz vb.). _(Planlandi)_
-- Islemler sonunda fis yazdirma ve kullanici kimlik karti olusturma. _(Planlandi)_
-- Kural ihlallerinde kullaniciyi otomatik askiya alma is kurali. _(Planlandi)_
+- Katalog kaydı oluştururken yazar/konu ilişkilerini payload üzerinden alma desteği hazırlandı.
+- Yapılacaklar:
+  - MARC21 & RDA doğrulama servisleri (`IMarcValidationService`, `IRdaValidationService`).
+  - Dewey sınıflama kurallarının zorlayıcı hale getirilmesi.
+  - Z39.50 / WorldCat / KOHA import adaptörleri.
+
+---
+
+## Sprint 3 – Dolaşım & Barkod/RFID
+
+- Planlanan çalışmalar:
+  - Barkod okuyucu ve RFID servis adaptörleri, toplu ödünç akışları.
+  - Ödünç/iade hatırlatma e-postaları için background job (Hangfire/Quartz).
+  - İşlem fişi ve kullanıcı kartı çıktıları için PDF şablonları.
+  - Kural ihlallerinde kullanıcının otomatik askıya alınması.
+
+---
 
 ## Sprint 4 – Raporlama ve OPAC
-- **Tamamlandi:** Raporlama controller'i CSV/Excel/PDF ciktilari destekleyecek sekilde guncellendi, `ReportExportService` altyapisi eklendi, `ReportingGuide.md` guncellendi.
-- Cok boyutlu raporlar (yas, cinsiyet, il, ilce vb.) icin gelismis filtre setleri. _(Bekliyor)_
-- Rapor erisimi icin rol bazli yetki modeli. _(Bekliyor)_
-- OPAC arayuzunde gelismis arama, kullanilabilirlik ve dijital icerik sunumu. _(Bekliyor)_
-- Etiket / format detaylarinin UI formlariyla entegre edilmesi. _(Bekliyor)_
 
-## Surekli Yapilacaklar
-- Unicode temizligi ve TR/EN lokalizasyonunun tamamlanmasi.
-- Mobil/tablet deneyimi icin UI testleri.
-- Her sprint sonunda entegrasyon testleri ve dokumantasyon guncellemeleri.
+- `RaporlamaController` CSV/Excel/PDF destekleyecek şekilde güncellendi.
+- Yapılacaklar:
+  - Çok boyutlu raporlar (yaş, sınıf, il/ilçe bazlı).
+  - Raporlara rol bazlı yetki modeli.
+  - OPAC arayüzünde gelişmiş arama, kullanılabilirlik ve dijital içerik sunumu.
+  - Etiket/format detaylarının UI formlarıyla entegrasyonu.
+
+---
+
+## Sürekli Yapılacaklar
+
+- Unicode temizliği ve TR/EN lokalizasyonlarının tamamlanması.
+- Mobil/tablet deneyimi için UI testleri ve optimizasyon.
+- Her sprint sonunda entegrasyon testleri ile dokümantasyonun güncel tutulması.
+- Test kapsamının genişletilmesi (katalog, materyal, ödünç modülleri).
+
+---
+
+## Gelecek Sprint Önerileri
+
+1. **Kimlik Doğrulama:** MEBBİS/e-Okul entegrasyonu sonrası rol hiyerarşisinin derinleştirilmesi.
+2. **Entegrasyon:** KOHA veri migrasyonu, ISBN lookup, Cloudinary medya yönetimi otomasyonu.
+3. **Donanım:** Barkod/RFID yanında kiosk destekleri.
+4. **Bildirim:** E-posta/SMS hatırlatmaları, otomatik uyarı sistemleri.
+5. **Analitik:** Dashboard, grafikler, yönetim paneli.
+
+---
+
+Yeni sprint planlarını ve güncellemeleri bu dosya üzerinden takip edebilirsiniz. Değişiklik önerilerinizi PR veya issue olarak iletebilirsiniz.

@@ -1,12 +1,16 @@
 using Application.Authorization;
+using Application.Features.Raporlama.Queries.GetCatalogSummary;
 using Application.Features.Raporlama.Queries.GetLoanUsageStatistics;
 using Application.Features.Raporlama.Queries.GetOverdueLoans;
 using Application.Features.Raporlama.Queries.GetLoanAggregates;
+using Application.Features.Raporlama.Queries.GetReservationSummary;
+using Application.Features.Raporlama.Queries.GetUserSummary;
 using Application.Services.Reporting;
 using Application.Services.Reporting.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
@@ -19,6 +23,27 @@ public class RaporlamaController : BaseController
     public RaporlamaController(IReportExportService reportExportService)
     {
         _reportExportService = reportExportService;
+    }
+
+    [HttpGet("katalog/ozet")]
+    public async Task<ActionResult<CatalogSummaryDto>> GetCatalogSummary()
+    {
+        CatalogSummaryDto result = await Mediator.Send(new GetCatalogSummaryQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("kullanici/ozet")]
+    public async Task<ActionResult<UserSummaryDto>> GetUserSummary()
+    {
+        UserSummaryDto result = await Mediator.Send(new GetUserSummaryQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("rezervasyon/ozet")]
+    public async Task<ActionResult<ReservationSummaryDto>> GetReservationSummary()
+    {
+        ReservationSummaryDto result = await Mediator.Send(new GetReservationSummaryQuery());
+        return Ok(result);
     }
 
     [HttpGet("odunc/gecikmis")]
@@ -95,5 +120,3 @@ public class RaporlamaController : BaseController
         return File(exportResult.Content, exportResult.ContentType, exportResult.FileName);
     }
 }
-
-

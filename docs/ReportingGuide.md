@@ -1,79 +1,112 @@
 # Raporlama ve Denetim Rehberi
 
-Bu rehber, WebAPI üzerindeki raporlama uç noktalarını ve çıktı seçeneklerini açıklar. Örnek istekler Swagger UI, Postman veya herhangi bir HTTP istemcisi ile tekrarlanabilir.
+Bu rehber, WebAPI üzerindeki raporlama uç noktalarını, desteklenen parametreleri ve dışa aktarma seçeneklerini açıklar.
 
-## 1. Geciken Ödünç İşlemleri
+---
+
+## 1. Özet Raporları
+
+- **Katalog özeti:** `GET /api/Raporlama/katalog/ozet`  
+  Toplam katalog kaydı, materyal ve nusha sayıları ile nusha durum dağılımlarını döndürür.
+- **Kullanıcı özeti:** `GET /api/Raporlama/kullanici/ozet`  
+  Aktif/pasif kullanıcı sayılarını ve `Role.*` claim'lerine göre kullanıcı dağılımını getirir.
+- **Rezervasyon özeti:** `GET /api/Raporlama/rezervasyon/ozet`  
+  Rezervasyonların durum bazında (Beklemede, Hazır, Tamamlandı, İptal, Süre Doldu) sayısal dağılımını sağlar.
+
+Örnek çıktı:
+
+```json
+{
+  "metrics": [
+    { "key": "totalCatalogRecords", "label": "Toplam Katalog Kaydı", "value": 2 },
+    { "key": "availableCopies", "label": "Raftaki Nüsha", "value": 2 }
+  ]
+}
+```
+
+Özet uç noktaları `metrics` isimli opsiyonel sorgu parametresi alır. İhtiyaç duyduğunuz metrikleri virgül ile ayırarak çağırabilirsiniz:
+
+```
+GET /api/Raporlama/katalog/ozet?metrics=totalCatalogRecords,availableCopies
+```
+
+Mümkün metrik anahtarları ilgili endpoint’lerin XML dokümantasyonunda belirtilmiştir (örn. katalog için `totalCatalogRecords`, `totalMaterials`, `lostCopies` vb.).
+Kullanıcı özetinde rol dağılımları ayrıca `Role.*` claim’lerine göre Türkçe etiketlerle (`RoleLabel`) gelir.
+
+> Bu uç noktalar yalnızca GET çağrısı kabul eder ve dinamik sorgu göndermez; yönetim ekranlarında hızlı göstergeler için kullanın.
+
+---
+
+## 2. Geciken Ödünç İşlemleri
 
 - **Endpoint:** `GET /api/Raporlama/odunc/gecikmis`
-- **Amaç:** Son teslim tarihi geçmiş ve hâlâ iade edilmemiş ödünç işlemlerini listeler.
-- **Sorgu Parametreleri:**
-  - `KutuphaneId` *(Guid, opsiyonel)* – Belirli bir kütüphane için filtre.
-  - `KullaniciId` *(Guid, opsiyonel)* – Belirli bir kullanıcıya ait geciken işlemleri getirir.
+- **Amaç:** Son teslim tarihi geçmiş ve hâlâ iade edilmemiş ödünçleri listeler.
+- **Parametreler:**
+  - `KutuphaneId` (Guid, opsiyonel)
+  - `KullaniciId` (Guid, opsiyonel)
 
-Örnek çağrı:
+**Örnek:**
 
-```http
-GET /api/Raporlama/odunc/gecikmis?KutuphaneId=8c4e8f23-28c9-4a27-8cf7-208407828fa9 HTTP/1.1
-Host: localhost:5278
+```
+GET /api/Raporlama/odunc/gecikmis?KutuphaneId=8c4e8f23-28c9-4a27-8cf7-208407828fa9
 Authorization: Bearer <token>
 ```
 
-**Not:** `DataSeedingExtensions` dosyası gecikmiş bir ödünç kaydı (`stemOverdueOduncId`) içerir; uygulamayı ilk kez ayağa kaldırdığınızda bu uç nokta örnek veri döndürür.
+Seed verilerinde hazır bir gecikmiş işlem (`stemOverdueOduncId`) bulunduğundan ilk çalıştırmada örnek veri döner.
 
-## 2. Ödünç Kullanım İstatistikleri
+---
+
+## 3. Ödünç Kullanım İstatistikleri
 
 - **Endpoint:** `GET /api/Raporlama/odunc/kullanim`
-- **Amaç:** Belirli tarih aralıklarındaki ödünç alma eğilimlerini raporlar.
-- **Sorgu Parametreleri:**
-  - `KutuphaneId` *(Guid, opsiyonel)* – Kütüphane bazlı filtre.
-  - `BaslangicTarihi`, `BitisTarihi` *(DateTime, opsiyonel)* – Tarih aralığı (UTC, ISO-8601 formatı).
+- **Amaç:** Belirli tarih aralıklarındaki ödünç alma eğilimleri.
+- **Parametreler:**
+  - `KutuphaneId` (Guid, opsiyonel)
+  - `BaslangicTarihi`, `BitisTarihi` (ISO-8601, opsiyonel)
 
-Örnek çağrı:
+**Örnek:**
 
-```http
-GET /api/Raporlama/odunc/kullanim?KutuphaneId=8c4e8f23-28c9-4a27-8cf7-208407828fa9&BaslangicTarihi=2025-01-01T00:00:00Z HTTP/1.1
-Host: localhost:5278
+```
+GET /api/Raporlama/odunc/kullanim?BaslangicTarihi=2025-01-01T00:00:00Z
 Authorization: Bearer <token>
 ```
 
-Boş liste dönmesi seçtiğiniz aralıkta ödünç kaydı olmadığını gösterir; filtreyi genişletebilir veya veri setini artırabilirsiniz.
+---
 
-## 3. Ödünç Aggregasyonu (En Çok Ödünç Alınanlar)
+## 4. Ödünç Agregasyonları
 
 - **Endpoint:** `GET /api/Raporlama/odunc/toplamlar`
-- **Amaç:** Ödünç işlemlerini kitap, yazar veya kütüphane boyutunda toplayarak sıralar.
-- **Sorgu Parametreleri:**
-  - `Dimension` *(Book | Author | Library, zorunlu)* – Toplama boyutu.
-  - `Top` *(int, opsiyonel)* – Döndürülecek kayıt sayısı (varsayılan 10).
-  - `KutuphaneId`, `BaslangicTarihi`, `BitisTarihi` *(opsiyonel)* – Ek filtreler.
+- **Amaç:** Ödünç işlemlerini kitap, yazar veya kütüphane bazında toplamak.
+- **Parametreler:**
+  - `Dimension` (`Book`, `Author`, `Library`) – zorunlu.
+  - `Top` – döndürülecek kayıt sayısı (varsayılan 10).
+  - `KutuphaneId`, `BaslangicTarihi`, `BitisTarihi` – opsiyonel filtreler.
 
-Örnek çağrı (en çok ödünç alınan kitaplar için ilk 20):
+**Örnek:**
 
-```http
-GET /api/Raporlama/odunc/toplamlar?Dimension=Book&Top=20 HTTP/1.1
-Host: localhost:5278
+```
+GET /api/Raporlama/odunc/toplamlar?Dimension=Book&Top=20
 Authorization: Bearer <token>
 ```
 
-Yazar veya kütüphane bazlı toplamlara erişmek için `Dimension=Author` ya da `Dimension=Library` değerleri kullanılabilir.
+---
 
-## 4. Raporları Dosya Olarak Dışa Aktarma
+## 5. Dışa Aktarma Uç Noktaları
 
-Her rapor için JSON çıktısının yanı sıra CSV, Excel veya PDF formatında dosya üretmek mümkündür. İlgili `POST` uç noktaları:
+Her rapor için JSON çıktısına ek olarak CSV, Excel veya PDF formatında dosya üretilebilir.
 
 | Rapor | Endpoint | Not |
-|-------|----------|-----|
-| Geciken ödünçler | `POST /api/Raporlama/odunc/gecikmis/export?format=Csv|Excel|Pdf` | Gövdede `KutuphaneId`, `KullaniciId` vb. filtreler gönderilebilir |
-| Ödünç kullanım istatistiği | `POST /api/Raporlama/odunc/kullanim/export?format=Csv|Excel|Pdf` | Tarih aralığı ve kütüphane filtreleri geçerli |
-| Ödünç agregasyonları | `POST /api/Raporlama/odunc/toplamlar/export?format=Csv|Excel|Pdf` | Gövdede `Dimension`, `Top` ve diğer filtreler yer almalı |
+| --- | --- | --- |
+| Geciken ödünçler | `POST /api/Raporlama/odunc/gecikmis/export?format=Csv|Excel|Pdf` | Gövdede filtre parametreleri gönderilebilir. |
+| Kullanım istatistikleri | `POST /api/Raporlama/odunc/kullanim/export?format=...` | Tarih/kütüphane filtreleri desteklenir. |
+| Agregasyon raporu | `POST /api/Raporlama/odunc/toplamlar/export?format=...` | Gövdede `dimension` ve `top` yer almalı. |
 
-Örnek istek (en çok ödünç alınan ilk 15 kitabı Excel olarak dışa aktarma):
+**Örnek (Excel dışa aktarma):**
 
 ```http
-POST /api/Raporlama/odunc/toplamlar/export?format=Excel HTTP/1.1
-Host: localhost:5278
-Authorization: Bearer <token>
+POST /api/Raporlama/odunc/toplamlar/export?format=Excel
 Content-Type: application/json
+Authorization: Bearer <token>
 
 {
   "dimension": "Book",
@@ -81,19 +114,21 @@ Content-Type: application/json
 }
 ```
 
-Çıktı özetleri:
+**Çıktı Özeti**
 
-| Format | İçerik Tipi | Uzantı | Açıklama |
-|--------|-------------|--------|----------|
-| CSV | `text/csv` | `.csv` | UTF-8, virgül ile ayrılmış |
-| Excel | `application/vnd.ms-excel` | `.xls` | HTML tablo, Excel tarafından doğrudan açılır |
-| PDF | `application/pdf` | `.pdf` | Basit tablo içeren PDF |
+| Format | Content-Type | Açıklama |
+| --- | --- | --- |
+| CSV | `text/csv` | UTF-8, virgülle ayrılmış. |
+| Excel | `application/vnd.ms-excel` | HTML tablo, Excel tarafından açılır. |
+| PDF | `application/pdf` | Basit tablo içeren PDF. |
 
-Tüm dosya adları `rapor_YYYYMMDDHHmmss.*` biçiminde zaman damgası içerir.
+Dosya adları `rapor_YYYYMMDDHHmmss.*` şeklindedir.
 
-## 5. Dinamik Filtre ve Sıralama
+---
 
-Export uç noktalarına dinamik filtre (DynamicQuery) yapıları da gönderebilirsiniz. Örneğin geciken ödünç raporunu sadeleştirmek için:
+## 6. Dinamik Filtre Yapısı
+
+Tüm export uç noktaları `DynamicQuery` gövdesini destekler:
 
 ```json
 {
@@ -110,17 +145,31 @@ Export uç noktalarına dinamik filtre (DynamicQuery) yapıları da gönderebili
 }
 ```
 
-Bu JSON'u ilgili `POST /export` isteğinin gövdesine eklediğinizde, çıktı filtrelenmiş ve sıralanmış şekilde üretilir.
+Bu JSON’u export isteğinin gövdesine ekleyerek filtrelenmiş dosya çıktıları alabilirsiniz.
 
-## 6. Denetim (Audit) Kayıtları
+---
 
-MediatR pipeline’ındaki `AuditLoggingBehavior` her komut çalıştığında `AuditLogs` tablosuna kayıt düşer. Kaydedilen alanlar:
+## 7. Denetim (Audit) Kayıtları
 
-- Kullanıcı Id ve kullanıcı adı
-- IP adresi ve User-Agent bilgisi
+MediatR pipeline’ındaki `AuditLoggingBehavior`, tüm komut çağrılarını `AuditLogs` tablosuna kaydeder:
+
+- Kullanıcı Id / adı
+- IP adresi ve User-Agent
 - Komut adı
-- Komutun JSON olarak serialized payload’ı
-- UTC zaman damgası
+- Komut gövdesi (JSON)
+- Oluşma zamanı (UTC)
 
-Audit log yazımı sırasında oluşan hatalar ana iş akışını engellemez; yine de üretim ortamında izleme yapılması önerilir.
+Audit log yazımı ana iş akışını bloke etmez; hata durumunda da komut çalışmaya devam eder.
 
+---
+
+## 8. Geliştirme Önerileri
+
+1. Raporlara rol bazlı erişim kısıtları eklemek (örn. sadece merkez yetkilisi görebilsin).
+2. Dashboard ve grafiksel görselleştirmeler (ör. aylık ödünç trend grafikleri).
+3. Daha detaylı filtreler (yaş, sınıf, cinsiyet, materyal türü bazlı kırılımlar).
+4. Audit log verilerini raporlayan yönetim ekranı.
+
+---
+
+Raporlama modülüne katkıda bulunurken bu rehberi referans alın. Yeni rapor ihtiyaçlarını issue veya PR olarak paylaşabilirsiniz.

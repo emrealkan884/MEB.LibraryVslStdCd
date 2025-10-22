@@ -1,20 +1,20 @@
 # Semantic Commit Messages
 
-**Format:** `<type>(?<scope>): <subject>` (scope is optional.)
+**Format:** `<type>(?<scope>): <subject>` (scope isteğe bağlıdır).
 
-## 🏷️ Types
+## Types
 
-- `feat`: (new feature for the user, not a new feature for build script)
-- `fix`: (bug fix for the user, not a fix to a build script)
-- `docs`: (changes to the documentation)
-- `style`: (formatting, missing semi colons, etc; no production code change)
-- `perf`: (production changes related to backward-compatible performance improvements)
-- `refactor`: (refactoring production code, eg. renaming a variable)
-- `test`: (adding missing tests, refactoring tests; no production code change)
-- `build`: (updating grunt tasks etc; no production code change)
-- `ci`: (changes to identify development changes related to the continuous integration and deployment system - involving scripts, configurations or tools)
+- `feat`: Kullanıcıya yönelik yeni özellik.
+- `fix`: Kullanıcıyı etkileyen hata düzeltmesi.
+- `docs`: Dokümantasyon güncellemesi.
+- `style`: Biçimlendirme, boşluk vb.; davranış değiştirmez.
+- `perf`: Performans iyileştirmesi.
+- `refactor`: Davranışı değiştirmeden kod düzeni.
+- `test`: Test ekleme veya düzenleme.
+- `build`: Derleme araçları/komutları ile ilgili değişiklik.
+- `ci`: Sürekli entegrasyon veya dağıtım süreçleri ile ilgili değişiklik.
 
-## 💡 Example
+## Example
 
 ```
 feat(core): add otp authenticator
