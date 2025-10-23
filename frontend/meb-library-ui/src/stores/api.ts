@@ -1,7 +1,7 @@
-import axios from 'axios'
+﻿import axios from 'axios'
 
 // API base URL'ini environment'a göre ayarla
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7001/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5278/api'
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

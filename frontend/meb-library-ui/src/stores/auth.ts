@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+﻿import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import apiClient from './api'
 
@@ -14,9 +14,10 @@ export interface User {
 }
 
 export interface LoginCredentials {
-  tcNo: string
+  email: string
   password: string
   rememberMe?: boolean
+  authenticatorCode?: string
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -39,8 +40,33 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
 
     try {
-      // MEBBİS/e-Okul entegrasyonu için API çağrısı
-      const response = await apiClient.post('/Auth/Login', credentials)
+      if (import.meta.env.VITE_USE_MOCK_AUTH !== 'false') {
+        token.value = 'mock-access-token'
+        user.value = {
+          id: crypto.randomUUID(),
+          firstName: 'Kutuphane',
+          lastName: 'Yöneticisi',
+          email: credentials.email,
+          roles: ['Role.Library.Manager'],
+          libraryType: 'Merkez',
+          schoolCode: undefined,
+          isAuthenticated: true
+        }
+
+        if (credentials.rememberMe) {
+          localStorage.setItem('auth_token', token.value)
+        } else {
+          localStorage.removeItem('auth_token')
+        }
+
+        return { success: true }
+      }
+
+      const response = await apiClient.post('/Auth/Login', {
+        email: credentials.email,
+        password: credentials.password,
+        authenticatorCode: credentials.authenticatorCode
+      })
 
       token.value = response.data.accessToken
       user.value = {
@@ -54,9 +80,12 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated: true
       }
 
-      // Token'ı localStorage'a kaydet
-      if (credentials.rememberMe && token.value) {
-        localStorage.setItem('auth_token', token.value)
+      if (token.value) {
+        if (credentials.rememberMe) {
+          localStorage.setItem('auth_token', token.value)
+        } else {
+          localStorage.removeItem('auth_token')
+        }
       }
 
       return { success: true }
@@ -106,3 +135,5 @@ export const useAuthStore = defineStore('auth', () => {
     checkAuth
   }
 })
+
+

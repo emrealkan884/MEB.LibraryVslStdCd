@@ -10,6 +10,7 @@ import ToastService from 'primevue/toastservice'
 
 import App from './App.vue'
 import router from './router'
+import { useI18nStore } from '@/stores/i18n'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -28,5 +29,10 @@ app.use(PrimeVue, {
   }
 })
 app.use(ToastService)
+
+const i18nStore = useI18nStore(pinia)
+i18nStore.initializeLanguage()
+
+app.config.globalProperties.$t = (key: string) => i18nStore.t(key)
 
 app.mount('#app')

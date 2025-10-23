@@ -1,6 +1,8 @@
 using Domain.Entities;
+using Domain.ValueObjects.Marc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Text.Json;
 
 namespace Persistence.EntityConfigurations;
 
@@ -30,6 +32,12 @@ public class KatalogKaydiConfiguration : IEntityTypeConfiguration<KatalogKaydi>
         builder.Property(e => e.MateryalTuru).HasColumnName("MateryalTuru").IsRequired();
         builder.Property(e => e.MateryalAltTuru).HasColumnName("MateryalAltTuru");
         builder.Property(e => e.Marc21Verisi).HasColumnName("Marc21Verisi");
+        builder.Property(e => e.MarcAlanlari)
+            .HasColumnName("MarcAlanlari")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()),
+                v => JsonSerializer.Deserialize<List<MarcAlan>>(v, new JsonSerializerOptions())
+            );
         builder.Property(e => e.RdaUyumlu).HasColumnName("RdaUyumlu").IsRequired();
         builder.Property(e => e.KayitTarihi).HasColumnName("KayitTarihi").IsRequired();
         builder.Property(e => e.CreatedDate).HasColumnName("CreatedDate").IsRequired();

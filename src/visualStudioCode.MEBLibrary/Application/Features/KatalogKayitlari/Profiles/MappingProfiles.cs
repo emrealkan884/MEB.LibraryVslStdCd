@@ -16,7 +16,9 @@ public class MappingProfiles : Profile
     {
         CreateMap<CreateKatalogKaydiCommand, KatalogKaydi>()
             .ForMember(dest => dest.KatalogYazarlar, opt => opt.Ignore())
-            .ForMember(dest => dest.Konular, opt => opt.Ignore());
+            .ForMember(dest => dest.Konular, opt => opt.Ignore())
+            .ForMember(dest => dest.MarcAlanlari, opt => opt.MapFrom(src => src.MarcAlanlari));;
+
         CreateMap<KatalogKaydi, CreatedKatalogKaydiResponse>()
             .ForMember(dest => dest.Yazarlar, opt => opt.Ignore())
             .ForMember(dest => dest.Konular, opt => opt.Ignore());

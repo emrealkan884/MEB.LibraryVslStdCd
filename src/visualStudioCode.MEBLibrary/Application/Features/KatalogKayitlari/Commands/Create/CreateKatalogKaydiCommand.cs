@@ -3,6 +3,7 @@ using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.ValueObjects.Marc;
 using MediatR;
 
 namespace Application.Features.KatalogKayitlari.Commands.Create;
@@ -28,6 +29,7 @@ public class CreateKatalogKaydiCommand : IRequest<CreatedKatalogKaydiResponse>
     public MateryalTuru MateryalTuru { get; set; }
     public string? MateryalAltTuru { get; set; }
     public string? Marc21Verisi { get; set; }
+    public IList<MarcAlan>? MarcAlanlari { get; set; }
     public bool RdaUyumlu { get; set; }
     public DateTime KayitTarihi { get; set; }
     public IList<CreateKatalogKaydiYazarDto>? Yazarlar { get; set; }

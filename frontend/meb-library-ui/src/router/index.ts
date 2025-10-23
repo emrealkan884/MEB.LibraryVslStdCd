@@ -12,8 +12,7 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'dashboard',
-      component: () => import('../views/DashboardView.vue'),
+      redirect: '/merkez/dashboard',
       meta: { requiresAuth: true }
     },
     // Merkez Kütüphane Routes
@@ -32,6 +31,11 @@ const router = createRouter({
           path: 'kataloglama',
           name: 'merkez-cataloging',
           component: () => import('../views/merkez/CatalogingView.vue')
+        },
+        {
+          path: 'katalog-arama',
+          name: 'merkez-catalog-search',
+          component: () => import('../views/merkez/CatalogSearchView.vue')
         },
         {
           path: 'dolasim',
