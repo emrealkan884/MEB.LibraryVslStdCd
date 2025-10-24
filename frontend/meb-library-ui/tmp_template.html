@@ -1,0 +1,288 @@
+<template>
+  <div class="cataloging-page">
+    <section class="hero">
+      <div class="hero__content">
+        <div class="hero__status">Son senkronizasyon 18 sn önce</div>
+        <h1 class="hero__title">Kataloglama Stüdyosu</h1>
+        <p class="hero__subtitle">
+          MARC21, RDA ve yerel standartlarý tek arayüzde yönetin. Ekip içi iþ akýþlarýný hýzlandýran modern kataloglama aracýnýz.
+        </p>
+        <ul class="hero__highlights">
+          <li v-for="feature in heroHighlights" :key="feature.label" class="hero__highlight">
+            <span class="hero__highlight-dot" :style="{ background: feature.color }"></span>
+            {{ feature.label }}
+          </li>
+        </ul>
+      </div>
+      <button class="hero__cta" type="button">
+        <span class="hero__cta-icon">+</span>
+        Yeni MARC kaydý baþlat
+      </button>
+    </section>
+
+    <section class="quick-actions">
+      <button
+        v-for="action in quickActions"
+        :key="action.id"
+        type="button"
+        @click="handleQuickAction(action.id)"
+        class="quick-actions__item"
+      >
+        <div class="quick-actions__header">
+          <span class="quick-actions__shortcut" :style="{ background: action.gradient }">{{ action.shortcut }}</span>
+          <span class="quick-actions__badge">{{ action.meta }}</span>
+        </div>
+        <h3 class="quick-actions__title">{{ action.title }}</h3>
+        <p class="quick-actions__description">{{ action.description }}</p>
+      </button>
+    </section>
+
+    <section class="stats">
+      <article v-for="metric in metrics" :key="metric.label" class="stats-card">
+        <header class="stats-card__header">
+          <span class="stats-card__category">{{ metric.category }}</span>
+        </header>
+        <div class="stats-card__value">{{ metric.value }}</div>
+        <div class="stats-card__label">{{ metric.label }}</div>
+        <div class="stats-card__trend" :class="'stats-card__trend--' + metric.tone">
+          <span class="stats-card__trend-icon">{{ metric.direction === 'down' ? '¡' : metric.direction === 'steady' ? '¦' : '^' }}</span>
+          <span>{{ metric.trendLabel }}</span>
+          <span class="stats-card__trend-period">{{ metric.period }}</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="main-grid">
+      <div class="card form-card">
+        <header class="card__header">
+          <div>
+            <h2 class="card__title">Yeni katalog kaydý</h2>
+            <p class="card__subtitle">Alanlarý doldurdukça MARC21 önizlemesi otomatik güncellenir.</p>
+          </div>
+          <div class="card__meta">
+            <span class="pill pill--neutral">Doðrulama aktif</span>
+            <span class="pill pill--primary">%{{ completionProgress }} tamamlandý</span>
+          </div>
+        </header>
+
+        <nav class="tabs">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            type="button"
+            @click="activeTab = tab.id"
+            :class="['tabs__item', { 'tabs__item--active': activeTab === tab.id }]"
+          >
+            <span class="tabs__label">{{ tab.label }}</span>
+            <span class="tabs__description">{{ tab.description }}</span>
+          </button>
+        </nav>
+
+        <form class="form" @submit.prevent>
+          <template v-if="activeTab === 'temel'">
+            <div class="form__grid form__grid--two">
+              <label class="form-field">
+                <span class="form-field__label">ISBN</span>
+                <input v-model="formModel.isbn" type="text" class="form-field__control" placeholder="9789754707083" />
+              </label>
+              <label class="form-field">
+                <span class="form-field__label">Baþlýk</span>
+                <input v-model="formModel.title" type="text" class="form-field__control" placeholder="Benim Adým Kýrmýzý" />
+              </label>
+            </div>
+            <div class="form__grid form__grid--three">
+              <label class="form-field">
+                <span class="form-field__label">Yazar(lar)</span>
+                <input v-model="formModel.author" type="text" class="form-field__control" placeholder="Orhan Pamuk" />
+              </label>
+              <label class="form-field">
+                <span class="form-field__label">Yayýnevi</span>
+                <input v-model="formModel.publisher" type="text" class="form-field__control" placeholder="Ýletiþim Yayýnlarý" />
+              </label>
+              <label class="form-field">
+                <span class="form-field__label">Yayýn Yýlý</span>
+                <input v-model="formModel.publicationYear" type="number" class="form-field__control" placeholder="1998" />
+              </label>
+            </div>
+            <label class="form-field">
+              <span class="form-field__label">Özet Notu</span>
+              <textarea v-model="formModel.summary" rows="3" class="form-field__control" placeholder="Eserle ilgili kýsa içerik bilgisi girin."></textarea>
+            </label>
+          </template>
+
+          <template v-else-if="activeTab === 'siniflama'">
+            <div class="form__grid form__grid--two">
+              <label class="form-field">
+                <span class="form-field__label">Dewey Sýnýfý</span>
+                <select v-model="formModel.dewey" class="form-field__control">
+                  <option disabled value="">Seçiniz</option>
+                  <option v-for="option in deweyOptions" :key="option" :value="option">{{ option }}</option>
+                </select>
+              </label>
+              <label class="form-field">
+                <span class="form-field__label">Materyal Türü</span>
+                <select v-model="formModel.materialType" class="form-field__control">
+                  <option disabled value="">Seçiniz</option>
+                  <option v-for="type in materialTypes" :key="type" :value="type">{{ type }}</option>
+                </select>
+              </label>
+            </div>
+            <div class="form__grid form__grid--two">
+              <label class="form-field">
+                <span class="form-field__label">Konu Baþlýklarý</span>
+                <input v-model="formModel.subjects" type="text" class="form-field__control" placeholder="Türk romaný, minyatür sanatý..." />
+              </label>
+              <label class="form-field">
+                <span class="form-field__label">Dil</span>
+                <select v-model="formModel.language" class="form-field__control">
+                  <option disabled value="">Seçiniz</option>
+                  <option v-for="language in languages" :key="language" :value="language">{{ language }}</option>
+                </select>
+              </label>
+            </div>
+            <div class="form__grid form__grid--three">
+              <label class="form-field">
+                <span class="form-field__label">Hedef Kitle</span>
+                <select v-model="formModel.audience" class="form-field__control">
+                  <option disabled value="">Seçiniz</option>
+                  <option v-for="audience in audienceLevels" :key="audience" :value="audience">{{ audience }}</option>
+                </select>
+              </label>
+              <label class="form-field">
+                <span class="form-field__label">Koleksiyon</span>
+                <input v-model="formModel.collection" type="text" class="form-field__control" placeholder="Edebiyat Koleksiyonu" />
+              </label>
+              <label class="form-field">
+                <span class="form-field__label">Eriþim Durumu</span>
+                <select v-model="formModel.availability" class="form-field__control">
+                  <option disabled value="">Seçiniz</option>
+                  <option v-for="availability in availabilityStatuses" :key="availability" :value="availability">{{ availability }}</option>
+                </select>
+              </label>
+            </div>
+          </template>
+
+          <template v-else>
+            <div class="form__grid form__grid--two">
+              <label class="form-field">
+                <span class="form-field__label">Dijital Varlýk URL</span>
+                <input v-model="formModel.digitalUrl" type="url" class="form-field__control" placeholder="https://kutuphane.meb.gov.tr/dijital/12345" />
+              </label>
+              <label class="form-field">
+                <span class="form-field__label">Dosya Biçimi</span>
+                <select v-model="formModel.digitalFormat" class="form-field__control">
+                  <option disabled value="">Seçiniz</option>
+                  <option v-for="format in digitalFormats" :key="format" :value="format">{{ format }}</option>
+                </select>
+              </label>
+            </div>
+            <label class="form-field">
+              <span class="form-field__label">Lisans / Kullaným Koþulu</span>
+              <input v-model="formModel.license" type="text" class="form-field__control" placeholder="CC BY-NC 4.0" />
+            </label>
+            <div class="dropzone">
+              <div class="dropzone__icon">?</div>
+              <div>
+                Dosyalarý sürükleyip býrakýn ya da <span class="dropzone__link">göz atýn</span>
+              </div>
+            </div>
+          </template>
+
+          <div class="form__footer">
+            <div class="form__hint">Sistem MARC alanlarýný kaydetmeden önce doðrulayacak.</div>
+            <div class="form__actions">
+              <button type="button" class="btn btn--ghost">Taslak Olarak Kaydet</button>
+              <button type="submit" class="btn btn--primary">Yayýna Al</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <aside class="side-column">
+        <div class="card preview-card">
+          <header class="card__header">
+            <h3 class="card__title">MARC21 önizlemesi</h3>
+            <span class="pill pill--neutral">Canlý</span>
+          </header>
+          <pre class="preview-card__code">{{ marcPreview }}</pre>
+          <p class="preview-card__footnote">RDA tanýmlamalarýna göre alan önerileri güncellendi.</p>
+        </div>
+
+        <div class="card workflow-card">
+          <h3 class="card__title">Ýþ akýþý durumu</h3>
+          <ul class="timeline">
+            <li v-for="stage in workflowStages" :key="stage.title" class="timeline__item">
+              <span class="timeline__icon" :style="{ background: stage.color }">{{ stage.icon }}</span>
+              <div>
+                <p class="timeline__title">{{ stage.title }}</p>
+                <p class="timeline__subtitle">{{ stage.subtitle }}</p>
+              </div>
+              <span class="timeline__meta">{{ stage.meta }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card activity-card">
+          <header class="card__header">
+            <div>
+              <h3 class="card__title">Son aktiviteler</h3>
+              <p class="card__subtitle">Ekibinizdeki kataloglama hareketleri</p>
+            </div>
+            <button type="button" class="card__link">Tümünü gör</button>
+          </header>
+          <ul class="activity-list">
+            <li v-for="activity in recentActivity" :key="activity.id" class="activity-list__item">
+              <div class="activity-list__header">
+                <span class="activity-list__title">{{ activity.title }}</span>
+                <span class="activity-list__time">{{ activity.timeAgo }}</span>
+              </div>
+              <p class="activity-list__description">{{ activity.detail }}</p>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card table-card">
+      <header class="card__header">
+        <div>
+          <h3 class="card__title">Katalog koleksiyonunuz</h3>
+          <p class="card__subtitle">Son eklenen kayýtlar, durum ve eriþim bilgileri</p>
+        </div>
+        <div class="card__meta">
+          <span class="pill pill--success">%{{ publishedPercentage }} yayýnlandý</span>
+          <span class="pill pill--warning">{{ draftCount }} taslak</span>
+        </div>
+      </header>
+      <div class="table-card__wrapper">
+        <table class="catalog-table">
+          <thead>
+            <tr>
+              <th>ISBN</th>
+              <th>Baþlýk</th>
+              <th>Yazar</th>
+              <th>Yayýn Yýlý</th>
+              <th>Durum</th>
+              <th class="catalog-table__actions">Ýþlemler</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in catalogEntries" :key="entry.isbn">
+              <td class="catalog-table__code">{{ entry.isbn }}</td>
+              <td>{{ entry.title }}</td>
+              <td>{{ entry.author }}</td>
+              <td>{{ entry.year }}</td>
+              <td>
+                <span class="badge" :class="'badge--' + getStatusTone(entry.status)">{{ entry.status }}</span>
+              </td>
+              <td class="catalog-table__actions">
+                <button type="button" class="table-action table-action--primary">Düzenle</button>
+                <button type="button" class="table-action table-action--danger">Sil</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</template>
