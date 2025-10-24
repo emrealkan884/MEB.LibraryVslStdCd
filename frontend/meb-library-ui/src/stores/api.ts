@@ -14,7 +14,10 @@ export const apiClient = axios.create({
 // Request interceptor - token ekleme
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token')
+    let token: string | null = null
+    if (typeof window !== 'undefined') {
+      token = window.localStorage.getItem('auth_token') ?? window.sessionStorage.getItem('auth_token')
+    }
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -31,7 +34,10 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token geçersiz, kullanıcıyı login sayfasına yönlendir
-      localStorage.removeItem('auth_token')
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('auth_token')
+        window.sessionStorage.removeItem('auth_token')
+      }
       window.location.href = '/login'
     }
     return Promise.reject(error)

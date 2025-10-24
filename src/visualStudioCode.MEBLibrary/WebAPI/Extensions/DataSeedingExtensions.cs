@@ -25,6 +25,7 @@ public static class DataSeedingExtensions
         DateTime now = DateTime.UtcNow;
         DateTime lastWeek = now.AddDays(-7);
         DateTime lastMonth = now.AddMonths(-1);
+        DateTime ToUtcDate(DateTime dt) => DateTime.SpecifyKind(dt, DateTimeKind.Utc);
 
         Guid merkezKutuphaneId = Guid.Parse("5C87D9F1-6F9B-46E0-90F0-7F205874A9F8");
         Guid fenKutuphaneId = Guid.Parse("8C4E8F23-28C9-4A27-8CF7-208407828FA9");
@@ -81,12 +82,14 @@ public static class DataSeedingExtensions
 
         Guid ogrenciUserId = Guid.Parse("1C77CE41-5A1C-4C07-BD81-9B88C3F3A807");
         Guid personelUserId = Guid.Parse("8FE171E5-3C60-441E-9F8B-64B3EABFA86C");
-        Guid personelClaimLinkId = Guid.Parse("5D7460EE-0F95-483C-96CF-6F7934F7F96E");
-        Guid personelMinistryRoleClaimLinkId = Guid.Parse("EAA3AAE5-0E6C-4397-AFAA-4B26F72C2719");
+        Guid bakanlikUserId = Guid.Parse("D4F59B7B-EE66-4F7C-9E41-7F9CE2C9C8E5");
+        Guid bakanlikAdminClaimLinkId = Guid.Parse("0B1E0815-BC65-4C13-980D-5E5D70592860");
+        Guid bakanlikRoleClaimLinkId = Guid.Parse("3F8C8AF1-B86B-4C6D-9EAD-23F8C7CC4204");
         Guid personelSchoolRoleClaimLinkId = Guid.Parse("8F0DFD7F-9D0F-4B36-A7B7-2F2D42ED9DAE");
 
         HashingHelper.CreatePasswordHash("Library123!", out byte[] studentHash, out byte[] studentSalt);
         HashingHelper.CreatePasswordHash("Library123!", out byte[] staffHash, out byte[] staffSalt);
+        HashingHelper.CreatePasswordHash("Ministry123!", out byte[] ministryHash, out byte[] ministrySalt);
 
         var users = new List<User>
         {
@@ -111,6 +114,17 @@ public static class DataSeedingExtensions
                 PasswordSalt = staffSalt,
                 Status = true,
                 CreatedDate = lastMonth
+            },
+            new()
+            {
+                Id = bakanlikUserId,
+                Email = "bakanlik.yetkilisi@example.com",
+                FirstName = "Murat",
+                LastName = "Demir",
+                PasswordHash = ministryHash,
+                PasswordSalt = ministrySalt,
+                Status = true,
+                CreatedDate = lastMonth
             }
         };
         context.Users.AddRange(users);
@@ -127,8 +141,8 @@ public static class DataSeedingExtensions
             context.UserOperationClaims.Add(
                 new UserOperationClaim
                 {
-                    Id = personelClaimLinkId,
-                    UserId = personelUserId,
+                    Id = bakanlikAdminClaimLinkId,
+                    UserId = bakanlikUserId,
                     OperationClaimId = adminClaimId.Value,
                     CreatedDate = lastMonth
                 });
@@ -139,8 +153,8 @@ public static class DataSeedingExtensions
             context.UserOperationClaims.Add(
                 new UserOperationClaim
                 {
-                    Id = personelMinistryRoleClaimLinkId,
-                    UserId = personelUserId,
+                    Id = bakanlikRoleClaimLinkId,
+                    UserId = bakanlikUserId,
                     OperationClaimId = ministryRoleClaimId.Value,
                     CreatedDate = lastMonth
                 });
@@ -170,7 +184,9 @@ public static class DataSeedingExtensions
                 Telefon = "0312 111 22 33",
                 EPosta = "merkez@meb.gov.tr",
                 Aktif = true,
-                CreatedDate = lastMonth
+                CreatedDate = lastMonth,
+                Il = "Ankara",
+                Ilce = "Çankaya" 
             },
             new()
             {
@@ -182,7 +198,9 @@ public static class DataSeedingExtensions
                 Telefon = "0232 765 43 21",
                 EPosta = "kutuphane@fenlisesi.edu.tr",
                 Aktif = true,
-                CreatedDate = lastMonth
+                CreatedDate = lastMonth,
+                Il = "Hatay",
+                Ilce = "Antakya"
             }
         };
         context.Kutuphaneler.AddRange(kutuphaneler);
@@ -316,7 +334,7 @@ public static class DataSeedingExtensions
             {
                 Id = orhanPamukYazarId,
                 AdSoyad = "Orhan Pamuk",
-                DogumTarihi = new DateTime(1952, 6, 7),
+                DogumTarihi = ToUtcDate(new DateTime(1952, 6, 7)),
                 Uyruk = "Turkiye",
                 Aciklama = "Nobel odullu yazar",
                 CreatedDate = lastMonth
@@ -616,6 +634,7 @@ public static class DataSeedingExtensions
         };
         context.OduncIslemleri.AddRange(oduncIslemleri);
 
+        DateTime nextEventDay = ToUtcDate(now.AddDays(3).Date);
         var etkinlikler = new List<Etkinlik>
         {
             new()
@@ -624,8 +643,8 @@ public static class DataSeedingExtensions
                 KutuphaneId = merkezKutuphaneId,
                 Baslik = "Okuma Kulubu Tartismasi",
                 Aciklama = "Benim Adim Kirmizi uzerine sohbet",
-                BaslangicTarihi = now.AddDays(3).Date.AddHours(18),
-                BitisTarihi = now.AddDays(3).Date.AddHours(20),
+                BaslangicTarihi = nextEventDay.AddHours(18),
+                BitisTarihi = nextEventDay.AddHours(20),
                 Konum = "Merkez konferans salonu",
                 AfisDosyasi = "/events/okuma-kulubu.jpg",
                 CreatedDate = lastWeek

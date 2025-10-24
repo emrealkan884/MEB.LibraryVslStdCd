@@ -380,7 +380,7 @@ const availableLanguages = computed(() => {
 const activeFilterLabel = computed(() => {
   const parts: string[] = []
 
-  const materialOption = materialTypeOptions.find(option => option.value === selectedMaterialType.valueOf())
+  const materialOption = materialTypeOptions.find(option => option.value === selectedMaterialType.value.valueOf())
   if (materialOption && materialOption.value !== 'all') {
     parts.push(materialOption.label)
   }

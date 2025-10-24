@@ -48,6 +48,7 @@ Bu depo, Milli Eğitim Bakanlığı için geliştirilen **MEB Kütüphane Yönet
 - .NET SDK 8.0+
 - Node.js 20+
 - NPM veya pnpm
+- PostgreSQL 14+ (varsayılan bağlantı: `Host=localhost;Port=5432;Database=MEBLibraryDb;Username=postgres;Password=1234;`)
 
 ### Backend
 
@@ -55,6 +56,8 @@ Bu depo, Milli Eğitim Bakanlığı için geliştirilen **MEB Kütüphane Yönet
 dotnet restore
 dotnet run --project src/visualStudioCode.MEBLibrary/WebAPI/WebAPI.csproj
 ```
+
+> **Not:** Uygulamayı başlatmadan önce PostgreSQL sunucunuzda `MEBLibraryDb` adlı bir veritabanı oluşturun (veya `appsettings*.json` altında kendi bağlantınızı tanımlayın). Gerekli tablolar istemci ayağa kalkarken `AddDbMigrationApplier` ile otomatik uygulanır.
 
 Swagger arayüzü: `https://localhost:5278/swagger`
 

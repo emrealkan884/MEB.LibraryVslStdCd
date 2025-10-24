@@ -6,8 +6,10 @@ using Application.Features.Auth.Commands.Register;
 using Application.Features.Auth.Commands.RevokeToken;
 using Application.Features.Auth.Commands.VerifyEmailAuthenticator;
 using Application.Features.Auth.Commands.VerifyOtpAuthenticator;
+using Application.Features.Auth.Queries.GetCurrentUser;
 using Domain.Entities;
 using Domain.Entities.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NArchitecture.Core.Application.Dtos;
@@ -47,6 +49,15 @@ public class AuthController : BaseController
         RegisteredResponse result = await Mediator.Send(registerCommand);
         setRefreshTokenToCookie(result.RefreshToken);
         return Created(uri: "", result.AccessToken);
+    }
+
+    [HttpGet("Me")]
+    [Authorize]
+    public async Task<IActionResult> Me()
+    {
+        GetCurrentUserQuery query = new() { UserId = getUserIdFromRequest() };
+        CurrentUserResponse response = await Mediator.Send(query);
+        return Ok(response);
     }
 
     [HttpGet("RefreshToken")]

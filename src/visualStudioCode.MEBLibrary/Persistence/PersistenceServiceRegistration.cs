@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NArchitecture.Core.Persistence.DependencyInjection;
 using Persistence.Contexts;
 using Persistence.Repositories;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace Persistence;
 
@@ -12,7 +13,21 @@ public static class PersistenceServiceRegistration
 {
     public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<BaseDbContext>(options => options.UseInMemoryDatabase("BaseDb"));
+        string connectionString = configuration.GetConnectionString("BaseDb");
+        services.AddDbContext<BaseDbContext>(options =>
+        {
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                options.UseInMemoryDatabase("BaseDb");
+            }
+            else
+            {
+                options.UseNpgsql(connectionString, npgsqlOptions =>
+                {
+                    npgsqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                });
+            }
+        });
         services.AddDbMigrationApplier(buildServices => buildServices.GetRequiredService<BaseDbContext>());
 
         services.AddScoped<IEmailAuthenticatorRepository, EmailAuthenticatorRepository>();

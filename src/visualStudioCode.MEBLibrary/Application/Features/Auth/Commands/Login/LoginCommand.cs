@@ -1,4 +1,5 @@
-﻿using Application.Features.Auth.Rules;
+﻿using Application.Authorization;
+using Application.Features.Auth.Rules;
 using Application.Services.AuthenticatorService;
 using Application.Services.AuthService;
 using Application.Services.UsersService;
@@ -56,6 +57,7 @@ public class LoginCommand : IRequest<LoggedResponse>
             );
             await _authBusinessRules.UserShouldBeExistsWhenSelected(user);
             await _authBusinessRules.UserPasswordShouldBeMatch(user!, request.UserForLoginDto.Password);
+            await _authBusinessRules.UserShouldHaveRole(user!, ApplicationRoles.OkulKutuphaneYoneticisi);
 
             LoggedResponse loggedResponse = new();
 

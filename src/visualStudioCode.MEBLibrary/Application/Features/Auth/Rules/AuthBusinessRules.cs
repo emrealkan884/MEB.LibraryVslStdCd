@@ -13,11 +13,17 @@ namespace Application.Features.Auth.Rules;
 public class AuthBusinessRules : BaseBusinessRules
 {
     private readonly IUserRepository _userRepository;
+    private readonly IUserOperationClaimRepository _userOperationClaimRepository;
     private readonly ILocalizationService _localizationService;
 
-    public AuthBusinessRules(IUserRepository userRepository, ILocalizationService localizationService)
+    public AuthBusinessRules(
+        IUserRepository userRepository,
+        IUserOperationClaimRepository userOperationClaimRepository,
+        ILocalizationService localizationService
+    )
     {
         _userRepository = userRepository;
+        _userOperationClaimRepository = userOperationClaimRepository;
         _localizationService = localizationService;
     }
 
@@ -86,5 +92,15 @@ public class AuthBusinessRules : BaseBusinessRules
     {
         if (!HashingHelper.VerifyPasswordHash(password, user!.PasswordHash, user.PasswordSalt))
             await throwBusinessException(AuthMessages.PasswordDontMatch);
+    }
+
+    public async Task UserShouldHaveRole(User user, string roleName)
+    {
+        bool hasRole = await _userOperationClaimRepository.AnyAsync(
+            predicate: claim => claim.UserId == user.Id && claim.OperationClaim.Name == roleName
+        );
+
+        if (!hasRole)
+            await throwBusinessException(AuthMessages.MinistryRoleRequired);
     }
 }

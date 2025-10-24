@@ -53,7 +53,7 @@ Bu belge, MEB Kütüphane Yönetim Sistemi’nin ana bileşenlerini ve mimari ka
 
 ## 6. Bilinen Açık Noktalar
 
-- InMemory veritabanı kullanılmaktadır; çoklu sağlayıcı (SQL Server, PostgreSQL, Oracle) desteği henüz eklenmedi.
+- Varsayılan veritabanı PostgreSQL’dir; InMemory sadece test/senaryo amaçlı fallback olarak kullanılmaktadır.
 - Ödünç iş kurallarındaki bazı yardımcı metotlar örnek olarak bırakılmıştır (kuvvetlendirilmesi planlanıyor).
 - Frontend bileşenleri prototip düzeyindedir; gerçek API ile entegrasyon ve guard mekanizmaları tamamlanmalıdır.
 - Dokümantasyonda belirtilen entegrasyon adaptörleri (MEBBİS, e-Okul, KOHA, Z39.50) henüz implement edilmedi.

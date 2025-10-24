@@ -34,8 +34,11 @@ public class YeniKatalogTalebiConfiguration : IEntityTypeConfiguration<YeniKatal
         builder.Property(e => e.DeletedDate).HasColumnName("DeletedDate");
 
 
-        builder.HasOne(e => e.TalepEdenKutuphane).WithMany(k => k.YeniKatalogTalepleri).HasForeignKey(e => e.TalepEdenKutuphaneId);
-        builder.HasOne(e => e.KatalogKaydi).WithMany().HasForeignKey(e => e.KatalogKaydiId);
+        builder.HasOne(y => y.KatalogKaydi)
+            .WithOne(k => k.YeniKatalogTalebi)
+            .HasForeignKey<KatalogKaydi>(k => k.YeniKatalogTalebiId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasQueryFilter(e => !e.DeletedDate.HasValue);
     }

@@ -7,21 +7,28 @@ using NArchitecture.Core.Application.Pipelines.Authorization;
 using NArchitecture.Core.Application.Pipelines.Caching;
 using NArchitecture.Core.Application.Pipelines.Logging;
 using NArchitecture.Core.Application.Pipelines.Performance;
+using System.Text.Json.Serialization;
 
 namespace Application.Features.OduncIslemler.Commands.Extend;
 
 public class ExtendOduncIslemiCommand : IRequest<ExtendedOduncIslemiResponse>, ISecuredRequest, ICacheRemoverRequest, ILoggableRequest, IIntervalRequest
 {
+    [JsonIgnore]
     public Guid Id { get; set; } // Ödünç işlemi ID'si
     public int EkGun { get; set; } // Kaç gün uzatılacağı
     public string? UzatmaNedeni { get; set; }
 
     public string[] Roles => ["Users.Admin", "Users.Write"];
 
+    [JsonIgnore]
     public bool BypassCache { get; }
+    [JsonIgnore]
     public string? CacheKey { get; }
+    [JsonIgnore]
     public string[]? CacheGroupKey => ["GetOduncIslemler"];
+    [JsonIgnore]
     public TimeSpan? SlidingExpiration { get; }
+    [JsonIgnore]
     public int Interval => 30;
 
     public class ExtendOduncIslemiCommandHandler : IRequestHandler<ExtendOduncIslemiCommand, ExtendedOduncIslemiResponse>

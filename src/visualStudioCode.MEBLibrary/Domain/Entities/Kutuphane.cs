@@ -9,14 +9,19 @@ public class Kutuphane : Entity<Guid>
     {
     }
 
-    public Kutuphane(Guid id, KutuphaneTipi tip, string? telefon, string? ePosta, bool aktif) : base(id)
+    public Kutuphane(Guid id, KutuphaneTipi tip, string? telefon, string? ePosta, bool aktif, string? il,
+        string? ilce) : base(id)
     {
         Tip = tip;
         Telefon = telefon;
         EPosta = ePosta;
         Aktif = aktif;
+        Il = il;
+        Ilce = ilce;
     }
 
+    public string Il { get; set; } = string.Empty; // örnek: "İstanbul"
+    public string Ilce { get; set; } = string.Empty; // örnek: "Kadıköy"
     public string Kod { get; set; } = string.Empty; // "MERKEZ-01", "ANK-CNK-05", "YTF-01"
 
     public string Ad { get; set; } =

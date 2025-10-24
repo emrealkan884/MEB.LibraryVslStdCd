@@ -1,225 +1,638 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
-      <!-- Logo -->
-      <div class="flex items-center justify-center h-16 px-4 bg-blue-600">
-        <h1 class="text-white text-lg font-bold">🏛️ Merkez Kütüphane</h1>
+  <div class="layout-shell">
+    <aside class="sidebar-panel">
+      <div class="brand">
+        <div class="brand-symbol">MK</div>
+        <div>
+          <h1>Merkez Kutuphane</h1>
+          <p>Yonetim Konsolu</p>
+        </div>
       </div>
 
-      <!-- Navigation Menu -->
-      <nav class="mt-8">
-        <div class="px-4 space-y-2">
-          <!-- Dashboard -->
-          <router-link
-            to="/merkez/dashboard"
-            class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
-            :class="{ 'bg-blue-50 text-blue-700': $route.name === 'merkez-dashboard' }"
-          >
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z" />
-            </svg>
-            Ana Sayfa
-          </router-link>
-
-          <!-- Kataloglama -->
-          <router-link
-            to="/merkez/kataloglama"
-            class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
-            :class="{ 'bg-blue-50 text-blue-700': $route.name === 'merkez-cataloging' }"
-          >
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-            Kataloglama
-          </router-link>
-
-          <!-- Dolaşım -->
-          <router-link
-            to="/merkez/dolasim"
-            class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
-            :class="{ 'bg-blue-50 text-blue-700': $route.name === 'merkez-circulation' }"
-          >
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-            Dolaşım
-          </router-link>
-
-          <!-- Kullanıcılar -->
-          <router-link
-            to="/merkez/kullanicilar"
-            class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
-            :class="{ 'bg-blue-50 text-blue-700': $route.name === 'merkez-users' }"
-          >
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-            </svg>
-            Kullanıcılar
-          </router-link>
-
-          <!-- Otoriteler -->
-          <router-link
-            to="/merkez/otoriteler"
-            class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
-            :class="{ 'bg-blue-50 text-blue-700': $route.name === 'merkez-authorities' }"
-          >
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            Otoriteler
-          </router-link>
-
-          <!-- Raporlar -->
-          <router-link
-            to="/merkez/raporlar"
-            class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
-            :class="{ 'bg-blue-50 text-blue-700': $route.name === 'merkez-reports' }"
-          >
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Raporlar
-          </router-link>
-
-          <!-- Yönetim -->
-          <router-link
-            to="/merkez/yonetim"
-            class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
-            :class="{ 'bg-blue-50 text-blue-700': $route.name === 'merkez-management' }"
-          >
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Yönetim
-          </router-link>
-        </div>
+      <nav class="nav-list">
+        <RouterLink
+          v-for="item in navItems"
+          :key="item.routeName"
+          :to="item.to"
+          class="nav-link"
+          :class="{ active: normalizedRouteName === item.routeName }"
+          :aria-current="normalizedRouteName === item.routeName ? 'page' : undefined"
+        >
+          <span
+            class="nav-icon"
+            :class="item.accent"
+            :data-initial="item.initial"
+          ></span>
+          <div class="nav-text">
+            <span>{{ item.label }}</span>
+            <small>{{ item.navHint }}</small>
+          </div>
+        </RouterLink>
       </nav>
-    </div>
 
-    <!-- Main Content -->
-    <div class="ml-64">
-      <!-- Top Header -->
-      <header class="bg-white shadow-sm border-b">
-        <div class="px-6 py-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900">
-                {{ getPageTitle(String($route.name)) }}
-              </h2>
-              <p class="text-sm text-gray-600 mt-1">
-                {{ getPageDescription(String($route.name)) }}
-              </p>
-            </div>
+      <div class="sidebar-footer">
+        <p>v2.0 - Onizleme</p>
+        <small>Son senkronizasyon: 3 dk once</small>
+      </div>
+    </aside>
 
-            <!-- User Info & Language -->
-            <div class="flex items-center space-x-4">
-              <!-- Dil Seçimi -->
-              <select
-                v-model="currentLanguage"
-                @change="changeLanguage"
-                class="text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="tr">🇹🇷 Türkçe</option>
-                <option value="en">🇺🇸 English</option>
-              </select>
+    <div class="content-region">
+      <header class="layout-header">
+        <div class="layout-header-content">
+          <div>
+            <h2>{{ pageTitle }}</h2>
+            <p>{{ pageDescription }}</p>
+          </div>
+          <div class="layout-header-controls" ref="headerControls">
+            <select :value="currentLanguage" @change="changeLanguage">
+              <option value="tr">TR - Turkce</option>
+              <option value="en">EN - English</option>
+            </select>
 
-              <!-- User Menu -->
-              <div class="relative">
-                <button
-                  @click="showUserMenu = !showUserMenu"
-                  class="flex items-center space-x-2 text-sm rounded-full hover:bg-gray-100 p-2"
-                >
-                  <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span class="text-white text-sm font-medium">
-                      {{ user?.firstName?.[0] }}{{ user?.lastName?.[0] }}
-                    </span>
-                  </div>
-                  <span class="text-gray-700">{{ user?.firstName }} {{ user?.lastName }}</span>
-                </button>
-
-                <div
-                  v-if="showUserMenu"
-                  class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border"
-                >
-                  <router-link
-                    to="/profile"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Profil
-                  </router-link>
-                  <button
-                    @click="logout"
-                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Çıkış Yap
-                  </button>
-                </div>
+            <button
+              type="button"
+              class="avatar-menu"
+              aria-haspopup="menu"
+              :aria-expanded="showUserMenu ? 'true' : 'false'"
+              @click.stop="toggleUserMenu"
+            >
+              <div class="avatar">{{ userInitials }}</div>
+              <div class="avatar-info">
+                <span>{{ user?.firstName }} {{ user?.lastName }}</span>
+                <small>{{ userRoleLabel }}</small>
               </div>
-            </div>
+              <span class="chevron" aria-hidden="true"></span>
+            </button>
+
+            <transition name="fade">
+              <div v-if="showUserMenu" class="user-dropdown" role="menu" @click.stop>
+                <RouterLink to="/profile">Profil</RouterLink>
+                <button type="button" @click="logout">Oturumu Kapat</button>
+              </div>
+            </transition>
           </div>
         </div>
       </header>
 
-      <!-- Page Content -->
-      <main class="p-6">
-        <router-view />
+      <main class="layout-main">
+        <RouterView />
       </main>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useI18nStore } from '@/stores/i18n'
+
+interface NavItem {
+  routeName: string
+  to: string
+  label: string
+  navHint: string
+  pageIntro: string
+  initial: string
+  accent: string
+}
+
+const navItems: NavItem[] = [
+  {
+    routeName: 'merkez-dashboard',
+    to: '/merkez/dashboard',
+    label: 'Ana Sayfa',
+    navHint: 'Ozet ve izleme',
+    pageIntro: 'Genel durum, ozet metrikler ve son aktiviteler',
+    initial: 'A',
+    accent: 'nav-icon--indigo'
+  },
+  {
+    routeName: 'merkez-cataloging',
+    to: '/merkez/kataloglama',
+    label: 'Kataloglama',
+    navHint: 'Kayit olusturma',
+    pageIntro: 'MARC ve RDA standartlarinda kataloglama islemleri',
+    initial: 'K',
+    accent: 'nav-icon--sky'
+  },
+  {
+    routeName: 'merkez-catalog-search',
+    to: '/merkez/katalog-arama',
+    label: 'Katalog Arama',
+    navHint: 'Arama ve filtreleme',
+    pageIntro: 'Kayitlari filtreleyin ve disari aktarim yapin',
+    initial: 'S',
+    accent: 'nav-icon--emerald'
+  },
+  {
+    routeName: 'merkez-circulation',
+    to: '/merkez/dolasim',
+    label: 'Dolasim',
+    navHint: 'Odunc akisi',
+    pageIntro: 'Odunc verme, iade ve rezervasyon surecleri',
+    initial: 'D',
+    accent: 'nav-icon--amber'
+  },
+  {
+    routeName: 'merkez-users',
+    to: '/merkez/kullanicilar',
+    label: 'Kullanicilar',
+    navHint: 'Ekip ve roller',
+    pageIntro: 'Kullanici hesaplarini ve yetkileri yonetin',
+    initial: 'U',
+    accent: 'nav-icon--purple'
+  },
+  {
+    routeName: 'merkez-authorities',
+    to: '/merkez/otoriteler',
+    label: 'Otoriteler',
+    navHint: 'Otorite kayitlari',
+    pageIntro: 'Yazar ve konu otorite kayitlarini guncel tutun',
+    initial: 'O',
+    accent: 'nav-icon--rose'
+  },
+  {
+    routeName: 'merkez-reports',
+    to: '/merkez/raporlar',
+    label: 'Raporlar',
+    navHint: 'Analiz ve raporlar',
+    pageIntro: 'Detayli raporlar ve performans gostergeleri',
+    initial: 'R',
+    accent: 'nav-icon--orange'
+  },
+  {
+    routeName: 'merkez-management',
+    to: '/merkez/yonetim',
+    label: 'Yonetim',
+    navHint: 'Ayarlar ve entegrasyon',
+    pageIntro: 'Sistem ayarlari, entegrasyonlar ve bakim araclari',
+    initial: 'Y',
+    accent: 'nav-icon--slate'
+  }
+]
+
+const navLookup = navItems.reduce<Record<string, NavItem>>((map, item) => {
+  map[item.routeName] = item
+  return map
+}, {})
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const i18nStore = useI18nStore()
 
+const { user } = storeToRefs(authStore)
+
 const showUserMenu = ref(false)
+const headerControls = ref<HTMLElement | null>(null)
+
+const normalizedRouteName = computed(() => (typeof route.name === 'string' ? route.name : undefined))
+const pageTitle = computed(() => navLookup[normalizedRouteName.value || '']?.label ?? 'Kutuphane Yonetimi')
+const pageDescription = computed(
+  () => navLookup[normalizedRouteName.value || '']?.pageIntro ?? 'Merkez kutuphane yonetimi paneli'
+)
 const currentLanguage = computed(() => i18nStore.currentLanguage)
 
-const { user } = authStore
+const userInitials = computed(() => {
+  const first = user.value?.firstName?.charAt(0) ?? 'K'
+  const last = user.value?.lastName?.charAt(0) ?? 'Y'
+  return `${first}${last}`.toUpperCase()
+})
 
-const getPageTitle = (routeName: string | undefined) => {
-  const titles: Record<string, string> = {
-    'merkez-dashboard': 'Ana Sayfa',
-    'merkez-cataloging': 'Kataloglama',
-    'merkez-circulation': 'Dolaşım',
-    'merkez-users': 'Kullanıcı Yönetimi',
-    'merkez-authorities': 'Otorite Kontrolü',
-    'merkez-reports': 'Raporlar',
-    'merkez-management': 'Sistem Yönetimi'
+const userRoleLabel = computed(() =>
+  user.value?.libraryType === 'Merkez' ? 'Merkez kutuphanesi' : 'Okul kutuphanesi'
+)
+
+watch(
+  () => route.fullPath,
+  () => {
+    showUserMenu.value = false
   }
-  return titles[routeName || ''] || 'Sayfa'
-}
+)
 
-const getPageDescription = (routeName: string | undefined) => {
-  const descriptions: Record<string, string> = {
-    'merkez-dashboard': 'Merkez kütüphane genel durumu ve istatistikler',
-    'merkez-cataloging': 'MARC21 ve RDA standartlarında kataloglama işlemleri',
-    'merkez-circulation': 'Ödünç verme ve iade işlemleri yönetimi',
-    'merkez-users': 'Kullanıcı hesapları ve yetki yönetimi',
-    'merkez-authorities': 'Yazar ve konu otorite kayıtları',
-    'merkez-reports': 'Detaylı raporlar ve istatistikler',
-    'merkez-management': 'Sistem konfigürasyonu ve ayarları'
-  }
-  return descriptions[routeName || ''] || ''
-}
-
-const changeLanguage = (event: Event) => {
+function changeLanguage(event: Event) {
   const target = event.target as HTMLSelectElement
   i18nStore.setLanguage(target.value as 'tr' | 'en')
 }
 
-const logout = () => {
+function toggleUserMenu() {
+  showUserMenu.value = !showUserMenu.value
+}
+
+function logout() {
+  showUserMenu.value = false
   authStore.logout()
   router.push('/login')
 }
+
+function handleGlobalClick(event: MouseEvent) {
+  if (!showUserMenu.value) {
+    return
+  }
+
+  const target = event.target as HTMLElement | null
+  if (headerControls.value && target && !headerControls.value.contains(target)) {
+    showUserMenu.value = false
+  }
+}
+
+function handleEscapeKey(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    showUserMenu.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleGlobalClick)
+  document.addEventListener('keydown', handleEscapeKey)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleGlobalClick)
+  document.removeEventListener('keydown', handleEscapeKey)
+})
 </script>
+
+<style scoped>
+.layout-shell {
+  min-height: 100vh;
+  display: flex;
+  background: linear-gradient(180deg, #f6f7fb 0%, #eef2ff 100%);
+}
+
+.sidebar-panel {
+  width: 264px;
+  background: #ffffff;
+  border-right: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 8px 0 32px rgba(15, 23, 42, 0.08);
+  padding: 2.1rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+}
+
+.brand-symbol {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.16rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.brand p {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(71, 85, 105, 0.72);
+  letter-spacing: 0.01em;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 14px;
+  text-decoration: none;
+  color: #475569;
+  font-weight: 600;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-link:hover {
+  transform: translateX(6px);
+  background: rgba(37, 99, 235, 0.12);
+  color: #1e293b;
+}
+
+.nav-link.active {
+  color: #1f2937;
+  background: rgba(37, 99, 235, 0.16);
+  box-shadow: inset 4px 0 0 rgba(37, 99, 235, 0.85);
+}
+
+.nav-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.nav-text span {
+  font-size: 0.95rem;
+}
+
+.nav-text small {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(71, 85, 105, 0.8);
+}
+
+.nav-link.active .nav-text small {
+  color: rgba(37, 99, 235, 0.85);
+}
+
+.nav-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-icon::before {
+  content: attr(data-initial);
+}
+
+.nav-link.active .nav-icon {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+}
+
+.nav-icon--indigo {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+}
+
+.nav-icon--sky {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+}
+
+.nav-icon--emerald {
+  background: linear-gradient(135deg, #10b981, #047857);
+}
+
+.nav-icon--amber {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.nav-icon--purple {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+}
+
+.nav-icon--rose {
+  background: linear-gradient(135deg, #f43f5e, #e11d48);
+}
+
+.nav-icon--orange {
+  background: linear-gradient(135deg, #fb923c, #ea580c);
+}
+
+.nav-icon--slate {
+  background: linear-gradient(135deg, #475569, #1f2937);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(226, 232, 240, 0.7);
+  padding-top: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: rgba(71, 85, 105, 0.75);
+  font-size: 0.82rem;
+}
+
+.content-region {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.9), rgba(239, 246, 255, 0.95));
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.layout-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 55%);
+  pointer-events: none;
+}
+
+.layout-header-content {
+  position: relative;
+  padding: 1.6rem 2.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.layout-header-content h2 {
+  margin: 0;
+  font-size: 1.7rem;
+  color: #111827;
+}
+
+.layout-header-content p {
+  margin: 0.35rem 0 0;
+  color: rgba(75, 85, 99, 0.7);
+  font-size: 0.95rem;
+}
+
+.layout-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.layout-header-controls select {
+  border-radius: 10px;
+  border: 1px solid rgba(203, 213, 225, 0.65);
+  padding: 0.45rem 0.7rem;
+  background: rgba(255, 255, 255, 0.88);
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.avatar-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  border: 1px solid rgba(203, 213, 225, 0.6);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.avatar-menu:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(148, 163, 184, 0.18);
+}
+
+.avatar-menu:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.55);
+  outline-offset: 2px;
+}
+
+.avatar-menu[aria-expanded='true'] .chevron {
+  transform: rotate(180deg);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.avatar-info span {
+  display: block;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.avatar-info small {
+  color: rgba(55, 65, 81, 0.6);
+  font-size: 0.78rem;
+}
+
+.chevron {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid rgba(55, 65, 81, 0.5);
+  transition: transform 0.2s ease;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 24px 46px rgba(15, 23, 42, 0.15);
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 190px;
+  z-index: 10;
+}
+
+.user-dropdown a,
+.user-dropdown button {
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  color: #1f2937;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.user-dropdown a:hover,
+.user-dropdown button:hover {
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.layout-main {
+  flex: 1;
+  padding: 2rem 2.4rem;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.18s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@media (max-width: 1024px) {
+  .layout-shell {
+    flex-direction: column;
+  }
+
+  .sidebar-panel {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 1.5rem;
+    gap: 1.2rem;
+  }
+
+  .nav-list {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.65rem;
+  }
+
+  .sidebar-footer {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .content-region {
+    flex: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .layout-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .layout-header-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .layout-main {
+    padding: 1.5rem 1.6rem;
+  }
+}
+</style>

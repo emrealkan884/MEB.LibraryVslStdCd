@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
+const MINISTRY_ROLE = 'Role.BakanlikYetkilisi'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -144,6 +146,11 @@ router.beforeEach(async (to, from, next) => {
 
   // Auth gerektiren sayfa için token kontrolü
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next('/login')
+    return
+  }
+
+  if (to.meta.libraryType === 'Merkez' && !authStore.hasRole(MINISTRY_ROLE)) {
     next('/login')
     return
   }

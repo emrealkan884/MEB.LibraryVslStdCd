@@ -1,5 +1,7 @@
 using Application.Features.OduncIslemler.Commands.Create;
 using Application.Features.OduncIslemler.Commands.Delete;
+using Application.Features.OduncIslemler.Commands.Extend;
+using Application.Features.OduncIslemler.Commands.Return;
 using Application.Features.OduncIslemler.Commands.Update;
 using Application.Features.OduncIslemler.Queries.GetById;
 using Application.Features.OduncIslemler.Queries.GetList;
@@ -26,6 +28,8 @@ public class MappingProfiles : Profile
         CreateMap<OduncIslemi, GetByIdOduncIslemiResponse>();
 
         CreateMap<OduncIslemi, GetListOduncIslemiListItemDto>();
+        CreateMap<OduncIslemi, ReturnedOduncIslemiResponse>();
+        CreateMap<OduncIslemi, ExtendedOduncIslemiResponse>();
         CreateMap<IPaginate<OduncIslemi>, GetListResponse<GetListOduncIslemiListItemDto>>();
     }
 }
