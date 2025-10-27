@@ -171,8 +171,8 @@ export const useAuthStore = defineStore('auth', () => {
           firstName: 'Kutuphane',
           lastName: 'Yoneticisi',
           email: credentials.email,
-          roles: ['Role.Library.Manager'],
-          libraryType: 'Merkez',
+          roles: ['Role.BakanlikYetkilisi'], // Guard'ı geçmek için doğru rol
+          libraryType: 'Merkez', // Sabit Merkez olarak ayarlandı
           schoolCode: undefined,
           isAuthenticated: true
         }

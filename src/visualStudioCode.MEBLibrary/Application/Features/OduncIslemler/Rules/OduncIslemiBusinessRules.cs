@@ -158,11 +158,14 @@ public class OduncIslemiBusinessRules : BaseBusinessRules
 
     public async Task ProcessOverdueLoans(CancellationToken cancellationToken)
     {
-        // Bu metodun implementasyonu için repository'ye özel metod eklenebilir
-        // Şimdilik basit bir yaklaşım kullanıyoruz
-        var allLoans = new List<OduncIslemi>(); // Placeholder
+        // Aktif ödünçleri getir ve teslim tarihi geçmiş olanları bul
+        var activeLoans = await _oduncIslemiRepository.GetListAsync(
+            predicate: x => x.Durumu == OduncDurumu.Aktif && x.SonTeslimTarihi < DateTime.UtcNow,
+            enableTracking: true, // Update için tracking gerekli
+            cancellationToken: cancellationToken
+        );
 
-        foreach (var loan in allLoans.Where(x => x.Durumu == OduncDurumu.Aktif && x.SonTeslimTarihi < DateTime.UtcNow))
+        foreach (var loan in activeLoans.Items)
         {
             loan.GecikmeDurumunaGec();
             await _oduncIslemiRepository.UpdateAsync(loan);
@@ -171,15 +174,23 @@ public class OduncIslemiBusinessRules : BaseBusinessRules
 
     public async Task<int> GetUserActiveLoanCount(Guid kullaniciId, CancellationToken cancellationToken)
     {
-        // Bu metodun implementasyonu için repository'ye özel metod eklenebilir
-        var userLoans = new List<OduncIslemi>(); // Placeholder
-        return userLoans.Count(x => x.KullaniciId == kullaniciId && x.Durumu == OduncDurumu.Aktif);
+        var userLoans = await _oduncIslemiRepository.GetListAsync(
+            predicate: x => x.KullaniciId == kullaniciId && x.Durumu == OduncDurumu.Aktif,
+            enableTracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return userLoans.Items.Count;
     }
 
     public async Task<IEnumerable<OduncIslemi>> GetUserOverdueLoans(Guid kullaniciId, CancellationToken cancellationToken)
     {
-        // Bu metodun implementasyonu için repository'ye özel metod eklenebilir
-        var userLoans = new List<OduncIslemi>(); // Placeholder
-        return userLoans.Where(x => x.KullaniciId == kullaniciId && x.Durumu == OduncDurumu.Gecikmis);
+        var userLoans = await _oduncIslemiRepository.GetListAsync(
+            predicate: x => x.KullaniciId == kullaniciId && x.Durumu == OduncDurumu.Gecikmis,
+            enableTracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return userLoans.Items;
     }
 }

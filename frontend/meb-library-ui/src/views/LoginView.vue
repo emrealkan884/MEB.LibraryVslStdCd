@@ -196,19 +196,45 @@ const handleLogin = async () => {
   error.value = null
 
   try {
+    console.log('Login attempt:', {
+      email: credentials.email.trim(),
+      selectedLibraryType,
+      mockEnabled: import.meta.env.VITE_USE_MOCK_AUTH
+    })
+
     const result = await authStore.login({
       email: credentials.email.trim(),
       password: credentials.password,
       rememberMe: credentials.rememberMe,
     })
 
+    console.log('Login result:', result)
+    console.log('Auth store state:', {
+      user: authStore.user,
+      token: authStore.token,
+      isAuthenticated: authStore.isAuthenticated,
+      isMerkezKutuphane: authStore.isMerkezKutuphane,
+      isOkulKutuphane: authStore.isOkulKutuphane
+    })
+
     if (result.success) {
+      console.log('Login successful, redirecting...')
+
+      // Force a delay to ensure auth store is updated
+      await new Promise(resolve => setTimeout(resolve, 100))
+
       if (authStore.isMerkezKutuphane) {
-        router.push('/merkez/dashboard')
+        console.log('Redirecting to merkez dashboard')
+        await router.push('/merkez/dashboard')
+        console.log('Router push completed')
       } else if (authStore.isOkulKutuphane) {
-        router.push('/okul/dashboard')
+        console.log('Redirecting to okul dashboard')
+        await router.push('/okul/dashboard')
+        console.log('Router push completed')
       } else {
-        router.push('/')
+        console.log('Redirecting to home')
+        await router.push('/')
+        console.log('Router push completed')
       }
     } else {
       error.value = result.error || 'Giriş başarısız. Bilgilerinizi kontrol edin.'
