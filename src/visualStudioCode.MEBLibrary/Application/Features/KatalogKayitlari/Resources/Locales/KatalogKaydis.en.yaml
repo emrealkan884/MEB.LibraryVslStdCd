@@ -1,1 +1,2 @@
-KatalogKaydiNotExists: KatalogKaydi does not exist.
+KatalogKaydiNotExists: Catalog record does not exist.
+KatalogKaydiMustBelongToCentralLibrary: Catalog records must belong to the central library.

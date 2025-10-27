@@ -5,6 +5,7 @@ using MediatR;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Paging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.KatalogKayitlari.Queries.GetList;
 
@@ -28,6 +29,17 @@ public class GetListKatalogKaydiQuery : IRequest<GetListResponse<GetListKatalogK
             IPaginate<KatalogKaydi> katalogKaydis = await _katalogKaydiRepository.GetListAsync(
                 index: request.PageRequest.PageIndex,
                 size: request.PageRequest.PageSize,
+                include: q => q
+                    .Include(k => k.KatalogYazarlar)
+                        .ThenInclude(ky => ky.Yazar)
+                    .Include(k => k.DeweySiniflama)
+                    .Include(k => k.Materyaller)
+                        .ThenInclude(m => m.Kutuphane)
+                    .Include(k => k.Materyaller)
+                        .ThenInclude(m => m.Bolum)
+                    .Include(k => k.Materyaller)
+                        .ThenInclude(m => m.Nushalar)
+                            .ThenInclude(n => n.Raf),
                 cancellationToken: cancellationToken
             );
 

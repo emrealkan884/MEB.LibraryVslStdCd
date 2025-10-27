@@ -57,6 +57,8 @@ public class CreateKatalogKaydiCommand : IRequest<CreatedKatalogKaydiResponse>
 
         public async Task<CreatedKatalogKaydiResponse> Handle(CreateKatalogKaydiCommand request, CancellationToken cancellationToken)
         {
+            await _katalogKaydiBusinessRules.KutuphaneShouldBeMerkez(request.KutuphaneId, cancellationToken);
+
             KatalogKaydi katalogKaydi = _mapper.Map<KatalogKaydi>(request);
 
             katalogKaydi = await _katalogKaydiRepository.AddAsync(katalogKaydi);

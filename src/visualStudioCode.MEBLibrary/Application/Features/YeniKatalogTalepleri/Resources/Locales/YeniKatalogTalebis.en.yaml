@@ -6,3 +6,6 @@ YeniKatalogTalebiRejectReasonRequired: A rejection reason must be provided.
 YeniKatalogTalebiInvalidStatusForUpdate: The request status does not allow updates.
 YeniKatalogTalebiInvalidStatusForReview: The request status does not allow moving into review.
 YeniKatalogTalebiAlreadyExists: YeniKatalogTalebi already exists.
+YeniKatalogTalebiApproverMustBeCentral: Approving library must be the central library.
+YeniKatalogTalebiApproverNotFound: Approving library could not be found.
+YeniKatalogTalebiCentralLibraryNotConfigured: Central library is not configured in the system.

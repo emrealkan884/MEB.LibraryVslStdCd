@@ -13,11 +13,17 @@ namespace Application.Features.YeniKatalogTalepleri.Rules;
 public class YeniKatalogTalebiBusinessRules : BaseBusinessRules
 {
     private readonly IYeniKatalogTalebiRepository _yeniKatalogTalebiRepository;
+    private readonly IKutuphaneRepository _kutuphaneRepository;
     private readonly ILocalizationService _localizationService;
 
-    public YeniKatalogTalebiBusinessRules(IYeniKatalogTalebiRepository yeniKatalogTalebiRepository, ILocalizationService localizationService)
+    public YeniKatalogTalebiBusinessRules(
+        IYeniKatalogTalebiRepository yeniKatalogTalebiRepository,
+        IKutuphaneRepository kutuphaneRepository,
+        ILocalizationService localizationService
+    )
     {
         _yeniKatalogTalebiRepository = yeniKatalogTalebiRepository;
+        _kutuphaneRepository = kutuphaneRepository;
         _localizationService = localizationService;
     }
 
@@ -78,13 +84,13 @@ public class YeniKatalogTalebiBusinessRules : BaseBusinessRules
 
     public async Task YeniKatalogTalebiShouldBeUnique(Guid talepEdenKutuphaneId, string baslik, string? isbn, CancellationToken cancellationToken)
     {
-        string sanitizedBaslik = baslik.Trim();
+        string sanitizedBaslikLower = baslik.Trim().ToLowerInvariant();
         string? normalizedIsbn = YeniKatalogTalebiSanitizer.NormalizeIsbn(isbn);
 
         bool exists = await _yeniKatalogTalebiRepository.AnyAsync(
             predicate: x =>
                 x.TalepEdenKutuphaneId == talepEdenKutuphaneId
-                && EF.Functions.Collate(x.Baslik, "Latin1_General_100_CI_AI") == sanitizedBaslik
+                && x.Baslik.ToLower() == sanitizedBaslikLower
                 && (normalizedIsbn == null || (x.Isbn != null && x.Isbn == normalizedIsbn))
                 && x.Durum != TalepDurumu.Reddedildi,
             cancellationToken: cancellationToken
@@ -109,4 +115,36 @@ public class YeniKatalogTalebiBusinessRules : BaseBusinessRules
 
         return Task.CompletedTask;
     }
+
+    public async Task<Guid> ResolveOnaylayanKutuphaneIdAsync(Guid? onaylayanKutuphaneId, CancellationToken cancellationToken)
+    {
+        if (onaylayanKutuphaneId.HasValue && onaylayanKutuphaneId.Value != Guid.Empty)
+        {
+            Kutuphane? kutuphane = await _kutuphaneRepository.GetAsync(
+                predicate: k => k.Id == onaylayanKutuphaneId.Value,
+                enableTracking: false,
+                cancellationToken: cancellationToken
+            );
+
+            if (kutuphane is null)
+                await throwBusinessException(YeniKatalogTalebisBusinessMessages.YeniKatalogTalebiApproverNotFound);
+
+            if (kutuphane.Tip != KutuphaneTipi.Merkez)
+                await throwBusinessException(YeniKatalogTalebisBusinessMessages.YeniKatalogTalebiApproverMustBeCentral);
+
+            return kutuphane.Id;
+        }
+
+        Kutuphane? merkezKutuphane = await _kutuphaneRepository.GetAsync(
+            predicate: k => k.Tip == KutuphaneTipi.Merkez,
+            enableTracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        if (merkezKutuphane is null)
+            await throwBusinessException(YeniKatalogTalebisBusinessMessages.YeniKatalogTalebiCentralLibraryNotConfigured);
+
+        return merkezKutuphane.Id;
+    }
+
 }

@@ -12,4 +12,7 @@ public static class YeniKatalogTalebisBusinessMessages
     public const string YeniKatalogTalebiInvalidStatusForUpdate = "YeniKatalogTalebiInvalidStatusForUpdate";
     public const string YeniKatalogTalebiInvalidStatusForReview = "YeniKatalogTalebiInvalidStatusForReview";
     public const string YeniKatalogTalebiAlreadyExists = "YeniKatalogTalebiAlreadyExists";
+    public const string YeniKatalogTalebiApproverMustBeCentral = "YeniKatalogTalebiApproverMustBeCentral";
+    public const string YeniKatalogTalebiApproverNotFound = "YeniKatalogTalebiApproverNotFound";
+    public const string YeniKatalogTalebiCentralLibraryNotConfigured = "YeniKatalogTalebiCentralLibraryNotConfigured";
 }

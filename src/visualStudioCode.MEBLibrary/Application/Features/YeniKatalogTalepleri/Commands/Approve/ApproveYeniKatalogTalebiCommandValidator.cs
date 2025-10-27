@@ -7,6 +7,5 @@ public class ApproveYeniKatalogTalebiCommandValidator : AbstractValidator<Approv
     public ApproveYeniKatalogTalebiCommandValidator()
     {
         RuleFor(c => c.Id).NotEmpty();
-        RuleFor(c => c.OnaylayanKutuphaneId).NotEmpty();
     }
 }

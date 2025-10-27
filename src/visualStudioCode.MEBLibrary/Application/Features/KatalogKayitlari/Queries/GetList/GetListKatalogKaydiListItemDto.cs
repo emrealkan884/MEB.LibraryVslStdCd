@@ -27,4 +27,10 @@ public class GetListKatalogKaydiListItemDto : IDto
     public string? Marc21Verisi { get; set; }
     public bool RdaUyumlu { get; set; }
     public DateTime KayitTarihi { get; set; }
+    public IList<string> Yazarlar { get; set; } = new List<string>();
+    public string? DeweyKod { get; set; }
+    public string? DeweyBaslik { get; set; }
+    public int NushaSayisiToplam { get; set; }
+    public int NushaSayisiMusait { get; set; }
+    public IList<string> Lokasyonlar { get; set; } = new List<string>();
 }

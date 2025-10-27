@@ -48,9 +48,17 @@ public class UpdateKatalogKaydiCommand : IRequest<UpdatedKatalogKaydiResponse>
 
         public async Task<UpdatedKatalogKaydiResponse> Handle(UpdateKatalogKaydiCommand request, CancellationToken cancellationToken)
         {
+            await _katalogKaydiBusinessRules.KutuphaneShouldBeMerkez(request.KutuphaneId, cancellationToken);
+
             KatalogKaydi? katalogKaydi = await _katalogKaydiRepository.GetAsync(predicate: x => x.Id == request.Id, cancellationToken: cancellationToken);
             await _katalogKaydiBusinessRules.KatalogKaydiShouldExistWhenSelected(katalogKaydi);
+
+            await _katalogKaydiBusinessRules.KutuphaneShouldBeMerkez(katalogKaydi!.KutuphaneId, cancellationToken);
+
+            Guid ownerKutuphaneId = katalogKaydi!.KutuphaneId;
+
             katalogKaydi = _mapper.Map(request, katalogKaydi);
+            katalogKaydi!.KutuphaneId = ownerKutuphaneId;
 
             await _katalogKaydiRepository.UpdateAsync(katalogKaydi!);
 

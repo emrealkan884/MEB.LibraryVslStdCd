@@ -3,9 +3,15 @@ using Domain.Enums;
 
 namespace Application.Services.YeniKatalogTalepleri;
 
+public record YeniKatalogTalebiApprovalResult(
+    YeniKatalogTalebi Talep,
+    KatalogKaydi KatalogKaydi,
+    Materyal Materyal
+);
+
 public interface IYeniKatalogTalebiWorkflowService
 {
-    Task<YeniKatalogTalebi> ApproveAsync(
+    Task<YeniKatalogTalebiApprovalResult> ApproveAsync(
         YeniKatalogTalebi talep,
         Guid onaylayanKutuphaneId,
         MateryalTuru materyalTuru,

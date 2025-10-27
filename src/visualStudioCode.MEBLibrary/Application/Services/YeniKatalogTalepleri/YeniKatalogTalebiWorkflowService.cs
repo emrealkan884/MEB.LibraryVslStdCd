@@ -9,20 +9,23 @@ public class YeniKatalogTalebiWorkflowService : IYeniKatalogTalebiWorkflowServic
 {
     private readonly IYeniKatalogTalebiRepository _yeniKatalogTalebiRepository;
     private readonly IKatalogKaydiRepository _katalogKaydiRepository;
+    private readonly IMateryalRepository _materyalRepository;
     private readonly YeniKatalogTalebiBusinessRules _yeniKatalogTalebiBusinessRules;
 
     public YeniKatalogTalebiWorkflowService(
         IYeniKatalogTalebiRepository yeniKatalogTalebiRepository,
         IKatalogKaydiRepository katalogKaydiRepository,
+        IMateryalRepository materyalRepository,
         YeniKatalogTalebiBusinessRules yeniKatalogTalebiBusinessRules
     )
     {
         _yeniKatalogTalebiRepository = yeniKatalogTalebiRepository;
         _katalogKaydiRepository = katalogKaydiRepository;
+        _materyalRepository = materyalRepository;
         _yeniKatalogTalebiBusinessRules = yeniKatalogTalebiBusinessRules;
     }
 
-    public async Task<YeniKatalogTalebi> ApproveAsync(
+    public async Task<YeniKatalogTalebiApprovalResult> ApproveAsync(
         YeniKatalogTalebi talep,
         Guid onaylayanKutuphaneId,
         MateryalTuru materyalTuru,
@@ -64,11 +67,26 @@ public class YeniKatalogTalebiWorkflowService : IYeniKatalogTalebiWorkflowServic
 
         KatalogKaydi addedKatalogKaydi = await _katalogKaydiRepository.AddAsync(katalogKaydi);
 
+        Materyal materyal = new()
+        {
+            Id = Guid.NewGuid(),
+            KatalogKaydiId = addedKatalogKaydi.Id,
+            KutuphaneId = talep.TalepEdenKutuphaneId,
+            KutuphaneBolumuId = null,
+            Formati = MapMateryalFormati(materyalTuru),
+            RezervasyonaAcik = true,
+            MaksimumOduncSuresiGun = materyalTuru == MateryalTuru.SureliYayin ? 7 : 14,
+            Not = "Yeni katalog talebi onayı ile otomatik oluşturuldu",
+            CreatedDate = now
+        };
+
+        Materyal addedMateryal = await _materyalRepository.AddAsync(materyal);
+
         talep.KatalogKaydinaBagla(addedKatalogKaydi.Id);
 
         await _yeniKatalogTalebiRepository.UpdateAsync(talep);
 
-        return talep;
+        return new YeniKatalogTalebiApprovalResult(talep, addedKatalogKaydi, addedMateryal);
     }
 
     public async Task<YeniKatalogTalebi> RejectAsync(
@@ -102,4 +120,17 @@ public class YeniKatalogTalebiWorkflowService : IYeniKatalogTalebiWorkflowServic
 
         return talep;
     }
+
+    private static MateryalFormati MapMateryalFormati(MateryalTuru materyalTuru) =>
+        materyalTuru switch
+        {
+            MateryalTuru.Kitap => MateryalFormati.Kitap,
+            MateryalTuru.SureliYayin => MateryalFormati.SureliYayin,
+            MateryalTuru.GorselMateryal => MateryalFormati.Diger,
+            MateryalTuru.Multimedya => MateryalFormati.Video,
+            MateryalTuru.EKitap => MateryalFormati.ElektronikKaynak,
+            MateryalTuru.Harita => MateryalFormati.Diger,
+            MateryalTuru.ElYazmasi => MateryalFormati.Diger,
+            _ => MateryalFormati.Diger
+        };
 }

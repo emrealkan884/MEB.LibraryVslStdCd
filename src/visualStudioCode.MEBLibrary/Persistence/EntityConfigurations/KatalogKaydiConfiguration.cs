@@ -49,6 +49,7 @@ public class KatalogKaydiConfiguration : IEntityTypeConfiguration<KatalogKaydi>
         builder.HasOne(e => e.DeweySiniflama).WithMany(d => d.KatalogKayitlari).HasForeignKey(e => e.DeweySiniflamaId);
         builder.HasOne(e => e.YeniKatalogTalebi).WithMany().HasForeignKey(e => e.YeniKatalogTalebiId);
 
+        //Global query filter for soft delete
         builder.HasQueryFilter(e => !e.DeletedDate.HasValue);
     }
 }

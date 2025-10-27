@@ -94,7 +94,6 @@ public class YeniKatalogTalepleriController : BaseController
         ApproveYeniKatalogTalebiCommand command = new()
         {
             Id = id,
-            OnaylayanKutuphaneId = request.OnaylayanKutuphaneId,
             MateryalTuru = request.MateryalTuru,
             MateryalAltTuru = request.MateryalAltTuru,
             DeweySiniflamaId = request.DeweySiniflamaId,
@@ -133,7 +132,6 @@ public class YeniKatalogTalepleriController : BaseController
     }
 
     public sealed record ApproveYeniKatalogTalebiRequest(
-        Guid OnaylayanKutuphaneId,
         MateryalTuru MateryalTuru,
         string? MateryalAltTuru,
         Guid? DeweySiniflamaId,

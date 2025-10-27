@@ -401,7 +401,7 @@ public static class DataSeedingExtensions
             new()
             {
                 Id = stemKatalogId,
-                KutuphaneId = fenKutuphaneId,
+                KutuphaneId = merkezKutuphaneId,
                 Baslik = "STEM Proje Rehberi",
                 AltBaslik = "Pratik etkinlikler ve planlar",
                 Isbn = "9786051234567",
