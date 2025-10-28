@@ -1,3 +1,5 @@
+using System.Linq;
+using Application.Authorization;
 using Application.Services.Repositories;
 using Domain.Entities;
 using Domain.Enums;
@@ -14,15 +16,24 @@ public class GetOverdueLoansReportQuery : IRequest<List<OverdueLoanReportDto>>
     public class GetOverdueLoansReportQueryHandler : IRequestHandler<GetOverdueLoansReportQuery, List<OverdueLoanReportDto>>
     {
         private readonly IOduncIslemiRepository _oduncIslemiRepository;
+        private readonly IKullaniciYetkiServisi _kullaniciYetkiServisi;
 
-        public GetOverdueLoansReportQueryHandler(IOduncIslemiRepository oduncIslemiRepository)
+        public GetOverdueLoansReportQueryHandler(
+            IOduncIslemiRepository oduncIslemiRepository,
+            IKullaniciYetkiServisi kullaniciYetkiServisi
+        )
         {
             _oduncIslemiRepository = oduncIslemiRepository;
+            _kullaniciYetkiServisi = kullaniciYetkiServisi;
         }
 
         public async Task<List<OverdueLoanReportDto>> Handle(GetOverdueLoansReportQuery request, CancellationToken cancellationToken)
         {
             DateTime utcNow = DateTime.UtcNow;
+
+            IReadOnlyList<Guid>? yetkiliKutuphaneler = await _kullaniciYetkiServisi.YetkiliKutuphaneIdListesiAsync(cancellationToken);
+            if (yetkiliKutuphaneler is { Count: 0 })
+                return new List<OverdueLoanReportDto>();
 
             IQueryable<OduncIslemi> query = _oduncIslemiRepository
                 .Query()
@@ -35,6 +46,12 @@ public class GetOverdueLoansReportQuery : IRequest<List<OverdueLoanReportDto>>
 
             if (request.KutuphaneId.HasValue)
                 query = query.Where(o => o.KutuphaneId == request.KutuphaneId);
+
+            if (yetkiliKutuphaneler is not null)
+            {
+                HashSet<Guid> kutuphaneSet = yetkiliKutuphaneler.ToHashSet();
+                query = query.Where(o => kutuphaneSet.Contains(o.KutuphaneId));
+            }
 
             if (request.KullaniciId.HasValue)
                 query = query.Where(o => o.KullaniciId == request.KullaniciId);

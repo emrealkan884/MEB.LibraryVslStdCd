@@ -14,5 +14,6 @@ public static class AuthMessages
     public const string InvalidRefreshToken = "InvalidRefreshToken";
     public const string UserMailAlreadyExists = "UserMailAlreadyExists";
     public const string PasswordDontMatch = "PasswordDontMatch";
-    public const string MinistryRoleRequired = "MinistryRoleRequired";
+    public const string YetkiGerekli = "YetkiGerekli";
+    public const string KullaniciKapsamiEksik = "KullaniciKapsamiEksik";
 }

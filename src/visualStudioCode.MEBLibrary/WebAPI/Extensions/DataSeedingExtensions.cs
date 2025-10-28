@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Application.Authorization;
@@ -99,6 +99,8 @@ public static class DataSeedingExtensions
                 Email = "ogrenci@example.com",
                 FirstName = "Aylin",
                 LastName = "Tas",
+                SorumluIlKodu = "Hatay",
+                SorumluIlceKodu = "Antakya",
                 PasswordHash = studentHash,
                 PasswordSalt = studentSalt,
                 Status = true,
@@ -110,6 +112,9 @@ public static class DataSeedingExtensions
                 Email = "kutuphane.yonetici@example.com",
                 FirstName = "Esra",
                 LastName = "Balcik",
+                SorumluIlKodu = "Hatay",
+                SorumluIlceKodu = "Antakya",
+                SorumluKutuphaneId = fenKutuphaneId,
                 PasswordHash = staffHash,
                 PasswordSalt = staffSalt,
                 Status = true,
@@ -121,6 +126,7 @@ public static class DataSeedingExtensions
                 Email = "bakanlik.yetkilisi@example.com",
                 FirstName = "Murat",
                 LastName = "Demir",
+                SorumluIlKodu = "Ankara",
                 PasswordHash = ministryHash,
                 PasswordSalt = ministrySalt,
                 Status = true,
@@ -186,7 +192,7 @@ public static class DataSeedingExtensions
                 Aktif = true,
                 CreatedDate = lastMonth,
                 Il = "Ankara",
-                Ilce = "Çankaya" 
+                Ilce = "�ankaya" 
             },
             new()
             {

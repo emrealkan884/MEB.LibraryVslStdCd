@@ -1,10 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
+using Application.Authorization;
 using Application.Features.Raporlama.Queries.Common;
 using Application.Services.Repositories;
 using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Application.Features.Raporlama.Queries.GetReservationSummary;
 
@@ -19,15 +20,29 @@ public class GetReservationSummaryQuery : IRequest<ReservationSummaryDto>
     public class GetReservationSummaryQueryHandler : IRequestHandler<GetReservationSummaryQuery, ReservationSummaryDto>
     {
         private readonly IRezervasyonRepository _rezervasyonRepository;
+        private readonly IKullaniciYetkiServisi _kullaniciYetkiServisi;
 
-        public GetReservationSummaryQueryHandler(IRezervasyonRepository rezervasyonRepository)
+        public GetReservationSummaryQueryHandler(
+            IRezervasyonRepository rezervasyonRepository,
+            IKullaniciYetkiServisi kullaniciYetkiServisi
+        )
         {
             _rezervasyonRepository = rezervasyonRepository;
+            _kullaniciYetkiServisi = kullaniciYetkiServisi;
         }
 
         public async Task<ReservationSummaryDto> Handle(GetReservationSummaryQuery request, CancellationToken cancellationToken)
         {
+            IReadOnlyList<Guid>? yetkiliKutuphaneler =
+                await _kullaniciYetkiServisi.YetkiliKutuphaneIdListesiAsync(cancellationToken);
+            if (yetkiliKutuphaneler is { Count: 0 })
+                return new ReservationSummaryDto();
+
+            HashSet<Guid>? kutuphaneSet = yetkiliKutuphaneler?.ToHashSet();
+
             IQueryable<Domain.Entities.Rezervasyon> query = _rezervasyonRepository.Query();
+            if (kutuphaneSet is not null)
+                query = query.Where(r => kutuphaneSet.Contains(r.KutuphaneId));
 
             int total = await query.CountAsync(cancellationToken);
             int pending = await query.Where(r => r.Durumu == RezervasyonDurumu.Beklemede).CountAsync(cancellationToken);

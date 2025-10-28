@@ -15,7 +15,7 @@ namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Policy = AuthorizationPolicies.RequireProvinceOrAbove)]
+[Authorize(Policy = AuthorizationPolicies.IlYetkisiVeyaUstu)]
 public class RaporlamaController : BaseController
 {
     private readonly IReportExportService _reportExportService;

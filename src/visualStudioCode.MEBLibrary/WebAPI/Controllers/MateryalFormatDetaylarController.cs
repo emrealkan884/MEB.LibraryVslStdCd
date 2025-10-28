@@ -13,7 +13,7 @@ namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
+[Authorize(Policy = AuthorizationPolicies.OkulYetkisiVeyaUstu)]
 public class MateryalFormatDetaylarController : BaseController
 {
     [HttpPost]

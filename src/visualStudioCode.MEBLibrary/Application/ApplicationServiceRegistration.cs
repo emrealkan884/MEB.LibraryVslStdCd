@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Application.Authorization;
 using Application.Pipelines.Audit;
 using Application.Services.AuthenticatorService;
 using Application.Services.AuthService;
@@ -75,6 +76,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IAuthService, AuthManager>();
         services.AddScoped<IAuthenticatorService, AuthenticatorManager>();
         services.AddScoped<IUserService, UserManager>();
+        services.AddScoped<IKullaniciYetkiServisi, KullaniciYetkiServisi>();
 
         services.AddYamlResourceLocalization();
 

@@ -31,6 +31,7 @@ public class OperationClaimConfiguration : IEntityTypeConfiguration<OperationCla
     }
 
     public static int AdminId => 1;
+    public static int SistemYoneticisiId { get; private set; }
     private IEnumerable<OperationClaim> _seeds
     {
         get
@@ -100,6 +101,10 @@ public class OperationClaimConfiguration : IEntityTypeConfiguration<OperationCla
         #endregion
 
         #region SystemRoles
+        OperationClaim sistemYoneticisiClaim = new() { Id = ++lastId, Name = ApplicationRoles.SistemYoneticisi };
+        SistemYoneticisiId = sistemYoneticisiClaim.Id;
+        featureOperationClaims.Add(sistemYoneticisiClaim);
+
         featureOperationClaims.AddRange(
             [
                 new() { Id = ++lastId, Name = ApplicationRoles.BakanlikYetkilisi },

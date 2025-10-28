@@ -1,3 +1,4 @@
+using System.Linq;
 using Application.Features.Auth.Constants;
 using Application.Services.Repositories;
 using Domain.Entities;
@@ -94,13 +95,18 @@ public class AuthBusinessRules : BaseBusinessRules
             await throwBusinessException(AuthMessages.PasswordDontMatch);
     }
 
-    public async Task UserShouldHaveRole(User user, string roleName)
+    public Task UserShouldHaveRole(User user, string roleName) => UserShouldHaveAnyOfRoles(user, roleName);
+
+    public async Task UserShouldHaveAnyOfRoles(User user, params string[] roleNames)
     {
+        if (roleNames.Length == 0)
+            await throwBusinessException(AuthMessages.YetkiGerekli);
+
         bool hasRole = await _userOperationClaimRepository.AnyAsync(
-            predicate: claim => claim.UserId == user.Id && claim.OperationClaim.Name == roleName
+            predicate: claim => claim.UserId == user.Id && roleNames.Contains(claim.OperationClaim.Name)
         );
 
         if (!hasRole)
-            await throwBusinessException(AuthMessages.MinistryRoleRequired);
+            await throwBusinessException(AuthMessages.YetkiGerekli);
     }
 }

@@ -61,7 +61,7 @@ Bu alanlar, MARC21 alan 300/347/538 karşılıklarını modellemek için tasarla
 ### 6. Roller ve Yetkilendirme
 
 - Roller: `Role.BakanlikYetkilisi`, `Role.IlYetkilisi`, `Role.IlceYetkilisi`, `Role.OkulKutuphaneYoneticisi`.
-- Politikalar: `RequireMinistry`, `RequireProvinceOrAbove`, `RequireDistrictOrAbove`, `RequireSchoolOrAbove`.
+- Politikalar: `BakanlikYetkisi`, `IlYetkisiVeyaUstu`, `IlceYetkisiVeyaUstu`, `OkulYetkisiVeyaUstu`.
 
 Controller’larda rol tabanlı erişim bu politikalar üzerinden yönetilir. Seed edilen kullanıcılar örnek rollerle gelir.
 

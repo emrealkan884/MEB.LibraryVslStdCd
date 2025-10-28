@@ -6,7 +6,7 @@ Bu belge, proje için planlanan sprintleri ve sürekli yapılacak çalışmalar�
 
 ## Sprint 1 – Güvenlik ve Yetkilendirme
 
-- ASP.NET Core authorization policy’leri (`RequireMinistry`, `RequireSchoolOrAbove` vb.) tamamlandı.
+- ASP.NET Core authorization policy’leri (`BakanlikYetkisi`, `OkulYetkisiVeyaUstu` vb.) tamamlandı.
 - Seed kullanıcılarına örnek rol claim’leri atandı.
 - Yapılacaklar:
   - MEBBİS / e-Okul SSO entegrasyon adaptörünün tasarlanması.

@@ -2,6 +2,7 @@ namespace Application.Authorization;
 
 public static class ApplicationRoles
 {
+    public const string SistemYoneticisi = "Role.SistemYoneticisi";
     public const string BakanlikYetkilisi = "Role.BakanlikYetkilisi";
     public const string IlYetkilisi = "Role.IlYetkilisi";
     public const string IlceYetkilisi = "Role.IlceYetkilisi";

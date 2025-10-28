@@ -36,7 +36,7 @@ Bu depo, Milli Eğitim Bakanlığı için geliştirilen **MEB Kütüphane Yönet
 - **Otorite Kayıtları:** Yazar, konu, kurum otoriteleri ile standartlaştırılmış bibliyografik veri.
 - **Ödünç İşlemleri:** Ödünç alma, iade, süre uzatma, gecikme cezası hesaplama ve ilgili raporlar.
 - **Raporlama:** Geciken ödünçler, kullanım istatistikleri, agregasyon raporları ve çok formatlı dışa aktarma.
-- **Güvenlik:** JWT, rol tabanlı politikalar (`RequireMinistry`, `RequireSchoolOrAbove`, vb.), audit logleyici pipeline.
+- **Güvenlik:** JWT, rol tabanlı politikalar (`BakanlikYetkisi`, `OkulYetkisiVeyaUstu`, vb.), audit logleyici pipeline.
 - **Çok Dilli Destek:** YAML tabanlı kaynak dosyaları ve frontend’de dinamik dil seçimi.
 
 ---

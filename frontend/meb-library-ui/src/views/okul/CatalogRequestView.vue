@@ -22,51 +22,53 @@
         <form class="mt-6 space-y-4" @submit.prevent="submitRequest">
           <div class="grid gap-4 md:grid-cols-2">
             <label class="space-y-2 text-sm text-gray-700">
-              <span class="font-medium">Title</span>
+              <span class="font-medium">Başlık *</span>
               <input
-                v-model="newRequest.title"
+                v-model="newRequest.baslik"
                 type="text"
                 required
-                placeholder="Book or resource title"
+                placeholder="Kitap veya kaynak başlığı"
                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
               />
             </label>
             <label class="space-y-2 text-sm text-gray-700">
-              <span class="font-medium">Author / Creator</span>
+              <span class="font-medium">Yazar / Yaratıcı *</span>
               <input
-                v-model="newRequest.author"
+                v-model="newRequest.yazarMetni"
                 type="text"
                 required
-                placeholder="Author name"
+                placeholder="Yazar adı"
                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
               />
             </label>
           </div>
 
           <label class="space-y-2 text-sm text-gray-700">
-            <span class="font-medium">Summary</span>
+            <span class="font-medium">Açıklama *</span>
             <textarea
-              v-model="newRequest.description"
+              v-model="newRequest.aciklama"
               rows="3"
               required
-              placeholder="Short summary, learning outcomes, or curriculum connections"
+              placeholder="Kısa özet, öğrenme çıktıları veya müfredat bağlantıları"
               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             ></textarea>
           </label>
 
           <div class="grid gap-4 md:grid-cols-3">
             <label class="space-y-2 text-sm text-gray-700">
-              <span class="font-medium">Format</span>
+              <span class="font-medium">Materyal Türü *</span>
               <select
-                v-model="newRequest.format"
+                v-model="newRequest.materyalTuru"
                 required
                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
               >
-                <option value="">Select format</option>
-                <option value="Print">Print book</option>
-                <option value="eBook">E-book</option>
-                <option value="Audiobook">Audiobook</option>
-                <option value="Multimedia">Multimedia</option>
+                <option value="">Materyal türü seçin</option>
+                <option value="Kitap">Kitap</option>
+                <option value="E-Kitap">E-Kitap</option>
+                <option value="Sesli Kitap">Sesli Kitap</option>
+                <option value="Çoklu Ortam">Çoklu Ortam</option>
+                <option value="Dergi">Dergi</option>
+                <option value="Gazete">Gazete</option>
               </select>
             </label>
 
@@ -84,17 +86,18 @@
             </label>
 
             <label class="space-y-2 text-sm text-gray-700">
-              <span class="font-medium">Intended Audience</span>
+              <span class="font-medium">Hedef Kitle *</span>
               <select
                 v-model="newRequest.target"
                 required
                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
               >
-                <option value="">Select audience</option>
-                <option value="Primary">Primary</option>
-                <option value="Middle School">Middle school</option>
-                <option value="High School">High school</option>
-                <option value="Teachers">Teachers</option>
+                <option value="">Hedef kitle seçin</option>
+                <option value="İlkokul">İlkokul</option>
+                <option value="Ortaokul">Ortaokul</option>
+                <option value="Lise">Lise</option>
+                <option value="Öğretmenler">Öğretmenler</option>
+                <option value="Genel">Genel</option>
               </select>
             </label>
           </div>
@@ -210,43 +213,38 @@
         >
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 class="text-lg font-semibold text-gray-900">{{ request.title }}</h3>
-              <p class="text-sm text-gray-500">Requested by {{ request.requestedBy }} · {{ formatDate(request.createdAt) }}</p>
+              <h3 class="text-lg font-semibold text-gray-900">{{ request.baslik }}</h3>
+              <p class="text-sm text-gray-500">{{ request.talepEdenKutuphaneId }} · {{ formatDate(request.talepTarihi) }}</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
               <span
                 class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
-                :class="priorityBadgeClass(request.priority)"
+                :class="statusBadgeClass(request.durum)"
               >
-                {{ request.priority }} priority
-              </span>
-              <span
-                class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
-                :class="statusBadgeClass(request.status)"
-              >
-                {{ request.status }}
+                {{ statusMap[request.durum] || request.durum }}
               </span>
             </div>
           </div>
-          <p class="mt-3 text-sm text-gray-700">{{ request.description }}</p>
+          <p class="mt-3 text-sm text-gray-700">{{ request.aciklama }}</p>
           <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-500">
             <span class="inline-flex items-center gap-1">
               <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75h15m-15 0a2.25 2.25 0 0 1 0-4.5h15a2.25 2.25 0 0 1 0 4.5Zm0 0a2.25 2.25 0 0 0 0 4.5h15a2.25 2.25 0 0 0 0-4.5" />
               </svg>
-              {{ request.format }}
+              {{ request.materyalTuru }}
+              <span v-if="request.materyalAltTuru">({{ request.materyalAltTuru }})</span>
             </span>
             <span class="inline-flex items-center gap-1">
               <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
               </svg>
-              Audience: {{ request.target }}
+              Yazar: {{ request.yazarMetni }}
             </span>
-            <span class="inline-flex items-center gap-1">
+            <span v-if="request.sonGuncellemeTarihi" class="inline-flex items-center gap-1">
               <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l3 3" />
               </svg>
-              Updated: {{ formatDate(request.updatedAt) }}
+              Güncellendi: {{ formatDate(request.sonGuncellemeTarihi) }}
             </span>
           </div>
         </article>
@@ -256,32 +254,69 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, onMounted } from 'vue'
+import { useToast } from 'primevue/usetoast'
+import { useAuthStore } from '@/stores/auth'
+import apiClient from '@/stores/api'
 
 interface CatalogRequest {
-  id: number
-  title: string
-  author: string
-  description: string
-  format: string
-  priority: string
-  target: string
-  status: string
-  requestedBy: string
-  createdAt: string
-  updatedAt: string
+  id: string
+  talepEdenKutuphaneId: string
+  baslik: string
+  altBaslik?: string
+  yazarMetni?: string
+  isbn?: string
+  issn?: string
+  materyalTuru?: string
+  materyalAltTuru?: string
+  dil?: string
+  yayinevi?: string
+  yayinYeri?: string
+  yayinYili?: number
+  aciklama?: string
+  redGerekcesi?: string
+  durum: string
+  talepTarihi: string
+  sonGuncellemeTarihi?: string
+  katalogKaydiId?: string
 }
 
+interface CreateCatalogRequest {
+  talepEdenKutuphaneId: string
+  baslik: string
+  altBaslik?: string
+  yazarMetni?: string
+  isbn?: string
+  issn?: string
+  materyalTuru?: string
+  materyalAltTuru?: string
+  dil?: string
+  yayinevi?: string
+  yayinYeri?: string
+  yayinYili?: number
+  aciklama?: string
+}
+
+const toast = useToast()
+const authStore = useAuthStore()
+
 const priorities = ['High', 'Medium', 'Low']
-const statuses = ['In Review', 'Approved', 'Rejected', 'Needs Update']
+const statuses = ['Beklemede', 'Inceleniyor', 'Onaylandi', 'Reddedildi']
 
 const newRequest = reactive({
-  title: '',
-  author: '',
-  description: '',
-  format: '',
+  baslik: '',
+  yazarMetni: '',
+  aciklama: '',
+  materyalTuru: '',
   priority: 'Medium',
   target: '',
+  altBaslik: '',
+  isbn: '',
+  issn: '',
+  dil: '',
+  yayinevi: '',
+  yayinYeri: '',
+  yayinYili: undefined as number | undefined,
 })
 
 const filters = reactive({
@@ -289,60 +324,42 @@ const filters = reactive({
   search: '',
 })
 
-const catalogRequests = ref<CatalogRequest[]>([
-  {
-    id: 1,
-    title: 'Modern Physics for Schools',
-    author: 'Ismail Demir',
-    description: 'Updated physics topics aligned with Grade 11 curriculum and national exam focus.',
-    format: 'Print',
-    priority: 'High',
-    target: 'High School',
-    status: 'In Review',
-    requestedBy: 'Ankara Science High School',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
-  },
-  {
-    id: 2,
-    title: 'Interactive Coding Projects',
-    author: 'CodeLab Collective',
-    description: 'Project-based activities that introduce algorithms and basic programming for middle schoolers.',
-    format: 'Multimedia',
-    priority: 'Medium',
-    target: 'Middle School',
-    status: 'Approved',
-    requestedBy: 'Etimesgut Secondary School',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(),
-  },
-  {
-    id: 3,
-    title: 'Inclusive Classroom Strategies',
-    author: 'Inclusive Schools Network',
-    description: 'Guidelines, templates, and case studies to support inclusive practices for teachers.',
-    format: 'eBook',
-    priority: 'Low',
-    target: 'Teachers',
-    status: 'Needs Update',
-    requestedBy: 'Bursa Teacher Development Center',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-  },
-])
-
+const catalogRequests = ref<CatalogRequest[]>([])
 const isSubmitting = ref(false)
+const isLoading = ref(false)
 const formError = ref<string | null>(null)
 const successMessage = ref<string | null>(null)
 
+// Priority mapping
+const priorityMap: Record<string, string> = {
+  'High': 'Yuksek',
+  'Medium': 'Orta',
+  'Low': 'Dusuk'
+}
+
+const reversePriorityMap: Record<string, string> = {
+  'Yuksek': 'High',
+  'Orta': 'Medium',
+  'Dusuk': 'Low'
+}
+
+// Status mapping for UI
+const statusMap: Record<string, string> = {
+  'Beklemede': 'In Review',
+  'Inceleniyor': 'In Review',
+  'Onaylandi': 'Approved',
+  'Reddedildi': 'Rejected'
+}
+
 const filteredRequests = computed(() => {
   return catalogRequests.value.filter((request) => {
-    const matchesStatus = filters.status === 'All' || request.status === filters.status
+    const uiStatus = statusMap[request.durum] || request.durum
+    const matchesStatus = filters.status === 'All' || uiStatus === filters.status
     const term = filters.search.trim().toLowerCase()
     const matchesSearch =
       term.length === 0 ||
-      request.title.toLowerCase().includes(term) ||
-      request.requestedBy.toLowerCase().includes(term)
+      request.baslik.toLowerCase().includes(term) ||
+      (request.yazarMetni && request.yazarMetni.toLowerCase().includes(term))
 
     return matchesStatus && matchesSearch
   })
@@ -359,7 +376,9 @@ function formatDate(value: string) {
 }
 
 function priorityBadgeClass(priority: string) {
-  switch (priority) {
+  // For backend data, map priority from UI values or use default
+  const uiPriority = reversePriorityMap[priority] || priority
+  switch (uiPriority) {
     case 'High':
       return 'bg-red-100 text-red-700'
     case 'Low':
@@ -370,7 +389,8 @@ function priorityBadgeClass(priority: string) {
 }
 
 function statusBadgeClass(status: string) {
-  switch (status) {
+  const uiStatus = statusMap[status] || status
+  switch (uiStatus) {
     case 'Approved':
       return 'bg-emerald-100 text-emerald-700'
     case 'Rejected':
@@ -382,46 +402,101 @@ function statusBadgeClass(status: string) {
   }
 }
 
-function submitRequest() {
+async function fetchRequests() {
+  try {
+    isLoading.value = true
+    const response = await apiClient.get('/YeniKatalogTalepleri', {
+      params: { PageIndex: 0, PageSize: 100 } // Basic pagination
+    })
+    catalogRequests.value = response.data.items || []
+  } catch (error: any) {
+    console.error('Failed to fetch requests:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to load catalog requests',
+      life: 3000
+    })
+  } finally {
+    isLoading.value = false
+  }
+}
+
+async function submitRequest() {
   formError.value = null
   successMessage.value = null
 
   if (isSubmitting.value) return
-  if (!newRequest.title || !newRequest.author || !newRequest.description || !newRequest.format || !newRequest.target) {
+  if (!newRequest.baslik || !newRequest.yazarMetni || !newRequest.aciklama || !newRequest.materyalTuru || !newRequest.target) {
     formError.value = 'Please fill in all required fields.'
     return
   }
 
+  // Get current user's library ID (assuming it's available via auth store)
+  const currentUserLibraryId = authStore.user?.schoolCode || 'unknown'
+
   isSubmitting.value = true
-  setTimeout(() => {
-    const now = new Date().toISOString()
-    catalogRequests.value.unshift({
-      id: Date.now(),
-      title: newRequest.title,
-      author: newRequest.author,
-      description: newRequest.description,
-      format: newRequest.format,
-      priority: newRequest.priority,
-      target: newRequest.target,
-      status: 'In Review',
-      requestedBy: 'Current School',
-      createdAt: now,
-      updatedAt: now,
+  try {
+    const requestData: CreateCatalogRequest = {
+      talepEdenKutuphaneId: currentUserLibraryId,
+      baslik: newRequest.baslik,
+      altBaslik: newRequest.altBaslik || undefined,
+      yazarMetni: newRequest.yazarMetni,
+      isbn: newRequest.isbn || undefined,
+      issn: newRequest.issn || undefined,
+      materyalTuru: newRequest.materyalTuru,
+      materyalAltTuru: newRequest.target, // Using target as sub-type for now
+      dil: newRequest.dil || undefined,
+      yayinevi: newRequest.yayinevi || undefined,
+      yayinYeri: newRequest.yayinYeri || undefined,
+      yayinYili: newRequest.yayinYili,
+      aciklama: newRequest.aciklama
+    }
+
+    const response = await apiClient.post('/YeniKatalogTalepleri', requestData)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Catalog request submitted successfully',
+      life: 3000
     })
 
-    successMessage.value = 'Request submitted. You will receive updates via e-mail.'
     resetForm()
+    await fetchRequests() // Refresh the list
+  } catch (error: any) {
+    console.error('Failed to submit request:', error)
+    formError.value = error.response?.data?.message || 'Failed to submit request'
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: error.response?.data?.message || 'Failed to submit catalog request',
+      life: 3000
+    })
+  } finally {
     isSubmitting.value = false
-  }, 600)
+  }
 }
 
 function resetForm() {
-  newRequest.title = ''
-  newRequest.author = ''
-  newRequest.description = ''
-  newRequest.format = ''
+  newRequest.baslik = ''
+  newRequest.yazarMetni = ''
+  newRequest.aciklama = ''
+  newRequest.materyalTuru = ''
   newRequest.priority = 'Medium'
   newRequest.target = ''
+  newRequest.altBaslik = ''
+  newRequest.isbn = ''
+  newRequest.issn = ''
+  newRequest.dil = ''
+  newRequest.yayinevi = ''
+  newRequest.yayinYeri = ''
+  newRequest.yayinYili = undefined
   formError.value = null
 }
+
+// Lifecycle hook to fetch requests on component mount
+onMounted(() => {
+  fetchRequests()
+})
 </script>

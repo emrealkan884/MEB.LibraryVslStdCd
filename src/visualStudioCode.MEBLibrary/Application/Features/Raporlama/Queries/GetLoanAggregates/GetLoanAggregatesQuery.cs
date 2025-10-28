@@ -1,3 +1,5 @@
+using System.Linq;
+using Application.Authorization;
 using Application.Services.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -25,14 +27,23 @@ public class GetLoanAggregatesQuery : IRequest<List<LoanAggregateDto>>
     public class GetLoanAggregatesQueryHandler : IRequestHandler<GetLoanAggregatesQuery, List<LoanAggregateDto>>
     {
         private readonly IOduncIslemiRepository _oduncIslemiRepository;
+        private readonly IKullaniciYetkiServisi _kullaniciYetkiServisi;
 
-        public GetLoanAggregatesQueryHandler(IOduncIslemiRepository oduncIslemiRepository)
+        public GetLoanAggregatesQueryHandler(
+            IOduncIslemiRepository oduncIslemiRepository,
+            IKullaniciYetkiServisi kullaniciYetkiServisi
+        )
         {
             _oduncIslemiRepository = oduncIslemiRepository;
+            _kullaniciYetkiServisi = kullaniciYetkiServisi;
         }
 
         public async Task<List<LoanAggregateDto>> Handle(GetLoanAggregatesQuery request, CancellationToken cancellationToken)
         {
+            IReadOnlyList<Guid>? yetkiliKutuphaneler = await _kullaniciYetkiServisi.YetkiliKutuphaneIdListesiAsync(cancellationToken);
+            if (yetkiliKutuphaneler is { Count: 0 })
+                return new List<LoanAggregateDto>();
+
             IQueryable<Domain.Entities.OduncIslemi> baseQuery = _oduncIslemiRepository
                 .Query()
                 .AsNoTracking()
@@ -42,6 +53,12 @@ public class GetLoanAggregatesQuery : IRequest<List<LoanAggregateDto>>
                         .ThenInclude(m => m.KatalogKaydi)
                             .ThenInclude(k => k.KatalogYazarlar)
                                 .ThenInclude(ky => ky.Yazar);
+
+            if (yetkiliKutuphaneler is not null)
+            {
+                HashSet<Guid> kutuphaneSet = yetkiliKutuphaneler.ToHashSet();
+                baseQuery = baseQuery.Where(o => kutuphaneSet.Contains(o.KutuphaneId));
+            }
 
             if (request.KutuphaneId.HasValue)
                 baseQuery = baseQuery.Where(o => o.KutuphaneId == request.KutuphaneId);

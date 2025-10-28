@@ -13,7 +13,7 @@ namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Policy = AuthorizationPolicies.RequireMinistry)]
+[Authorize(Policy = AuthorizationPolicies.BakanlikYetkisi)]
 public class DeweySiniflamalarController : BaseController
 {
     [HttpPost]

@@ -10,18 +10,23 @@ public static class AuthorizationExtensions
         services.AddAuthorization(options =>
         {
             options.AddPolicy(
-                AuthorizationPolicies.RequireMinistry,
-                policy => policy.RequireRole(ApplicationRoles.BakanlikYetkilisi)
+                AuthorizationPolicies.BakanlikYetkisi,
+                policy => policy.RequireRole(ApplicationRoles.SistemYoneticisi, ApplicationRoles.BakanlikYetkilisi)
             );
 
             options.AddPolicy(
-                AuthorizationPolicies.RequireProvinceOrAbove,
-                policy => policy.RequireRole(ApplicationRoles.BakanlikYetkilisi, ApplicationRoles.IlYetkilisi)
-            );
-
-            options.AddPolicy(
-                AuthorizationPolicies.RequireDistrictOrAbove,
+                AuthorizationPolicies.IlYetkisiVeyaUstu,
                 policy => policy.RequireRole(
+                    ApplicationRoles.SistemYoneticisi,
+                    ApplicationRoles.BakanlikYetkilisi,
+                    ApplicationRoles.IlYetkilisi
+                )
+            );
+
+            options.AddPolicy(
+                AuthorizationPolicies.IlceYetkisiVeyaUstu,
+                policy => policy.RequireRole(
+                    ApplicationRoles.SistemYoneticisi,
                     ApplicationRoles.BakanlikYetkilisi,
                     ApplicationRoles.IlYetkilisi,
                     ApplicationRoles.IlceYetkilisi
@@ -29,8 +34,9 @@ public static class AuthorizationExtensions
             );
 
             options.AddPolicy(
-                AuthorizationPolicies.RequireSchoolOrAbove,
+                AuthorizationPolicies.OkulYetkisiVeyaUstu,
                 policy => policy.RequireRole(
+                    ApplicationRoles.SistemYoneticisi,
                     ApplicationRoles.BakanlikYetkilisi,
                     ApplicationRoles.IlYetkilisi,
                     ApplicationRoles.IlceYetkilisi,

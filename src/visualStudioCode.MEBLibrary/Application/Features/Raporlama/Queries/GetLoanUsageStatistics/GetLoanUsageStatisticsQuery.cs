@@ -1,3 +1,5 @@
+using System.Linq;
+using Application.Authorization;
 using Application.Services.Repositories;
 using Domain.Entities;
 using Domain.Enums;
@@ -15,14 +17,23 @@ public class GetLoanUsageStatisticsQuery : IRequest<List<LoanUsageStatisticsDto>
     public class GetLoanUsageStatisticsQueryHandler : IRequestHandler<GetLoanUsageStatisticsQuery, List<LoanUsageStatisticsDto>>
     {
         private readonly IOduncIslemiRepository _oduncIslemiRepository;
+        private readonly IKullaniciYetkiServisi _kullaniciYetkiServisi;
 
-        public GetLoanUsageStatisticsQueryHandler(IOduncIslemiRepository oduncIslemiRepository)
+        public GetLoanUsageStatisticsQueryHandler(
+            IOduncIslemiRepository oduncIslemiRepository,
+            IKullaniciYetkiServisi kullaniciYetkiServisi
+        )
         {
             _oduncIslemiRepository = oduncIslemiRepository;
+            _kullaniciYetkiServisi = kullaniciYetkiServisi;
         }
 
         public async Task<List<LoanUsageStatisticsDto>> Handle(GetLoanUsageStatisticsQuery request, CancellationToken cancellationToken)
         {
+            IReadOnlyList<Guid>? yetkiliKutuphaneler = await _kullaniciYetkiServisi.YetkiliKutuphaneIdListesiAsync(cancellationToken);
+            if (yetkiliKutuphaneler is { Count: 0 })
+                return new List<LoanUsageStatisticsDto>();
+
             IQueryable<OduncIslemi> query = _oduncIslemiRepository
                 .Query()
                 .Include(o => o.Nusha!)
@@ -31,6 +42,12 @@ public class GetLoanUsageStatisticsQuery : IRequest<List<LoanUsageStatisticsDto>
 
             if (request.KutuphaneId.HasValue)
                 query = query.Where(o => o.KutuphaneId == request.KutuphaneId);
+
+            if (yetkiliKutuphaneler is not null)
+            {
+                HashSet<Guid> kutuphaneSet = yetkiliKutuphaneler.ToHashSet();
+                query = query.Where(o => kutuphaneSet.Contains(o.KutuphaneId));
+            }
 
             if (request.BaslangicTarihi.HasValue)
                 query = query.Where(o => o.AlinmaTarihi >= request.BaslangicTarihi.Value);

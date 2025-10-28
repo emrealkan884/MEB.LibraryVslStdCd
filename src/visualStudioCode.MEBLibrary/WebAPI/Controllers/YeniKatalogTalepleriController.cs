@@ -19,7 +19,7 @@ namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Policy = AuthorizationPolicies.RequireSchoolOrAbove)]
+[Authorize(Policy = AuthorizationPolicies.OkulYetkisiVeyaUstu)]
 public class YeniKatalogTalepleriController : BaseController
 {
     [HttpPost]

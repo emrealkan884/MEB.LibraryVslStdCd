@@ -38,6 +38,12 @@ public class UserOperationClaimConfiguration : IEntityTypeConfiguration<UserOper
                 UserId = UserConfiguration.AdminId,
                 OperationClaimId = OperationClaimConfiguration.AdminId
             };
+            yield return new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = UserConfiguration.AdminId,
+                OperationClaimId = OperationClaimConfiguration.SistemYoneticisiId
+            };
         }
     }
 }

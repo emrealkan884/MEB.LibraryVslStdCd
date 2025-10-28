@@ -8,10 +8,11 @@ internal static class RoleLabelProvider
 {
     private static readonly Dictionary<string, string> RoleLabels = new(StringComparer.OrdinalIgnoreCase)
     {
-        [ApplicationRoles.BakanlikYetkilisi] = "Bakanlık Yetkilisi",
-        [ApplicationRoles.IlYetkilisi] = "İl Yetkilisi",
-        [ApplicationRoles.IlceYetkilisi] = "İlçe Yetkilisi",
-        [ApplicationRoles.OkulKutuphaneYoneticisi] = "Okul Kütüphane Yöneticisi"
+        [ApplicationRoles.SistemYoneticisi] = "Sistem Yoneticisi",
+        [ApplicationRoles.BakanlikYetkilisi] = "Bakanlik Yetkilisi",
+        [ApplicationRoles.IlYetkilisi] = "Il Yetkilisi",
+        [ApplicationRoles.IlceYetkilisi] = "Ilce Yetkilisi",
+        [ApplicationRoles.OkulKutuphaneYoneticisi] = "Okul Kutuphane Yoneticisi"
     };
 
     public static string GetRoleLabel(string roleKey)

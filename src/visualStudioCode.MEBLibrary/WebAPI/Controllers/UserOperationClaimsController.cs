@@ -15,7 +15,7 @@ namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Policy = AuthorizationPolicies.RequireMinistry)]
+[Authorize(Policy = AuthorizationPolicies.BakanlikYetkisi)]
 public class UserOperationClaimsController : BaseController
 {
     [HttpGet("{Id}")]

@@ -28,19 +28,19 @@ Hazırlayan: Codex (GPT-5)
 - ☐ Öğrenci listelerinin toplu içe/dışa aktarımı ve sınıf yükseltme otomasyonları.
 
 ## 4. Raporlama ve Analitik
-- ✅ Katalog özeti, kullanıcı özeti, gecikenler vb. temel rapor sorguları mevcut (`GetCatalogSummaryQuery`, `GetLoanAggregatesQuery`, `GetOverdueLoansReportQuery`).
-- ✅ Raporlama rehberi ve model şemaları oluşturuldu (`ReportingGuide.md`, `SqlReportTemplateDefinition`).
-- ☐ İl/ilçe/kütüphane bazlı yetki filtreleriyle rapor erişiminin sınırlandırılması.
-- ☐ PDF/Excel dışa aktarım servisleri ve zamanlanmış rapor dağıtımı.
-- ☐ Özel rapor sihirbazı ve parametrik SQL şablon yönetimi.
+- [x] Katalog ozeti, kullanici ozeti, gecikenler vb. temel rapor sorgulari mevcut (`GetCatalogSummaryQuery`, `GetLoanAggregatesQuery`, `GetOverdueLoansReportQuery`).
+- [x] Raporlama rehberi ve model semalari olusturuldu (`ReportingGuide.md`, `SqlReportTemplateDefinition`).
+- [x] Il/ilce/kutuphane bazli yetki filtreleriyle rapor erisimi sinirlandirildi (`KullaniciYetkiServisi`, rapor sorgulari guncellendi).
+- [ ] PDF/Excel disa aktarim servisleri ve zamanlanmis rapor dagitimi.
+- [ ] Ozel rapor sihirbazi ve parametrik SQL sablon yonetimi.
 
-## 5. Kullanıcı Yönetimi ve Güvenlik
-- ✅ Roller, politika sabitleri ve temel kimlik doğrulama akışı hazır (`AuthorizationPolicies`, `LoginCommand`, Vue yönlendirme korumaları).
-- ☐ MEBBİS / e-Okul SSO entegrasyonu ve iki faktörlü doğrulama.
-- ☐ Yetki seviyelerini alan bazında kısıtlayacak granular politika kombinasyonları ve denetim logları.
-- ☐ Veri yedekleme, arşivleme, izleme ve uyarı mekanizmalarının devreye alınması.
+## 5. Kullanici Yonetimi ve Guvenlik
+- [x] Roller, politika sabitleri ve temel kimlik dogrulama akisleri hazir (`AuthorizationPolicies`, `LoginCommand`, Vue yonlendirme korumalari).
+- [ ] MEBBIS / e-Okul SSO entegrasyonu ve iki faktorlu dogrulama.
+- [x] Yetki seviyelerini alan bazinda kisitlayan politikalar ve kapsam kontrolleri guncellendi (KullaniciYetkiServisi, yeni roller).
+- [ ] Veri yedekleme, arsivleme, izleme ve uyari mekanizmalarinin devreye alinmasi.
 
-## 6. Ön Yüz ve Kullanıcı Deneyimi
+## 6.  Ön Yüz ve Kullanıcı Deneyimi
 - ✅ Vue tabanlı çoklu kütüphane yerleşimleri ve yönlendirme korumaları yapılandırıldı (`MerkezLayout.vue`, `OkulLayout.vue`, `router/index.ts`).
 - ☐ Türkçe/İngilizce tam lokalizasyon ve dil bazlı içerik yönetimi.
 - ☐ Mobil/tablet uyarlamaları ve erişilebilirlik (WCAG) testleri.
@@ -56,3 +56,5 @@ Hazırlayan: Codex (GPT-5)
 ### Notlar
 - Yeni gereksinimler veya tamamlanan işler bu dosyada güncellenmelidir.
 - Güncelleme yapılırken “Son güncelleme” ve sorumlu bilgisi değiştirilmelidir.
+
+

@@ -20,19 +20,34 @@ public class GetUserSummaryQuery : IRequest<UserSummaryDto>
     {
         private readonly IUserRepository _userRepository;
         private readonly IUserOperationClaimRepository _userOperationClaimRepository;
+        private readonly IKullaniciYetkiServisi _kullaniciYetkiServisi;
 
         public GetUserSummaryQueryHandler(
             IUserRepository userRepository,
-            IUserOperationClaimRepository userOperationClaimRepository
+            IUserOperationClaimRepository userOperationClaimRepository,
+            IKullaniciYetkiServisi kullaniciYetkiServisi
         )
         {
             _userRepository = userRepository;
             _userOperationClaimRepository = userOperationClaimRepository;
+            _kullaniciYetkiServisi = kullaniciYetkiServisi;
         }
 
         public async Task<UserSummaryDto> Handle(GetUserSummaryQuery request, CancellationToken cancellationToken)
         {
+            KullaniciYetkiBilgisi yetki = await _kullaniciYetkiServisi.AktifKullaniciYetkisiAsync(cancellationToken);
+
             IQueryable<User> usersQuery = _userRepository.Query();
+
+            if (yetki.TumUlkeGenelYetki is false)
+            {
+                if (yetki.OkulKutuphaneYoneticisi && yetki.TryGetKutuphaneId(out Guid? kutuphaneId))
+                    usersQuery = usersQuery.Where(u => u.SorumluKutuphaneId == kutuphaneId);
+                else if (yetki.IlceYetkilisi && yetki.TryGetIlKodu(out string? ilKodu) && yetki.TryGetIlceKodu(out string? ilceKodu))
+                    usersQuery = usersQuery.Where(u => u.SorumluIlKodu == ilKodu && u.SorumluIlceKodu == ilceKodu);
+                else if (yetki.IlYetkilisi && yetki.TryGetIlKodu(out string? ilKoduSadece))
+                    usersQuery = usersQuery.Where(u => u.SorumluIlKodu == ilKoduSadece);
+            }
 
             int totalUsers = await usersQuery.CountAsync(cancellationToken);
             int activeUsers = await usersQuery.Where(u => u.Status).CountAsync(cancellationToken);
@@ -49,10 +64,13 @@ public class GetUserSummaryQuery : IRequest<UserSummaryDto>
                 ? request.Metrics.Where(metricMap.ContainsKey)
                 : metricMap.Keys;
 
+            IQueryable<Guid> filtrelenmisKullaniciIdleri = usersQuery.Select(u => u.Id);
+
             List<RoleCountDto> roleCounts = await _userOperationClaimRepository
                 .Query()
                 .Include(uoc => uoc.OperationClaim)
                 .Where(uoc => uoc.OperationClaim.Name.StartsWith("Role."))
+                .Where(uoc => filtrelenmisKullaniciIdleri.Contains(uoc.UserId))
                 .GroupBy(uoc => uoc.OperationClaim.Name)
                 .Select(group => new RoleCountDto
                 {

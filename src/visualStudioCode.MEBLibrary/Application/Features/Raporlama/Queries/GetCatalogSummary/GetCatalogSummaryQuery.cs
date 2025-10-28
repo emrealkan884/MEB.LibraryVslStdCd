@@ -1,10 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
+using Application.Authorization;
 using Application.Features.Raporlama.Queries.Common;
 using Application.Services.Repositories;
 using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Application.Features.Raporlama.Queries.GetCatalogSummary;
 
@@ -22,24 +23,45 @@ public class GetCatalogSummaryQuery : IRequest<CatalogSummaryDto>
         private readonly IKatalogKaydiRepository _katalogKaydiRepository;
         private readonly IMateryalRepository _materyalRepository;
         private readonly INushaRepository _nushaRepository;
+        private readonly IKullaniciYetkiServisi _kullaniciYetkiServisi;
 
         public GetCatalogSummaryQueryHandler(
             IKatalogKaydiRepository katalogKaydiRepository,
             IMateryalRepository materyalRepository,
-            INushaRepository nushaRepository
+            INushaRepository nushaRepository,
+            IKullaniciYetkiServisi kullaniciYetkiServisi
         )
         {
             _katalogKaydiRepository = katalogKaydiRepository;
             _materyalRepository = materyalRepository;
             _nushaRepository = nushaRepository;
+            _kullaniciYetkiServisi = kullaniciYetkiServisi;
         }
 
         public async Task<CatalogSummaryDto> Handle(GetCatalogSummaryQuery request, CancellationToken cancellationToken)
         {
-            int totalCatalogRecords = await _katalogKaydiRepository.Query().CountAsync(cancellationToken);
-            int totalMaterials = await _materyalRepository.Query().CountAsync(cancellationToken);
+            IReadOnlyList<Guid>? yetkiliKutuphaneler =
+                await _kullaniciYetkiServisi.YetkiliKutuphaneIdListesiAsync(cancellationToken);
+            if (yetkiliKutuphaneler is { Count: 0 })
+                return new CatalogSummaryDto();
+
+            HashSet<Guid>? kutuphaneSet = yetkiliKutuphaneler?.ToHashSet();
+
+            IQueryable<Domain.Entities.KatalogKaydi> katalogKaydiQuery = _katalogKaydiRepository.Query();
+            if (kutuphaneSet is not null)
+                katalogKaydiQuery = katalogKaydiQuery.Where(k => kutuphaneSet.Contains(k.KutuphaneId));
+
+            int totalCatalogRecords = await katalogKaydiQuery.CountAsync(cancellationToken);
+
+            IQueryable<Domain.Entities.Materyal> materyalQuery = _materyalRepository.Query();
+            if (kutuphaneSet is not null)
+                materyalQuery = materyalQuery.Where(m => kutuphaneSet.Contains(m.KutuphaneId));
+
+            int totalMaterials = await materyalQuery.CountAsync(cancellationToken);
 
             IQueryable<Domain.Entities.Nusha> nushaQuery = _nushaRepository.Query();
+            if (kutuphaneSet is not null)
+                nushaQuery = nushaQuery.Where(n => n.Materyal != null && kutuphaneSet.Contains(n.Materyal.KutuphaneId));
 
             int totalCopies = await nushaQuery.CountAsync(cancellationToken);
             int availableCopies = await nushaQuery.Where(n => n.Durumu == NushaDurumu.Rafta).CountAsync(cancellationToken);

@@ -8,6 +8,7 @@ using Domain.Entities.Security;
 using MediatR;
 using NArchitecture.Core.Application.Dtos;
 using NArchitecture.Core.Security.Enums;
+using NArchitecture.Core.Security.Constants;
 using NArchitecture.Core.Security.JWT;
 
 namespace Application.Features.Auth.Commands.Login;
@@ -57,7 +58,15 @@ public class LoginCommand : IRequest<LoggedResponse>
             );
             await _authBusinessRules.UserShouldBeExistsWhenSelected(user);
             await _authBusinessRules.UserPasswordShouldBeMatch(user!, request.UserForLoginDto.Password);
-            await _authBusinessRules.UserShouldHaveRole(user!, ApplicationRoles.OkulKutuphaneYoneticisi);
+            await _authBusinessRules.UserShouldHaveAnyOfRoles(
+                user!,
+                ApplicationRoles.SistemYoneticisi,
+                ApplicationRoles.BakanlikYetkilisi,
+                ApplicationRoles.IlYetkilisi,
+                ApplicationRoles.IlceYetkilisi,
+                ApplicationRoles.OkulKutuphaneYoneticisi,
+                GeneralOperationClaims.Admin
+            );
 
             LoggedResponse loggedResponse = new();
 

@@ -9,16 +9,16 @@ public class YeniKatalogTalebi : Entity<Guid>
     {
     }
 
-    public YeniKatalogTalebi(Guid id, Guid talepEdenKutuphaneId, string? altBaslik, string? yazarMetni, string? ısbn,
-        string? ıssn, string? materyalTuru, string? materyalAltTuru, string? dil, string? yayinevi, string? yayinYeri,
+    public YeniKatalogTalebi(Guid id, Guid talepEdenKutuphaneId, string? altBaslik, string? yazarMetni, string? isbn,
+        string? issn, string? materyalTuru, string? materyalAltTuru, string? dil, string? yayinevi, string? yayinYeri,
         int? yayinYili, string? aciklama, string? redGerekcesi, TalepDurumu durum, DateTime? sonGuncellemeTarihi,
         Guid? katalogKaydiId, Kutuphane? talepEdenKutuphane, KatalogKaydi? katalogKaydi) : base(id)
     {
         TalepEdenKutuphaneId = talepEdenKutuphaneId;
         AltBaslik = altBaslik;
         YazarMetni = yazarMetni;
-        Isbn = ısbn;
-        Issn = ıssn;
+        Isbn = isbn;
+        Issn = issn;
         MateryalTuru = materyalTuru;
         MateryalAltTuru = materyalAltTuru;
         Dil = dil;
