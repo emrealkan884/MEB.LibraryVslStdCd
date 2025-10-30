@@ -14,7 +14,19 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'home',
+      name: 'public-catalog',
+      component: () => import('../views/PublicCatalogSearchView.vue'),
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/kayit/:id',
+      name: 'public-catalog-detail',
+      component: () => import('../views/PublicCatalogDetailView.vue'),
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
       component: () => import('../views/HomeView.vue'),
       meta: { requiresAuth: true }
     },

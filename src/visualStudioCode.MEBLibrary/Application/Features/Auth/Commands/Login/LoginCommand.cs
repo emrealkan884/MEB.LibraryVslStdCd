@@ -3,7 +3,6 @@ using Application.Features.Auth.Rules;
 using Application.Services.AuthenticatorService;
 using Application.Services.AuthService;
 using Application.Services.UsersService;
-using Domain.Entities;
 using Domain.Entities.Security;
 using MediatR;
 using NArchitecture.Core.Application.Dtos;

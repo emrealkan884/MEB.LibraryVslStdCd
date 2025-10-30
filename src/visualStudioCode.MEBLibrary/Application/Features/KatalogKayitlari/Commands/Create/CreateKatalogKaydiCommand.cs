@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.ValueObjects.Marc;
 using MediatR;
+using NArchitecture.Core.Application.Pipelines.Transaction;
 
 namespace Application.Features.KatalogKayitlari.Commands.Create;
 
@@ -35,7 +36,7 @@ public class CreateKatalogKaydiCommand : IRequest<CreatedKatalogKaydiResponse>
     public IList<CreateKatalogKaydiYazarDto>? Yazarlar { get; set; }
     public IList<CreateKatalogKaydiKonuDto>? Konular { get; set; }
 
-    public class CreateKatalogKaydiCommandHandler : IRequestHandler<CreateKatalogKaydiCommand, CreatedKatalogKaydiResponse>
+    public class CreateKatalogKaydiCommandHandler : IRequestHandler<CreateKatalogKaydiCommand, CreatedKatalogKaydiResponse>, ITransactionalRequest
     {
         private readonly IMapper _mapper;
         private readonly IKatalogKaydiRepository _katalogKaydiRepository;

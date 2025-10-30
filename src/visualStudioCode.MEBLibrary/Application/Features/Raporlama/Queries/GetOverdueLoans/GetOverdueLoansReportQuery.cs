@@ -1,10 +1,13 @@
 using System.Linq;
 using Application.Authorization;
+using Application.Features.Raporlama.Constants;
 using Application.Services.Repositories;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NArchitecture.Core.CrossCuttingConcerns.Exception.Types;
+using NArchitecture.Core.Localization.Abstraction;
 
 namespace Application.Features.Raporlama.Queries.GetOverdueLoans;
 
@@ -17,14 +20,20 @@ public class GetOverdueLoansReportQuery : IRequest<List<OverdueLoanReportDto>>
     {
         private readonly IOduncIslemiRepository _oduncIslemiRepository;
         private readonly IKullaniciYetkiServisi _kullaniciYetkiServisi;
+        private readonly IKutuphaneRepository _kutuphaneRepository;
+        private readonly ILocalizationService _localizationService;
 
         public GetOverdueLoansReportQueryHandler(
             IOduncIslemiRepository oduncIslemiRepository,
-            IKullaniciYetkiServisi kullaniciYetkiServisi
+            IKullaniciYetkiServisi kullaniciYetkiServisi,
+            IKutuphaneRepository kutuphaneRepository,
+            ILocalizationService localizationService
         )
         {
             _oduncIslemiRepository = oduncIslemiRepository;
             _kullaniciYetkiServisi = kullaniciYetkiServisi;
+            _kutuphaneRepository = kutuphaneRepository;
+            _localizationService = localizationService;
         }
 
         public async Task<List<OverdueLoanReportDto>> Handle(GetOverdueLoansReportQuery request, CancellationToken cancellationToken)
@@ -34,6 +43,34 @@ public class GetOverdueLoansReportQuery : IRequest<List<OverdueLoanReportDto>>
             IReadOnlyList<Guid>? yetkiliKutuphaneler = await _kullaniciYetkiServisi.YetkiliKutuphaneIdListesiAsync(cancellationToken);
             if (yetkiliKutuphaneler is { Count: 0 })
                 return new List<OverdueLoanReportDto>();
+
+            if (request.KutuphaneId.HasValue)
+            {
+                Guid kutuphaneId = request.KutuphaneId.Value;
+
+                if (yetkiliKutuphaneler is not null && !yetkiliKutuphaneler.Contains(kutuphaneId))
+                {
+                    string message = await _localizationService.GetLocalizedAsync(
+                        RaporlamaBusinessMessages.KutuphaneYetkisiGerekli,
+                        RaporlamaBusinessMessages.SectionName
+                    );
+                    throw new BusinessException(message);
+                }
+
+                bool kutuphaneExists = await _kutuphaneRepository.AnyAsync(
+                    predicate: k => k.Id == kutuphaneId,
+                    cancellationToken: cancellationToken
+                );
+
+                if (!kutuphaneExists)
+                {
+                    string message = await _localizationService.GetLocalizedAsync(
+                        RaporlamaBusinessMessages.KutuphaneBulunamadi,
+                        RaporlamaBusinessMessages.SectionName
+                    );
+                    throw new BusinessException(message);
+                }
+            }
 
             IQueryable<OduncIslemi> query = _oduncIslemiRepository
                 .Query()

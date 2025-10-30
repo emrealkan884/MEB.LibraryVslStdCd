@@ -232,8 +232,8 @@ const handleLogin = async () => {
         await router.push('/okul/dashboard')
         console.log('Router push completed')
       } else {
-        console.log('Redirecting to home')
-        await router.push('/')
+        console.log('Redirecting to dashboard')
+        await router.push('/dashboard')
         console.log('Router push completed')
       }
     } else {
