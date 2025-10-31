@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-const MINISTRY_ROLE = 'Role.BakanlikYetkilisi'
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -35,7 +33,11 @@ const router = createRouter({
       path: '/merkez',
       name: 'merkez-layout',
       component: () => import('../layouts/MerkezLayout.vue'),
-      meta: { requiresAuth: true, libraryType: 'Merkez' },
+      meta: {
+        requiresAuth: true,
+        libraryType: 'Merkez',
+        requiredRoles: ['Role.BakanlikYetkilisi', 'Role.SistemYoneticisi']
+      },
       children: [
         {
           path: 'dashboard',
@@ -71,6 +73,11 @@ const router = createRouter({
           path: 'dolasim',
           name: 'merkez-circulation',
           component: () => import('../views/merkez/CirculationView.vue')
+        },
+        {
+          path: 'kutuphaneler',
+          name: 'merkez-libraries',
+          component: () => import('../views/merkez/LibrariesView.vue')
         },
         {
           path: 'kullanicilar',
@@ -161,8 +168,8 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-  // Eğer auth bilgisi yoksa kontrol et
-  if (!authStore.user && !authStore.token) {
+  // Kullanıcı henüz yüklenmediyse auth bilgisini yenile
+  if (!authStore.user) {
     await authStore.checkAuth()
   }
 
@@ -178,25 +185,58 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  if (to.meta.libraryType === 'Merkez' && !authStore.hasRole(MINISTRY_ROLE)) {
-    next('/login')
-    return
+  // Kullanıcının türüne göre uygun dashboard'a yönlendir
+  if (to.path === '/dashboard' || to.name === 'dashboard') {
+    if (authStore.isMerkezKutuphane) {
+      next('/merkez/dashboard')
+      return
+    }
+    if (authStore.isOkulKutuphane) {
+      next('/okul/dashboard')
+      return
+    }
+  }
+
+  // Rol kontrolü
+  const requiredRoles = Array.isArray(to.meta.requiredRoles) ? (to.meta.requiredRoles as string[]) : []
+  if (requiredRoles.length > 0) {
+    const hasAllowedRole = requiredRoles.some(role => authStore.hasRole(role))
+    if (!hasAllowedRole) {
+      // Yetkisi yoksa uygun dashboard'a ya da giriş sayfasına yönlendir
+      if (authStore.isMerkezKutuphane) {
+        next('/merkez/dashboard')
+      } else if (authStore.isOkulKutuphane) {
+        next('/okul/dashboard')
+      } else {
+        next('/login')
+      }
+      return
+    }
   }
 
   // Kütüphane türü kontrolü
-  if (to.meta.libraryType && authStore.user?.libraryType !== to.meta.libraryType) {
-    // Yanlış kütüphane türü için doğru sayfaya yönlendir
-    if (authStore.isMerkezKutuphane) {
-      next('/merkez/dashboard')
-    } else if (authStore.isOkulKutuphane) {
-      next('/okul/dashboard')
-    } else {
-      next('/login')
+  if (to.meta.libraryType) {
+    if (to.meta.libraryType === 'Merkez' && authStore.isMerkezKutuphane) {
+      next()
+      return
     }
-    return
+    if (to.meta.libraryType === 'Okul' && authStore.isOkulKutuphane) {
+      next()
+      return
+    }
+
+    if (authStore.user?.libraryType !== to.meta.libraryType) {
+      if (authStore.isMerkezKutuphane) {
+        next('/merkez/dashboard')
+      } else if (authStore.isOkulKutuphane) {
+        next('/okul/dashboard')
+      } else {
+        next('/login')
+      }
+      return
+    }
   }
 
   next()
 })
-
 export default router

@@ -436,11 +436,14 @@ const buildDynamicQuery = () => {
   const trimmedSearch = searchTerm.value.trim()
   if (trimmedSearch.length > 0) {
     filters.push({
+      Field: 'Baslik',
+      Operator: 'contains',
+      Value: trimmedSearch,
       Logic: 'or',
       Filters: [
-        { Field: 'Baslik', Operator: 'Contains', Value: trimmedSearch },
-        { Field: 'AltBaslik', Operator: 'Contains', Value: trimmedSearch },
-        { Field: 'Isbn', Operator: 'Contains', Value: trimmedSearch }
+        { Field: 'AltBaslik', Operator: 'contains', Value: trimmedSearch },
+        { Field: 'Isbn', Operator: 'contains', Value: trimmedSearch },
+        { Field: 'Ozet', Operator: 'contains', Value: trimmedSearch }
       ]
     })
   }
@@ -448,7 +451,7 @@ const buildDynamicQuery = () => {
   if (selectedMaterialType.value !== 'all') {
     filters.push({
       Field: 'MateryalTuru',
-      Operator: 'Equal',
+      Operator: 'eq',
       Value: selectedMaterialType.value
     })
   }
@@ -456,7 +459,7 @@ const buildDynamicQuery = () => {
   if (selectedLanguage.value !== 'all') {
     filters.push({
       Field: 'Dil',
-      Operator: 'Equal',
+      Operator: 'eq',
       Value: selectedLanguage.value
     })
   }
@@ -467,7 +470,7 @@ const buildDynamicQuery = () => {
   if (!Number.isNaN(fromYear)) {
     filters.push({
       Field: 'YayinYili',
-      Operator: 'GreaterThanOrEqual',
+      Operator: 'gte',
       Value: fromYear
     })
   }
@@ -475,7 +478,7 @@ const buildDynamicQuery = () => {
   if (!Number.isNaN(toYear)) {
     filters.push({
       Field: 'YayinYili',
-      Operator: 'LessThanOrEqual',
+      Operator: 'lte',
       Value: toYear
     })
   }
@@ -485,6 +488,8 @@ const buildDynamicQuery = () => {
     filter = filters[0]
   } else if (filters.length > 1) {
     filter = {
+      Field: 'Id',
+      Operator: 'isnotnull',
       Logic: 'and',
       Filters: filters
     }
