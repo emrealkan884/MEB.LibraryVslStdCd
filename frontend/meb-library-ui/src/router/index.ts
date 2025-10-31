@@ -75,6 +75,11 @@ const router = createRouter({
           component: () => import('../views/merkez/CirculationView.vue')
         },
         {
+          path: 'kutuphaneler',
+          name: 'merkez-libraries',
+          component: () => import('../views/merkez/LibrariesView.vue')
+        },
+        {
           path: 'kullanicilar',
           name: 'merkez-users',
           component: () => import('../views/merkez/UsersView.vue')

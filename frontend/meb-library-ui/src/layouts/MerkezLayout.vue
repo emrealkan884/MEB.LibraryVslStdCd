@@ -136,6 +136,15 @@ const navItems: NavItem[] = [
     accent: 'nav-icon--amber'
   },
   {
+    routeName: 'merkez-libraries',
+    to: '/merkez/kutuphaneler',
+    label: 'Kutuphaneler',
+    navHint: 'Birim ve raflar',
+    pageIntro: 'Kurum kutuphanelerini, bolumleri ve raf yapilarini yonetin',
+    initial: 'K',
+    accent: 'nav-icon--teal'
+  },
+  {
     routeName: 'merkez-users',
     to: '/merkez/kullanicilar',
     label: 'Kullanicilar',
@@ -403,6 +412,10 @@ onBeforeUnmount(() => {
 
 .nav-icon--orange {
   background: linear-gradient(135deg, #fb923c, #ea580c);
+}
+
+.nav-icon--teal {
+  background: linear-gradient(135deg, #14b8a6, #0f766e);
 }
 
 .nav-icon--slate {
