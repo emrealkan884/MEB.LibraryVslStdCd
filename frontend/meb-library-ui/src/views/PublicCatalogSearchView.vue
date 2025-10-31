@@ -331,6 +331,33 @@ const formatLastUpdated = (value: string) => {
   return new Intl.DateTimeFormat('tr-TR', { dateStyle: 'medium' }).format(parsed)
 }
 
+const tokenizeQuery = (value: string) =>
+  value
+    .toLocaleLowerCase('tr-TR')
+    .split(/\s+/)
+    .filter(Boolean)
+
+const recordMatchesTokens = (
+  record: {
+    title?: string | null
+    author?: string | null
+    materialType?: string | null
+    summary?: string | null
+    isbn?: string | null
+  },
+  tokens: string[]
+) => {
+  if (tokens.length === 0) {
+    return true
+  }
+
+  const searchableFields = [record.title, record.author, record.materialType, record.summary, record.isbn].map(
+    field => field?.toString().toLocaleLowerCase('tr-TR') ?? ''
+  )
+
+  return tokens.every(token => searchableFields.some(field => field.includes(token)))
+}
+
 const mapServerRecord = (record: ServerCatalogRecord, index: number): CatalogRecord => {
   const availability = (['available', 'limited', 'unavailable'] as CatalogAvailability[]).includes(
     record.status as CatalogAvailability
@@ -483,16 +510,12 @@ const mockDataset: CatalogRecord[] = [
 const useMockResults = (reason?: string) => {
   state.error = reason ?? ''
 
+  const tokens = tokenizeQuery(criteria.query)
   const selectedMaterial = materialOptions.find(option => option.value === criteria.materialType)
-  const queryLower = criteria.query.trim().toLowerCase()
 
   const matches = mockDataset.filter(record => {
-    const recordMaterial = record.materialType.toLowerCase()
-    const matchesQuery =
-      !queryLower ||
-      record.title.toLowerCase().includes(queryLower) ||
-      record.author.toLowerCase().includes(queryLower) ||
-      (record.isbn && record.isbn.includes(criteria.query))
+    const recordMaterial = record.materialType.toLocaleLowerCase('tr-TR')
+    const matchesTokens = recordMatchesTokens(record, tokens)
 
     const matchesMaterial =
       criteria.materialType === 'all' ||
@@ -500,12 +523,12 @@ const useMockResults = (reason?: string) => {
 
     const matchesLanguage =
       criteria.language === 'all' ||
-      record.language?.toLowerCase() === criteria.language.toLowerCase()
+      record.language?.toLocaleLowerCase('tr-TR') === criteria.language.toLocaleLowerCase('tr-TR')
 
     const matchesYearFrom = !criteria.year.from || (record.publicationYear ?? 0) >= criteria.year.from
     const matchesYearTo = !criteria.year.to || (record.publicationYear ?? 9999) <= criteria.year.to
 
-    return matchesQuery && matchesMaterial && matchesLanguage && matchesYearFrom && matchesYearTo
+    return matchesTokens && matchesMaterial && matchesLanguage && matchesYearFrom && matchesYearTo
   })
 
   state.total = matches.length
@@ -537,11 +560,23 @@ const performSearch = async (resetPage = false, options?: { userInitiated?: bool
       return
     }
 
-    state.total = data.totalCount ?? data.items.length
+    const totalCount = data.totalCount ?? data.items.length
     criteria.page = data.page ?? criteria.page
     criteria.pageSize = data.pageSize ?? criteria.pageSize
 
-    records.value = data.items.map(mapServerRecord)
+    const tokens = tokenizeQuery(criteria.query)
+    const filteredItems = tokens.length > 0 ? data.items.filter(item => recordMatchesTokens(item, tokens)) : data.items
+
+    if (tokens.length > 0 && filteredItems.length === 0) {
+      state.total = 0
+      records.value = []
+      return
+    }
+
+    state.total =
+      tokens.length > 0 && filteredItems.length !== data.items.length ? filteredItems.length : totalCount
+
+    records.value = filteredItems.map(mapServerRecord)
   } catch (error: any) {
     const message =
       error?.response?.data?.message ??

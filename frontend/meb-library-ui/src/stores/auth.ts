@@ -133,8 +133,17 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!user.value && !!token.value)
 
   const hasRole = (role: string) => user.value?.roles.includes(role) ?? false
-  const isMerkezKutuphane = computed(() => user.value?.libraryType === 'Merkez')
-  const isOkulKutuphane = computed(() => user.value?.libraryType === 'Okul')
+  const isMerkezKutuphane = computed(
+    () =>
+      user.value?.libraryType === 'Merkez' ||
+      hasRole('Role.BakanlikYetkilisi') ||
+      hasRole('Role.SistemYoneticisi')
+  )
+  const isOkulKutuphane = computed(
+    () =>
+      user.value?.libraryType === 'Okul' ||
+      hasRole('Role.OkulKutuphaneYoneticisi')
+  )
 
   const mapProfileToUser = (profile: CurrentUserProfile): User => ({
     id: profile.id,
