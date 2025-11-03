@@ -1,49 +1,28 @@
-ï»¿<template>
+<template>
   <div class="dashboard">
     <section class="hero">
       <div class="hero-content">
         <div class="hero-text">
-          <h1>Merkez kÃ¼tÃ¼phanenin nabzÄ±</h1>
-          <p>GerÃ§ek zamanlÄ± metrikler, son aktiviteler ve sÄ±k kullanÄ±lan iÅŸlemler tek ekranda.</p>
+          <h1>Merkez kütüphanenin nabzı</h1>
+          <p>Gerçek zamanlı metrikler, son aktiviteler ve sık kullanılan işlemler tek ekranda.</p>
         </div>
         <div class="hero-pulse">
           <div class="pulse-circle"></div>
-          <span>Son senkronizasyon Â· {{ metricsLoading ? 'Veriler yÃ¼kleniyor...' : lastSyncLabel }}</span>
+          <span>Son senkronizasyon · 18 sn önce</span>
         </div>
-        <button type="button" class="hero-refresh" :disabled="metricsLoading" @click="refreshMetrics">
-          Verileri yenile
-        </button>
       </div>
       <div class="hero-wave"></div>
     </section>
 
     <section class="metrics">
-      <div v-if="metricsLoading" class="metric metric--placeholder">
-        <div class="metric-icon">...</div>
+      <article v-for="card in metricCards" :key="card.title" class="metric" :class="card.variant">
+        <div class="metric-icon">{{ card.icon }}</div>
         <div class="metric-body">
-          <span class="metric-title">Veriler yÃ¼kleniyor</span>
-          <strong>...</strong>
-          <small>Raporlama servisinden yanÄ±t bekleniyor</small>
+          <span class="metric-title">{{ card.title }}</span>
+          <strong>{{ card.value }}</strong>
+          <small>{{ card.subtitle }}</small>
         </div>
-      </div>
-      <template v-else-if="hasMetrics">
-        <article v-for="card in metricCards" :key="card.key" class="metric" :class="card.variant">
-          <div class="metric-icon">{{ card.icon }}</div>
-          <div class="metric-body">
-            <span class="metric-title">{{ card.title }}</span>
-            <strong>{{ card.value.toLocaleString('tr-TR') }}</strong>
-            <small>{{ card.subtitle }}</small>
-          </div>
-        </article>
-      </template>
-      <div v-else class="metric metric--placeholder">
-        <div class="metric-icon">-</div>
-        <div class="metric-body">
-          <span class="metric-title">HenÃ¼z metrik verisi bulunmuyor</span>
-          <strong>-</strong>
-          <small>Verileri Ã§ekmek iÃ§in yenile butonunu kullanabilirsiniz</small>
-        </div>
-      </div>
+      </article>
     </section>
 
     <section class="panels">
@@ -51,9 +30,9 @@
         <header>
           <div>
             <h2>Son aktiviteler</h2>
-            <p>Operasyonel akÄ±ÅŸÄ±n gÃ¼ncel Ã¶zetleri</p>
+            <p>Operasyonel akışın güncel özetleri</p>
           </div>
-          <button type="button">TÃ¼mÃ¼nÃ¼ GÃ¶r</button>
+          <button type="button">Tümünü Gör</button>
         </header>
         <ul>
           <li v-for="(item, index) in activities" :key="index" :class="`state-${item.state}`">
@@ -70,12 +49,12 @@
       <article class="panel quick-actions">
         <header>
           <div>
-            <h2>HÄ±zlÄ± iÅŸlemler</h2>
-            <p>En sÄ±k kullanÄ±lan ekranlara tek dokunuÅŸla ulaÅŸÄ±n</p>
+            <h2>Hızlı işlemler</h2>
+            <p>En sık kullanılan ekranlara tek dokunuşla ulaşın</p>
           </div>
         </header>
         <div class="action-grid">
-          <button v-for="(action, index) in actions" :key="index" type="button" @click="action.onClick()">
+          <button v-for="(action, index) in actions" :key="index" type="button">
             <span class="action-icon">{{ action.icon }}</span>
             <div>
               <strong>{{ action.title }}</strong>
@@ -91,7 +70,7 @@
         <header>
           <div>
             <h2>Servis durumu</h2>
-            <p>AltyapÄ± bileÅŸenlerinin canlÄ± izlenmesi</p>
+            <p>Altyapı bileşenlerinin canlı izlenmesi</p>
           </div>
         </header>
         <div class="status-grid">
@@ -113,26 +92,17 @@
 import { computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useReportingStore } from '@/stores/reporting'
-import { useRouter } from 'vue-router'
 
 const reportingStore = useReportingStore()
 const { loading, summaryCards, lastUpdated } = storeToRefs(reportingStore)
-const router = useRouter()
-
-interface QuickAction {
-  title: string
-  subtitle: string
-  icon: string
-  onClick: () => void
-}
 
 const palette = ['rose', 'emerald', 'amber', 'indigo', 'violet', 'sky']
-const icons = ['ğŸ“š', 'ğŸ“¦', 'ğŸ“Š', 'ğŸ“ˆ', 'ğŸ“˜', 'ğŸ“•']
+const icons = ['??', '??', '??', '??', '??', '???']
 
 const metricCards = computed(() => {
   const flattened = summaryCards.value.flatMap(card =>
     card.metrics.map(metric => ({
-      key: `${card.title}-${metric.key}`,
+      key: ${card.title}-,
       title: metric.label,
       value: metric.value,
       subtitle: card.title,
@@ -154,7 +124,7 @@ const hasMetrics = computed(() => metricCards.value.length > 0)
 
 const lastSyncLabel = computed(() => {
   const iso = lastUpdated.value.summaries
-  if (!iso) return 'HenÃ¼z senkronize edilmedi'
+  if (!iso) return 'Henüz senkronize edilmedi'
   try {
     return new Intl.DateTimeFormat('tr-TR', {
       hour: '2-digit',
@@ -162,7 +132,7 @@ const lastSyncLabel = computed(() => {
       second: '2-digit',
     }).format(new Date(iso))
   } catch {
-    return 'Tarih okunamadÄ±'
+    return 'Tarih okunamadı'
   }
 })
 
@@ -177,50 +147,22 @@ onMounted(async () => {
 })
 
 const activities = [
-  { title: 'Yeni kitap kataloglandÄ±', description: 'â€œYapay Zeka ve EÄŸitimâ€ kaydÄ± tamamlandÄ±.', time: '2 dakika Ã¶nce', state: 'success' },
-  { title: 'Ã–dÃ¼nÃ§ iÅŸlem iadesi', description: 'Ãœmraniye Anadolu Lisesi, 4 materyal iade etti.', time: '8 dakika Ã¶nce', state: 'info' },
-  { title: 'Gecikme bildirimi', description: 'Ä°stanbul Fen Lisesi iÃ§in otomatik hatÄ±rlatma gÃ¶nderildi.', time: '14 dakika Ã¶nce', state: 'warn' }
+  { title: 'Yeni kitap kataloglandı', description: '"Yapay Zeka ve Eğitim" kaydı tamamlandı.', time: '2 dakika önce', state: 'success' },
+  { title: 'Ödünç işlem iadesi', description: 'Ümraniye Anadolu Lisesi, 4 materyal iade etti.', time: '8 dakika önce', state: 'info' },
+  { title: 'Gecikme bildirimi', description: 'İstanbul Fen Lisesi için otomatik hatırlatma gönderildi.', time: '14 dakika önce', state: 'warn' }
 ]
 
-const actions: QuickAction[] = [
-  {
-    title: 'Yeni katalog kaydÄ±',
-    subtitle: 'MARC veya RDA giriÅŸ ekranÄ±nÄ± aÃ§',
-    icon: 'â•',
-    onClick: () => {
-      router.push({ name: 'merkez-cataloging' })
-    },
-  },
-  {
-    title: 'Ã–dÃ¼nÃ§ ver',
-    subtitle: 'Tek tÄ±kla seri Ã¶dÃ¼nÃ§ iÅŸlemine git',
-    icon: 'ğŸ“¥',
-    onClick: () => {
-      router.push({ name: 'merkez-circulation', query: { action: 'new-loan' } })
-    },
-  },
-  {
-    title: 'Rapor indir',
-    subtitle: 'HazÄ±r rapor ÅŸablonlarÄ±nÄ± indir',
-    icon: 'â¬‡ï¸',
-    onClick: () => {
-      router.push({ name: 'merkez-reports' })
-    },
-  },
-  {
-    title: 'KullanÄ±cÄ± davet et',
-    subtitle: 'Yeni okul yÃ¶neticisi ekle',
-    icon: 'âœ‰ï¸',
-    onClick: () => {
-      router.push({ name: 'merkez-users', query: { action: 'invite' } })
-    },
-  },
+const actions = [
+  { title: 'Yeni katalog kaydı', subtitle: 'MARC veya RDA giriş ekranını aç', icon: '??' },
+  { title: 'Ödünç ver', subtitle: 'Tek tıkla seri ödünç işlemine git', icon: '??' },
+  { title: 'Rapor indir', subtitle: 'Hazır rapor şablonlarını indir', icon: '??' },
+  { title: 'Kullanıcı davet et', subtitle: 'Yeni okul yöneticisi ekle', icon: '??' }
 ]
 
 const statusCards = [
-  { title: 'VeritabanÄ±', description: 'BaÄŸlÄ± ve replikasyon aktif', detail: 'Son yedekleme: 17 dk Ã¶nce', icon: 'ğŸ—„ï¸' },
-  { title: 'API servisleri', description: '4 servis Â· 26 ms yanÄ±t sÃ¼resi', detail: 'Durum: saÄŸlÄ±klÄ±', icon: 'ğŸŒ' },
-  { title: 'Depo kapasitesi', description: '%72 doluluk Â· log temizliÄŸi Ã¶neriliyor', detail: 'Planlanan bakÄ±m: 23:00', icon: 'ğŸ“¦' }
+  { title: 'Veritabanı', description: 'Bağlı ve replikasyon aktif', detail: 'Son yedekleme: 17 dk önce', icon: '???' },
+  { title: 'API servisleri', description: '4 servis · 26 ms yanıt süresi', detail: 'Durum: sağlıklı', icon: '???' },
+  { title: 'Depo kapasitesi', description: '%72 doluluk · log temizliği öneriliyor', detail: 'Planlanan bakım: 23:00', icon: '??' }
 ]
 </script>
 
@@ -321,29 +263,6 @@ const statusCards = [
   z-index: 0;
 }
 
-.hero-refresh {
-  align-self: center;
-  padding: 0.55rem 1rem;
-  border-radius: 999px;
-  border: 1px solid rgba(248, 113, 113, 0.35);
-  background: rgba(255, 255, 255, 0.85);
-  color: #dc2626;
-  font-weight: 500;
-  font-size: 0.85rem;
-  backdrop-filter: blur(6px);
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.hero-refresh:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 8px 18px rgba(248, 113, 113, 0.18);
-}
-
-.hero-refresh:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -410,22 +329,6 @@ const statusCards = [
 .metric.amber .metric-icon { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
 .metric.indigo .metric-icon { background: linear-gradient(135deg, #6366f1, #60a5fa); }
 
-.metric--placeholder {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  padding: 1.05rem 1.25rem;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px dashed rgba(226, 232, 240, 0.9);
-  color: #64748b;
-}
-
-.metric--placeholder strong {
-  font-size: 1.2rem;
-  color: #0f172a;
-}
-
 .panels {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -434,12 +337,13 @@ const statusCards = [
 
 .panel {
   background: #ffffff;
-  border-radius: 20px;
-  padding: 1.4rem;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.05);
-  border: 1px solid rgba(226, 232, 240, 0.6);
-  display: grid;
-  gap: 1.1rem;
+  border-radius: 22px;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.07);
+  padding: 1.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
 }
 
 .panel header {
@@ -451,51 +355,55 @@ const statusCards = [
 
 .panel header h2 {
   margin: 0;
-  color: #1f2937;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  color: #0f172a;
 }
 
 .panel header p {
-  margin: 0.3rem 0 0;
+  margin: 0.25rem 0 0;
   color: rgba(71, 85, 105, 0.75);
   font-size: 0.88rem;
 }
 
 .panel header button {
   border: none;
-  background: rgba(248, 113, 113, 0.12);
-  color: #b91c1c;
-  padding: 0.45rem 0.8rem;
-  border-radius: 12px;
-  cursor: pointer;
+  background: none;
+  color: #dc2626;
   font-weight: 600;
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+
+.panel header button:hover {
+  color: #be123c;
 }
 
 .activity ul {
   list-style: none;
-  padding: 0;
   margin: 0;
-  display: grid;
-  gap: 0.9rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
 }
 
 .activity li {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.8rem;
-  align-items: flex-start;
+  gap: 0.85rem;
+  align-items: start;
 }
 
-.activity .bullet {
+.activity li .bullet {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  margin-top: 0.4rem;
+  margin-top: 0.35rem;
 }
 
-.state-success .bullet { background: #16a34a; }
-.state-info .bullet { background: #2563eb; }
-.state-warn .bullet { background: #f59e0b; }
+.activity li.state-success .bullet { background: #16a34a; }
+.activity li.state-info .bullet { background: #2563eb; }
+.activity li.state-warn .bullet { background: #f97316; }
 
 .activity li strong {
   display: block;
@@ -605,6 +513,44 @@ const statusCards = [
   font-size: 0.78rem;
 }
 
+.hero-refresh {
+  align-self: center;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(255, 255, 255, 0.85);
+  color: #dc2626;
+  font-weight: 500;
+  font-size: 0.85rem;
+  backdrop-filter: blur(6px);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-refresh:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 18px rgba(248, 113, 113, 0.18);
+}
+
+.hero-refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.metric--placeholder {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.05rem 1.25rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px dashed rgba(226, 232, 240, 0.9);
+  color: #64748b;
+}
+
+.metric--placeholder strong {
+  font-size: 1.2rem;
+  color: #0f172a;
+}
 @media (max-width: 960px) {
   .hero {
     padding: 2rem;
@@ -626,3 +572,10 @@ const statusCards = [
   }
 }
 </style>
+
+
+
+
+
+
+
