@@ -288,6 +288,12 @@ interface PagedResponse<T> {
 
 type FilterStatus = 'all' | 'active' | 'inactive'
 
+type MaybePagedResponse<T> = Partial<PagedResponse<T>> & {
+  Items?: T[]
+  Count?: number
+  Pages?: number
+}
+
 interface FilterState {
   role: number
   status: FilterStatus
@@ -438,6 +444,41 @@ const getRoleLabel = (roleKey: string): string => {
     return raw.replace(/([A-Z])/g, ' $1').trim()
   }
   return roleKey
+}
+
+const extractPagedPayload = <T>(
+  payload: MaybePagedResponse<T> | undefined | null
+): MaybePagedResponse<T> | undefined | null => {
+  if (!payload) return payload
+
+  if (
+    payload.items !== undefined ||
+    payload.Items !== undefined ||
+    payload.count !== undefined ||
+    payload.Count !== undefined
+  ) {
+    return payload
+  }
+
+  const nested = (payload as Record<string, unknown>).data ?? (payload as Record<string, unknown>).Data
+  if (nested && typeof nested === 'object') {
+    return extractPagedPayload<T>(nested as MaybePagedResponse<T>)
+  }
+
+  return payload
+}
+
+const normalizePagedResponse = <T>(payload: MaybePagedResponse<T> | undefined | null) => {
+  const source = extractPagedPayload(payload)
+
+  const items = source?.items ?? source?.Items ?? []
+  const count =
+    source?.count ??
+    source?.Count ??
+    (typeof items.length === 'number' ? items.length : 0)
+  const pages = source?.pages ?? source?.Pages ?? 0
+
+  return { items, count, pages }
 }
 
 const getRoleGroupLabel = (rawGroup: string): string => {
@@ -618,7 +659,8 @@ const loadOperationClaims = async () => {
         'PageRequest.PageSize': 200
       }
     })
-    roleOptions.value = response.data?.items ?? []
+    const { items } = normalizePagedResponse<OperationClaim>(response.data as MaybePagedResponse<OperationClaim>)
+    roleOptions.value = items
   } catch (err) {
     showFeedback(getErrorMessage(err), 'error')
   }
@@ -643,22 +685,25 @@ const loadUserRoles = async (userIds: string[]) => {
         }
 
   try {
-    const response = await apiClient.post<PagedResponse<UserOperationClaim>>(
-      '/UserOperationClaims/GetListByDynamic',
-      { Filter: filter },
-      {
-        params: {
-          'PageRequest.PageIndex': 0,
-          'PageRequest.PageSize': 500
+      const response = await apiClient.post<PagedResponse<UserOperationClaim>>(
+        '/UserOperationClaims/GetListByDynamic',
+        { Filter: filter },
+        {
+          params: {
+            'PageRequest.PageIndex': 0,
+            'PageRequest.PageSize': 500
+          }
         }
-      }
-    )
-    userOperationClaims.value = response.data?.items ?? []
-  } catch (err) {
-    console.error('Kullanıcı rolleri alınamadı', err)
-    userOperationClaims.value = []
+      )
+      const { items } = normalizePagedResponse<UserOperationClaim>(
+        response.data as MaybePagedResponse<UserOperationClaim>
+      )
+      userOperationClaims.value = items
+    } catch (err) {
+      console.error('Kullanıcı rolleri alınamadı', err)
+      userOperationClaims.value = []
+    }
   }
-}
 
 const loadMetrics = async () => {
   try {
@@ -678,7 +723,10 @@ const loadMetrics = async () => {
         }
       }
     )
-    metrics.activeCount = response.data?.count ?? metrics.activeCount
+    const { count } = normalizePagedResponse<UserListItem>(
+      response.data as MaybePagedResponse<UserListItem>
+    )
+    metrics.activeCount = typeof count === 'number' ? count : metrics.activeCount
   } catch (err) {
     console.error('Aktif kullanıcı metriği alınamadı', err)
   }
@@ -710,10 +758,12 @@ const loadUsers = async () => {
       }
     )
 
-    const data = response.data
-    users.value = data.items ?? []
-    totalCount.value = data.count ?? users.value.length
-    const pagesFromServer = data.pages ?? 0
+    const normalized = normalizePagedResponse<UserListItem>(
+      response.data as MaybePagedResponse<UserListItem>
+    )
+    users.value = normalized.items
+    totalCount.value = normalized.count ?? normalized.items.length
+    const pagesFromServer = normalized.pages ?? 0
     totalPages.value =
       pagesFromServer > 0 ? pagesFromServer : totalCount.value > 0 ? Math.ceil(totalCount.value / pageSize.value) : 0
     lastUpdated.value = new Date().toISOString()

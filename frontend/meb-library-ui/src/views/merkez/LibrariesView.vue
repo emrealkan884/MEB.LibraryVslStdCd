@@ -100,7 +100,7 @@
             <tr v-else-if="libraries.length === 0">
               <td colspan="5" class="table-state">Kayıt bulunamadı.</td>
             </tr>
-            <tr v-for="library in libraries" :key="library.id" :class="{ selected: library.id === selectedLibraryId }">
+            <tr v-for="library in libraries" :key="library.id" :class="{ selected: library.id === selectedLibraryId }" class="table-row" @click="selectLibrary(library.id)">
               <td>
                 <div class="entity">
                   <span class="entity__title">{{ library.ad }}</span>
@@ -122,15 +122,15 @@
                 <button
                   type="button"
                   class="btn btn--ghost btn--sm"
-                  @click="selectLibrary(library.id)"
+                  @click.stop="selectLibrary(library.id)"
                   :disabled="librariesLoading"
                 >
                   Detay
                 </button>
-                <button type="button" class="btn btn--ghost btn--sm" @click="openLibraryModal('edit', library)">
+                <button type="button" class="btn btn--ghost btn--sm" @click.stop="openLibraryModal('edit', library)">
                   Düzenle
                 </button>
-                <button type="button" class="btn btn--danger btn--sm" @click="deleteLibrary(library)">
+                <button type="button" class="btn btn--danger btn--sm" @click.stop="deleteLibrary(library)">
                   Sil
                 </button>
               </td>
@@ -414,7 +414,7 @@ interface PagedResponse<T> {
   hasPrevious: boolean
 }
 
-interface LibraryListItem {
+interface Library {
   id: string
   kod: string
   ad: string
@@ -425,54 +425,65 @@ interface LibraryListItem {
   aktif: boolean
 }
 
-interface SectionListItem {
+interface LibrarySection {
   id: string
   kutuphaneId: string
   ad: string
   aciklama?: string | null
 }
 
-interface ShelfListItem {
+interface Shelf {
   id: string
   kutuphaneBolumuId: string
   kod: string
   aciklama?: string | null
 }
 
+type FeedbackKind = 'success' | 'error' | ''
+type LibraryTypeFilter = 'all' | 'Merkez' | 'Okul'
+type LibraryStatusFilter = 'all' | 'active' | 'inactive'
 type DynamicFilter = Record<string, unknown>
-type StatusFilter = 'all' | 'active' | 'inactive'
-type TypeFilter = 'all' | 'Merkez' | 'Okul'
 
-const libraries = ref<LibraryListItem[]>([])
-const sections = ref<SectionListItem[]>([])
-const shelves = ref<ShelfListItem[]>([])
+interface LibraryFilterState {
+  search: string
+  type: LibraryTypeFilter
+  status: LibraryStatusFilter
+}
 
-const totalCount = ref(0)
-const totalPages = ref(0)
 const page = ref(0)
-const pageSize = ref(20)
+const pageSize = 15
+const totalPages = ref(0)
+const totalCount = ref(0)
 
 const librariesLoading = ref(false)
-const sectionsLoading = ref(false)
-const shelvesLoading = ref(false)
+const libraries = ref<Library[]>([])
 
-const selectedLibraryId = ref<string | null>(null)
-const selectedSectionId = ref<string | null>(null)
+const libraryFilters = reactive<LibraryFilterState>({
+  search: '',
+  type: 'all',
+  status: 'all'
+})
 
-const feedback = reactive<{ message: string; kind: 'success' | 'error' | '' }>({
+const appliedLibraryFilters = ref<LibraryFilterState>({
+  search: '',
+  type: 'all',
+  status: 'all'
+})
+
+const feedback = reactive<{ message: string; kind: FeedbackKind }>({
   message: '',
   kind: ''
 })
 
-const libraryFilters = reactive<{
-  search: string
-  status: StatusFilter
-  type: TypeFilter
-}>({
-  search: '',
-  status: 'all',
-  type: 'all'
-})
+const selectedLibraryId = ref<string | null>(null)
+const sections = ref<LibrarySection[]>([])
+const sectionsLoading = ref(false)
+const sectionsCount = ref(0)
+const selectedSectionId = ref<string | null>(null)
+
+const shelves = ref<Shelf[]>([])
+const shelvesLoading = ref(false)
+const shelvesCount = ref(0)
 
 const libraryModal = reactive({
   visible: false,
@@ -482,629 +493,7 @@ const libraryModal = reactive({
   id: '',
   kod: '',
   ad: '',
-  tip: 'Merkez',
-  adres: '',
-  telefon: '',
-  ePosta: '',
-  aktif: true
-})
-
-const sectionModal = reactive({
-  visible: false,
-  mode: 'create' as 'create' | 'edit',
-  saving: false,
-  error: '',
-  id: '',
-  ad: '',
-  aciklama: ''
-})
-
-const shelfModal = reactive({
-  visible: false,
-  mode: 'create' as 'create' | 'edit',
-  saving: false,
-  error: '',
-  id: '',
-  kod: '',
-  aciklama: ''
-})
-
-const selectedLibrary = computed(() => {
-  return libraries.value.find(item => item.id === selectedLibraryId.value) ?? null
-})
-
-const selectedSection = computed(() => {
-  return sections.value.find(item => item.id === selectedSectionId.value) ?? null
-})
-
-const sectionsCount = computed(() => sections.value.length)
-const shelvesCount = computed(() => shelves.value.length)
-
-const getLibraryTypeLabel = (tip: number | string): string => {
-  if (typeof tip === 'number') {
-    return tip === 1 ? 'Merkez' : tip === 2 ? 'Okul' : tip.toString()
-  }
-  const normalized = tip.toLowerCase()
-  if (normalized.includes('merkez')) return 'Merkez'
-  if (normalized.includes('okul')) return 'Okul'
-  return tip
-}
-
-const mapLibraryTypeToEnum = (value: string): number => {
-  return value === 'Okul' ? 2 : 1
-}
-
-const showFeedback = (message: string, kind: 'success' | 'error') => {
-  feedback.message = message
-  feedback.kind = kind
-  window.setTimeout(() => {
-    feedback.message = ''
-    feedback.kind = ''
-  }, 3500)
-}
-
-const getErrorMessage = (err: unknown): string => {
-  if (typeof err === 'string') {
-    return err
-  }
-  const axiosError = err as AxiosError<{ message?: string }>
-  return axiosError?.response?.data?.message || axiosError?.message || 'İşlem sırasında bir hata oluştu.'
-}
-
-const buildLibraryQuery = (): Record<string, unknown> => {
-  const filtersStack: DynamicFilter[] = []
-
-  if (libraryFilters.search) {
-    const searchFilter: DynamicFilter = {
-      Logic: 'or',
-      Filters: [
-        { Field: 'Kod', Operator: 'contains', Value: libraryFilters.search },
-        { Field: 'Ad', Operator: 'contains', Value: libraryFilters.search },
-        { Field: 'Adres', Operator: 'contains', Value: libraryFilters.search }
-      ]
-    }
-    filtersStack.push(searchFilter)
-  }
-
-  if (libraryFilters.type !== 'all') {
-    filtersStack.push({
-      Field: 'Tip',
-      Operator: 'eq',
-      Value: mapLibraryTypeToEnum(libraryFilters.type)
-    })
-  }
-
-  if (libraryFilters.status === 'active') {
-    filtersStack.push({ Field: 'Aktif', Operator: 'eq', Value: true })
-  } else if (libraryFilters.status === 'inactive') {
-    filtersStack.push({ Field: 'Aktif', Operator: 'eq', Value: false })
-  }
-
-  let filterBody: DynamicFilter | null = null
-  if (filtersStack.length === 1) {
-    filterBody = filtersStack[0]
-  } else if (filtersStack.length > 1) {
-    filterBody = { Logic: 'and', Filters: filtersStack }
-  }
-
-  const query: Record<string, unknown> = {
-    Sort: [
-      { Field: 'Ad', Dir: 'asc' },
-      { Field: 'Kod', Dir: 'asc' }
-    ]
-  }
-
-  if (filterBody) {
-    query.Filter = filterBody
-  }
-
-  return query
-}
-
-const loadLibraries = async () => {
-  librariesLoading.value = true
-  try {
-    const query = buildLibraryQuery()
-    const response = await apiClient.post<PagedResponse<LibraryListItem>>(
-      '/Kutuphaneler/GetListByDynamic',
-      query,
-      {
-        params: {
-          'PageRequest.PageIndex': page.value,
-          'PageRequest.PageSize': pageSize.value
-        }
-      }
-    )
-
-    const data = response.data
-    libraries.value = data.items ?? []
-    totalCount.value = data.count ?? libraries.value.length
-    const pagesFromServer = data.pages ?? 0
-    totalPages.value =
-      pagesFromServer > 0 ? pagesFromServer : totalCount.value > 0 ? Math.ceil(totalCount.value / pageSize.value) : 0
-
-    if (libraries.value.length === 0) {
-      selectedLibraryId.value = null
-      sections.value = []
-      shelves.value = []
-      return
-    }
-
-    if (!selectedLibraryId.value || !libraries.value.some(item => item.id === selectedLibraryId.value)) {
-      selectedLibraryId.value = libraries.value[0].id
-    }
-  } catch (err) {
-    libraries.value = []
-    totalCount.value = 0
-    totalPages.value = 0
-    showFeedback(getErrorMessage(err), 'error')
-  } finally {
-    librariesLoading.value = false
-  }
-}
-
-const loadSections = async (libraryId: string) => {
-  sectionsLoading.value = true
-  try {
-    const response = await apiClient.post<PagedResponse<SectionListItem>>(
-      '/KutuphaneBolumleri/GetListByDynamic',
-      {
-        Filter: {
-          Field: 'KutuphaneId',
-          Operator: 'eq',
-          Value: libraryId
-        },
-        Sort: [{ Field: 'Ad', Dir: 'asc' }]
-      },
-      {
-        params: {
-          'PageRequest.PageIndex': 0,
-          'PageRequest.PageSize': 200
-        }
-      }
-    )
-    sections.value = response.data?.items ?? []
-    if (sections.value.length === 0) {
-      selectedSectionId.value = null
-      shelves.value = []
-    } else if (!selectedSectionId.value || !sections.value.some(item => item.id === selectedSectionId.value)) {
-      selectedSectionId.value = sections.value[0].id
-    }
-  } catch (err) {
-    sections.value = []
-    selectedSectionId.value = null
-    shelves.value = []
-    showFeedback(getErrorMessage(err), 'error')
-  } finally {
-    sectionsLoading.value = false
-  }
-}
-
-const loadShelves = async (sectionId: string) => {
-  shelvesLoading.value = true
-  try {
-    const response = await apiClient.post<PagedResponse<ShelfListItem>>(
-      '/Raflar/GetListByDynamic',
-      {
-        Filter: {
-          Field: 'KutuphaneBolumuId',
-          Operator: 'eq',
-          Value: sectionId
-        },
-        Sort: [{ Field: 'Kod', Dir: 'asc' }]
-      },
-      {
-        params: {
-          'PageRequest.PageIndex': 0,
-          'PageRequest.PageSize': 200
-        }
-      }
-    )
-    shelves.value = response.data?.items ?? []
-  } catch (err) {
-    shelves.value = []
-    showFeedback(getErrorMessage(err), 'error')
-  } finally {
-    shelvesLoading.value = false
-  }
-}
-
-const applyLibraryFilters = async () => {
-  page.value = 0
-  await loadLibraries()
-}
-
-const resetLibraryFilters = async () => {
-  libraryFilters.search = ''
-  libraryFilters.status = 'all'
-  libraryFilters.type = 'all'
-  await applyLibraryFilters()
-}
-
-const prevPage = async () => {
-  if (page.value === 0) return
-  page.value -= 1
-  await loadLibraries()
-}
-
-const nextPage = async () => {
-  if (page.value + 1 >= totalPages.value) return
-  page.value += 1
-  await loadLibraries()
-}
-
-const selectLibrary = (id: string) => {
-  if (selectedLibraryId.value === id) {
-    return
-  }
-  selectedLibraryId.value = id
-}
-
-const selectSection = (id: string) => {
-  if (selectedSectionId.value === id) {
-    return
-  }
-  selectedSectionId.value = id
-}
-
-const openLibraryModal = (mode: 'create' | 'edit', library?: LibraryListItem) => {
-  libraryModal.visible = true
-  libraryModal.mode = mode
-  libraryModal.error = ''
-  libraryModal.saving = false
-
-  if (mode === 'edit' && library) {
-    libraryModal.id = library.id
-    libraryModal.kod = library.kod
-    libraryModal.ad = library.ad
-    libraryModal.tip = getLibraryTypeLabel(library.tip)
-    libraryModal.adres = library.adres
-    libraryModal.telefon = library.telefon || ''
-    libraryModal.ePosta = library.ePosta || ''
-    libraryModal.aktif = !!library.aktif
-  } else {
-    libraryModal.id = ''
-    libraryModal.kod = ''
-    libraryModal.ad = ''
-    libraryModal.tip = 'Merkez'
-    libraryModal.adres = ''
-    libraryModal.telefon = ''
-    libraryModal.ePosta = ''
-    libraryModal.aktif = true
-  }
-}
-
-const closeLibraryModal = () => {
-  if (libraryModal.saving) return
-  libraryModal.visible = false
-}
-
-const validateLibraryModal = (): string | null => {
-  if (!libraryModal.kod || libraryModal.kod.length < 2) {
-    return 'Kod en az 2 karakter olmalıdır.'
-  }
-  if (!libraryModal.ad || libraryModal.ad.length < 3) {
-    return 'Kütüphane adı en az 3 karakter olmalıdır.'
-  }
-  if (!libraryModal.adres || libraryModal.adres.length < 5) {
-    return 'Adres bilgisi en az 5 karakter olmalıdır.'
-  }
-  return null
-}
-
-const submitLibrary = async () => {
-  const validationError = validateLibraryModal()
-  if (validationError) {
-    libraryModal.error = validationError
-    return
-  }
-
-  libraryModal.error = ''
-  libraryModal.saving = true
-  try {
-    const payload = {
-      kod: libraryModal.kod,
-      ad: libraryModal.ad,
-      tip: mapLibraryTypeToEnum(libraryModal.tip),
-      adres: libraryModal.adres,
-      telefon: libraryModal.telefon || null,
-      ePosta: libraryModal.ePosta || null,
-      aktif: libraryModal.aktif
-    }
-    if (libraryModal.mode === 'create') {
-      const response = await apiClient.post<{ id?: string; Id?: string }>('/Kutuphaneler', payload)
-      const createdId = response.data?.id ?? response.data?.Id
-      showFeedback('Kütüphane oluşturuldu.', 'success')
-      libraryModal.visible = false
-      await loadLibraries()
-      if (createdId) {
-        selectedLibraryId.value = createdId
-      }
-    } else {
-      await apiClient.put('/Kutuphaneler', { id: libraryModal.id, ...payload })
-      showFeedback('Kütüphane güncellendi.', 'success')
-      libraryModal.visible = false
-      await loadLibraries()
-    }
-  } catch (err) {
-    libraryModal.error = getErrorMessage(err)
-  } finally {
-    libraryModal.saving = false
-  }
-}
-
-const deleteLibrary = async (library: LibraryListItem) => {
-  if (!window.confirm()) {
-    return
-  }
-  try {
-    await apiClient.delete()
-    showFeedback('Kütüphane silindi.', 'success')
-    await loadLibraries()
-  } catch (err) {
-    showFeedback(getErrorMessage(err), 'error')
-  }
-}
-
-const openSectionModal = (mode: 'create' | 'edit', section?: SectionListItem) => {
-  if (!selectedLibraryId.value) {
-    showFeedback('Önce bir kütüphane seçmelisiniz.', 'error')
-    return
-  }
-  sectionModal.visible = true
-  sectionModal.mode = mode
-  sectionModal.error = ''
-  sectionModal.saving = false
-
-  if (mode === 'edit' && section) {
-    sectionModal.id = section.id
-    sectionModal.ad = section.ad
-    sectionModal.aciklama = section.aciklama || ''
-  } else {
-    sectionModal.id = ''
-    sectionModal.ad = ''
-    sectionModal.aciklama = ''
-  }
-}
-
-const closeSectionModal = () => {
-  if (sectionModal.saving) return
-  sectionModal.visible = false
-}
-
-const submitSection = async () => {
-  if (!selectedLibraryId.value) {
-    sectionModal.error = 'Kütüphane seçilmedi.'
-    return
-  }
-  if (!sectionModal.ad || sectionModal.ad.length < 2) {
-    sectionModal.error = 'Bölüm adı en az 2 karakter olmalıdır.'
-    return
-  }
-  sectionModal.error = ''
-  sectionModal.saving = true
-  try {
-    const payload = {
-      kutuphaneId: selectedLibraryId.value,
-      ad: sectionModal.ad,
-      aciklama: sectionModal.aciklama || null
-    }
-    if (sectionModal.mode === 'create') {
-      await apiClient.post('/KutuphaneBolumleri', payload)
-      showFeedback('Bölüm oluşturuldu.', 'success')
-    } else {
-      await apiClient.put('/KutuphaneBolumleri', { id: sectionModal.id, ...payload })
-      showFeedback('Bölüm güncellendi.', 'success')
-    }
-    sectionModal.visible = false
-    await loadSections(selectedLibraryId.value)
-  } catch (err) {
-    sectionModal.error = getErrorMessage(err)
-  } finally {
-    sectionModal.saving = false
-  }
-}
-
-const deleteSection = async (section: SectionListItem) => {
-  if (!window.confirm()) {
-    return
-  }
-  try {
-    await apiClient.delete()
-    showFeedback('Bölüm silindi.', 'success')
-    await loadSections(section.kutuphaneId)
-  } catch (err) {
-    showFeedback(getErrorMessage(err), 'error')
-  }
-}
-
-const openShelfModal = (mode: 'create' | 'edit', shelf?: ShelfListItem) => {
-  if (!selectedSectionId.value) {
-    showFeedback('Önce bir bölüm seçmelisiniz.', 'error')
-    return
-  }
-  shelfModal.visible = true
-  shelfModal.mode = mode
-  shelfModal.error = ''
-  shelfModal.saving = false
-
-  if (mode === 'edit' && shelf) {
-    shelfModal.id = shelf.id
-    shelfModal.kod = shelf.kod
-    shelfModal.aciklama = shelf.aciklama || ''
-  } else {
-    shelfModal.id = ''
-    shelfModal.kod = ''
-    shelfModal.aciklama = ''
-  }
-}
-
-const closeShelfModal = () => {
-  if (shelfModal.saving) return
-  shelfModal.visible = false
-}
-
-const submitShelf = async () => {
-  if (!selectedSectionId.value) {
-    shelfModal.error = 'Bölüm seçilmedi.'
-    return
-  }
-  if (!shelfModal.kod || shelfModal.kod.length < 1) {
-    shelfModal.error = 'Raf kodu gereklidir.'
-    return
-  }
-  shelfModal.error = ''
-  shelfModal.saving = true
-  try {
-    const payload = {
-      kutuphaneBolumuId: selectedSectionId.value,
-      kod: shelfModal.kod,
-      aciklama: shelfModal.aciklama || null
-    }
-    if (shelfModal.mode === 'create') {
-      await apiClient.post('/Raflar', payload)
-      showFeedback('Raf oluşturuldu.', 'success')
-    } else {
-      await apiClient.put('/Raflar', { id: shelfModal.id, ...payload })
-      showFeedback('Raf güncellendi.', 'success')
-    }
-    shelfModal.visible = false
-    await loadShelves(selectedSectionId.value)
-  } catch (err) {
-    shelfModal.error = getErrorMessage(err)
-  } finally {
-    shelfModal.saving = false
-  }
-}
-
-const deleteShelf = async (shelf: ShelfListItem) => {
-  if (!window.confirm()) {
-    return
-  }
-  try {
-    await apiClient.delete()
-    showFeedback('Raf silindi.', 'success')
-    if (selectedSectionId.value) {
-      await loadShelves(selectedSectionId.value)
-    }
-  } catch (err) {
-    showFeedback(getErrorMessage(err), 'error')
-  }
-}
-
-watch(selectedLibraryId, async newId => {
-  if (!newId) {
-    sections.value = []
-    selectedSectionId.value = null
-    shelves.value = []
-    return
-  }
-  await loadSections(newId)
-})
-
-watch(selectedSectionId, async newId => {
-  if (!newId) {
-    shelves.value = []
-    return
-  }
-  await loadShelves(newId)
-})
-
-onMounted(async () => {
-  await loadLibraries()
-  if (selectedLibraryId.value) {
-    await loadSections(selectedLibraryId.value)
-  }
-  if (selectedSectionId.value) {
-    await loadShelves(selectedSectionId.value)
-  }
-})
-</script>
-
-<script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import type { AxiosError } from 'axios'
-import apiClient from '@/stores/api'
-
-interface PagedResponse<T> {
-  items: T[]
-  index: number
-  size: number
-  count: number
-  pages: number
-  hasNext: boolean
-  hasPrevious: boolean
-}
-
-interface LibraryListItem {
-  id: string
-  kod: string
-  ad: string
-  tip: number | string
-  adres: string
-  telefon?: string | null
-  ePosta?: string | null
-  aktif: boolean
-}
-
-interface SectionListItem {
-  id: string
-  kutuphaneId: string
-  ad: string
-  aciklama?: string | null
-}
-
-interface ShelfListItem {
-  id: string
-  kutuphaneBolumuId: string
-  kod: string
-  aciklama?: string | null
-}
-
-type DynamicFilter = Record<string, unknown>
-type StatusFilter = 'all' | 'active' | 'inactive'
-type TypeFilter = 'all' | 'Merkez' | 'Okul'
-
-const libraries = ref<LibraryListItem[]>([])
-const sections = ref<SectionListItem[]>([])
-const shelves = ref<ShelfListItem[]>([])
-
-const totalCount = ref(0)
-const totalPages = ref(0)
-const page = ref(0)
-const pageSize = ref(20)
-
-const librariesLoading = ref(false)
-const sectionsLoading = ref(false)
-const shelvesLoading = ref(false)
-
-const selectedLibraryId = ref<string | null>(null)
-const selectedSectionId = ref<string | null>(null)
-
-const feedback = reactive<{ message: string; kind: 'success' | 'error' | '' }>({
-  message: '',
-  kind: ''
-})
-
-const libraryFilters = reactive<{
-  search: string
-  status: StatusFilter
-  type: TypeFilter
-}>({
-  search: '',
-  status: 'all',
-  type: 'all'
-})
-
-const libraryModal = reactive({
-  visible: false,
-  mode: 'create' as 'create' | 'edit',
-  saving: false,
-  error: '',
-  id: '',
-  kod: '',
-  ad: '',
-  tip: 'Merkez',
+  tip: 'Merkez' as 'Merkez' | 'Okul',
   adres: '',
   telefon: '',
   ePosta: '',
@@ -1134,21 +523,6 @@ const shelfModal = reactive({
 const selectedLibrary = computed(() => libraries.value.find(item => item.id === selectedLibraryId.value) ?? null)
 const selectedSection = computed(() => sections.value.find(item => item.id === selectedSectionId.value) ?? null)
 
-const sectionsCount = computed(() => sections.value.length)
-const shelvesCount = computed(() => shelves.value.length)
-
-const getLibraryTypeLabel = (tip: number | string): string => {
-  if (typeof tip === 'number') {
-    return tip === 1 ? 'Merkez' : tip === 2 ? 'Okul' : tip.toString()
-  }
-  const normalized = tip.toLowerCase()
-  if (normalized.includes('merkez')) return 'Merkez'
-  if (normalized.includes('okul')) return 'Okul'
-  return tip
-}
-
-const mapLibraryTypeToEnum = (value: string): number => (value === 'Okul' ? 2 : 1)
-
 const showFeedback = (message: string, kind: 'success' | 'error') => {
   feedback.message = message
   feedback.kind = kind
@@ -1159,38 +533,70 @@ const showFeedback = (message: string, kind: 'success' | 'error') => {
 }
 
 const getErrorMessage = (err: unknown): string => {
-  if (typeof err === 'string') return err
+  if (typeof err === 'string') {
+    return err
+  }
   const axiosError = err as AxiosError<{ message?: string }>
-  return axiosError?.response?.data?.message || axiosError?.message || 'İşlem sırasında bir hata oluştu.'
+  return axiosError?.response?.data?.message || axiosError?.message || 'Islem sirasinda bir hata olustu.'
 }
 
-const buildLibraryQuery = (): Record<string, unknown> => {
+const normalizeLibraryType = (value: Library['tip']): 'Merkez' | 'Okul' => {
+  if (typeof value === 'number') {
+    return value === 2 ? 'Okul' : 'Merkez'
+  }
+  if (value === 'Okul' || value === 'Merkez') {
+    return value
+  }
+  const lowered = value?.toString().toLowerCase()
+  if (lowered === 'okul') return 'Okul'
+  return 'Merkez'
+}
+
+const libraryTypeToValue = (value: 'Merkez' | 'Okul'): number => (value === 'Okul' ? 2 : 1)
+
+const parseLibraryTypeFilter = (filter: LibraryTypeFilter): number | null => {
+  if (filter === 'all') {
+    return null
+  }
+  return libraryTypeToValue(filter)
+}
+
+const getLibraryTypeLabel = (value: Library['tip']): string => {
+  const normalized = normalizeLibraryType(value)
+  return normalized === 'Okul' ? 'Okul Kutuphane' : 'Merkez Kutuphane'
+}
+
+const buildLibraryDynamicQuery = (): Record<string, unknown> => {
   const filtersStack: DynamicFilter[] = []
 
-  if (libraryFilters.search) {
+  const typeValue = parseLibraryTypeFilter(appliedLibraryFilters.value.type)
+  if (typeValue !== null) {
+    filtersStack.push({ Field: 'Tip', Operator: 'eq', Value: typeValue })
+  }
+
+  if (appliedLibraryFilters.value.status === 'active') {
+    filtersStack.push({ Field: 'Aktif', Operator: 'eq', Value: true })
+  } else if (appliedLibraryFilters.value.status === 'inactive') {
+    filtersStack.push({ Field: 'Aktif', Operator: 'eq', Value: false })
+  }
+
+  if (appliedLibraryFilters.value.search) {
     filtersStack.push({
       Logic: 'or',
       Filters: [
-        { Field: 'Kod', Operator: 'contains', Value: libraryFilters.search },
-        { Field: 'Ad', Operator: 'contains', Value: libraryFilters.search },
-        { Field: 'Adres', Operator: 'contains', Value: libraryFilters.search }
+        { Field: 'Kod', Operator: 'contains', Value: appliedLibraryFilters.value.search },
+        { Field: 'Ad', Operator: 'contains', Value: appliedLibraryFilters.value.search },
+        { Field: 'Adres', Operator: 'contains', Value: appliedLibraryFilters.value.search }
       ]
     })
   }
 
-  if (libraryFilters.type !== 'all') {
-    filtersStack.push({ Field: 'Tip', Operator: 'eq', Value: mapLibraryTypeToEnum(libraryFilters.type) })
-  }
-
-  if (libraryFilters.status === 'active') {
-    filtersStack.push({ Field: 'Aktif', Operator: 'eq', Value: true })
-  } else if (libraryFilters.status === 'inactive') {
-    filtersStack.push({ Field: 'Aktif', Operator: 'eq', Value: false })
-  }
-
   let filterBody: DynamicFilter | null = null
-  if (filtersStack.length === 1) filterBody = filtersStack[0]
-  else if (filtersStack.length > 1) filterBody = { Logic: 'and', Filters: filtersStack }
+  if (filtersStack.length === 1) {
+    filterBody = filtersStack[0]
+  } else if (filtersStack.length > 1) {
+    filterBody = { Logic: 'and', Filters: filtersStack }
+  }
 
   const query: Record<string, unknown> = {
     Sort: [
@@ -1198,47 +604,63 @@ const buildLibraryQuery = (): Record<string, unknown> => {
       { Field: 'Kod', Dir: 'asc' }
     ]
   }
-  if (filterBody) query.Filter = filterBody
+
+  if (filterBody) {
+    query.Filter = filterBody
+  }
+
   return query
 }
 
 const loadLibraries = async () => {
   librariesLoading.value = true
   try {
-    const query = buildLibraryQuery()
-    const response = await apiClient.post<PagedResponse<LibraryListItem>>(
-      '/Kutuphaneler/GetListByDynamic',
-      query,
-      {
-        params: {
-          'PageRequest.PageIndex': page.value,
-          'PageRequest.PageSize': pageSize.value
-        }
+    const query = buildLibraryDynamicQuery()
+    const response = await apiClient.post<PagedResponse<Library>>('/Kutuphaneler/GetListByDynamic', query, {
+      params: {
+        'PageRequest.PageIndex': page.value,
+        'PageRequest.PageSize': pageSize
       }
-    )
+    })
 
     const data = response.data
-    libraries.value = data.items ?? []
-    totalCount.value = data.count ?? libraries.value.length
-    const pagesFromServer = data.pages ?? 0
+    libraries.value = data?.items ?? []
+    totalCount.value = data?.count ?? libraries.value.length
+
+    const pagesFromServer = data?.pages ?? 0
     totalPages.value =
-      pagesFromServer > 0 ? pagesFromServer : totalCount.value > 0 ? Math.ceil(totalCount.value / pageSize.value) : 0
+      pagesFromServer > 0 ? pagesFromServer : totalCount.value > 0 ? Math.ceil(totalCount.value / pageSize) : 0
 
     if (libraries.value.length === 0) {
       selectedLibraryId.value = null
       sections.value = []
+      sectionsCount.value = 0
       shelves.value = []
+      shelvesCount.value = 0
+      selectedSectionId.value = null
+      return
+    }
+
+    if (page.value >= totalPages.value && totalPages.value > 0) {
+      page.value = Math.max(0, totalPages.value - 1)
+      await loadLibraries()
       return
     }
 
     if (!selectedLibraryId.value || !libraries.value.some(item => item.id === selectedLibraryId.value)) {
-      selectedLibraryId.value = libraries.value[0].id
+      selectedLibraryId.value = libraries.value[0]?.id ?? null
     }
   } catch (err) {
+    showFeedback(getErrorMessage(err), 'error')
     libraries.value = []
     totalCount.value = 0
     totalPages.value = 0
-    showFeedback(getErrorMessage(err), 'error')
+    selectedLibraryId.value = null
+    sections.value = []
+    sectionsCount.value = 0
+    shelves.value = []
+    shelvesCount.value = 0
+    selectedSectionId.value = null
   } finally {
     librariesLoading.value = false
   }
@@ -1246,8 +668,15 @@ const loadLibraries = async () => {
 
 const loadSections = async (libraryId: string) => {
   sectionsLoading.value = true
+  const previousSection = selectedSectionId.value
+  selectedSectionId.value = null
+  sections.value = []
+  sectionsCount.value = 0
+  shelves.value = []
+  shelvesCount.value = 0
+
   try {
-    const response = await apiClient.post<PagedResponse<SectionListItem>>(
+    const response = await apiClient.post<PagedResponse<LibrarySection>>(
       '/KutuphaneBolumleri/GetListByDynamic',
       {
         Filter: { Field: 'KutuphaneId', Operator: 'eq', Value: libraryId },
@@ -1260,18 +689,23 @@ const loadSections = async (libraryId: string) => {
         }
       }
     )
-    sections.value = response.data?.items ?? []
+
+    const data = response.data
+    sections.value = data?.items ?? []
+    sectionsCount.value = data?.count ?? sections.value.length
+
     if (sections.value.length === 0) {
       selectedSectionId.value = null
-      shelves.value = []
-    } else if (!selectedSectionId.value || !sections.value.some(item => item.id === selectedSectionId.value)) {
-      selectedSectionId.value = sections.value[0].id
+      return
     }
+
+    const existing = previousSection ? sections.value.find(item => item.id === previousSection) : null
+    selectedSectionId.value = existing?.id ?? sections.value[0].id
   } catch (err) {
-    sections.value = []
-    selectedSectionId.value = null
-    shelves.value = []
     showFeedback(getErrorMessage(err), 'error')
+    sections.value = []
+    sectionsCount.value = 0
+    selectedSectionId.value = null
   } finally {
     sectionsLoading.value = false
   }
@@ -1279,8 +713,11 @@ const loadSections = async (libraryId: string) => {
 
 const loadShelves = async (sectionId: string) => {
   shelvesLoading.value = true
+  shelves.value = []
+  shelvesCount.value = 0
+
   try {
-    const response = await apiClient.post<PagedResponse<ShelfListItem>>(
+    const response = await apiClient.post<PagedResponse<Shelf>>(
       '/Raflar/GetListByDynamic',
       {
         Filter: { Field: 'KutuphaneBolumuId', Operator: 'eq', Value: sectionId },
@@ -1293,24 +730,34 @@ const loadShelves = async (sectionId: string) => {
         }
       }
     )
-    shelves.value = response.data?.items ?? []
+
+    const data = response.data
+    shelves.value = data?.items ?? []
+    shelvesCount.value = data?.count ?? shelves.value.length
   } catch (err) {
-    shelves.value = []
     showFeedback(getErrorMessage(err), 'error')
+    shelves.value = []
+    shelvesCount.value = 0
   } finally {
     shelvesLoading.value = false
   }
 }
 
 const applyLibraryFilters = async () => {
+  if (librariesLoading.value) return
+  appliedLibraryFilters.value = {
+    search: libraryFilters.search,
+    type: libraryFilters.type,
+    status: libraryFilters.status
+  }
   page.value = 0
   await loadLibraries()
 }
 
 const resetLibraryFilters = async () => {
   libraryFilters.search = ''
-  libraryFilters.status = 'all'
   libraryFilters.type = 'all'
+  libraryFilters.status = 'all'
   await applyLibraryFilters()
 }
 
@@ -1327,16 +774,18 @@ const nextPage = async () => {
 }
 
 const selectLibrary = (id: string) => {
+  if (librariesLoading.value) return
   if (selectedLibraryId.value === id) return
   selectedLibraryId.value = id
 }
 
 const selectSection = (id: string) => {
+  if (sectionsLoading.value) return
   if (selectedSectionId.value === id) return
   selectedSectionId.value = id
 }
 
-const openLibraryModal = (mode: 'create' | 'edit', library?: LibraryListItem) => {
+const openLibraryModal = (mode: 'create' | 'edit', library?: Library) => {
   libraryModal.visible = true
   libraryModal.mode = mode
   libraryModal.error = ''
@@ -1344,13 +793,13 @@ const openLibraryModal = (mode: 'create' | 'edit', library?: LibraryListItem) =>
 
   if (mode === 'edit' && library) {
     libraryModal.id = library.id
-    libraryModal.kod = library.kod
-    libraryModal.ad = library.ad
-    libraryModal.tip = getLibraryTypeLabel(library.tip)
-    libraryModal.adres = library.adres
-    libraryModal.telefon = library.telefon || ''
-    libraryModal.ePosta = library.ePosta || ''
-    libraryModal.aktif = !!library.aktif
+    libraryModal.kod = library.kod ?? ''
+    libraryModal.ad = library.ad ?? ''
+    libraryModal.tip = normalizeLibraryType(library.tip)
+    libraryModal.adres = library.adres ?? ''
+    libraryModal.telefon = library.telefon ?? ''
+    libraryModal.ePosta = library.ePosta ?? ''
+    libraryModal.aktif = Boolean(library.aktif)
   } else {
     libraryModal.id = ''
     libraryModal.kod = ''
@@ -1366,38 +815,34 @@ const openLibraryModal = (mode: 'create' | 'edit', library?: LibraryListItem) =>
 const closeLibraryModal = () => {
   if (libraryModal.saving) return
   libraryModal.visible = false
-}
-
-const validateLibraryModal = (): string | null => {
-  if (!libraryModal.kod || libraryModal.kod.length < 2) return 'Kod en az 2 karakter olmalıdır.'
-  if (!libraryModal.ad || libraryModal.ad.length < 3) return 'Kütüphane adı en az 3 karakter olmalıdır.'
-  if (!libraryModal.adres || libraryModal.adres.length < 5) return 'Adres bilgisi en az 5 karakter olmalıdır.'
-  return null
+  libraryModal.error = ''
 }
 
 const submitLibrary = async () => {
-  const validationError = validateLibraryModal()
-  if (validationError) {
-    libraryModal.error = validationError
+  if (!libraryModal.visible || libraryModal.saving) return
+  if (!libraryModal.kod || !libraryModal.ad || !libraryModal.adres) {
+    libraryModal.error = 'Kod, ad ve adres alanlari zorunludur.'
     return
   }
 
   libraryModal.error = ''
   libraryModal.saving = true
+
+  const payload = {
+    kod: libraryModal.kod,
+    ad: libraryModal.ad,
+    tip: libraryTypeToValue(libraryModal.tip),
+    adres: libraryModal.adres,
+    telefon: libraryModal.telefon || null,
+    ePosta: libraryModal.ePosta || null,
+    aktif: libraryModal.aktif
+  }
+
   try {
-    const payload = {
-      kod: libraryModal.kod,
-      ad: libraryModal.ad,
-      tip: mapLibraryTypeToEnum(libraryModal.tip),
-      adres: libraryModal.adres,
-      telefon: libraryModal.telefon || null,
-      ePosta: libraryModal.ePosta || null,
-      aktif: libraryModal.aktif
-    }
     if (libraryModal.mode === 'create') {
       const response = await apiClient.post<{ id?: string; Id?: string }>('/Kutuphaneler', payload)
-      const createdId = response.data?.id ?? response.data?.Id
-      showFeedback('Kütüphane oluşturuldu.', 'success')
+      const createdId = response.data?.id ?? response.data?.Id ?? null
+      showFeedback('Kutuphane basariyla olusturuldu.', 'success')
       libraryModal.visible = false
       await loadLibraries()
       if (createdId) {
@@ -1405,7 +850,7 @@ const submitLibrary = async () => {
       }
     } else {
       await apiClient.put('/Kutuphaneler', { id: libraryModal.id, ...payload })
-      showFeedback('Kütüphane güncellendi.', 'success')
+      showFeedback('Kutuphane guncellendi.', 'success')
       libraryModal.visible = false
       await loadLibraries()
     }
@@ -1416,25 +861,28 @@ const submitLibrary = async () => {
   }
 }
 
-const deleteLibrary = async (library: LibraryListItem) => {
-  const confirmMessage = library.ad + ' kütüphanesini silmek istediğinize emin misiniz?'
-  if (!window.confirm(confirmMessage)) {
-    return
-  }
+const deleteLibrary = async (library: Library) => {
+  if (!library?.id) return
+  const confirmed = window.confirm(`'${library.ad}' kutuphanesini silmek istediginizden emin misiniz?`)
+  if (!confirmed) return
   try {
-    await apiClient.delete('/Kutuphaneler/' + library.id)
-    showFeedback('Kütüphane silindi.', 'success')
+    await apiClient.delete(`/Kutuphaneler/${library.id}`)
+    showFeedback('Kutuphane silindi.', 'success')
+    if (selectedLibraryId.value === library.id) {
+      selectedLibraryId.value = null
+    }
     await loadLibraries()
   } catch (err) {
     showFeedback(getErrorMessage(err), 'error')
   }
 }
 
-const openSectionModal = (mode: 'create' | 'edit', section?: SectionListItem) => {
-  if (!selectedLibraryId.value) {
-    showFeedback('Önce bir kütüphane seçmelisiniz.', 'error')
+const openSectionModal = (mode: 'create' | 'edit', section?: LibrarySection) => {
+  if (!selectedLibrary.value) {
+    showFeedback('Lutfen once bir kutuphane secin.', 'error')
     return
   }
+
   sectionModal.visible = true
   sectionModal.mode = mode
   sectionModal.error = ''
@@ -1442,8 +890,8 @@ const openSectionModal = (mode: 'create' | 'edit', section?: SectionListItem) =>
 
   if (mode === 'edit' && section) {
     sectionModal.id = section.id
-    sectionModal.ad = section.ad
-    sectionModal.aciklama = section.aciklama || ''
+    sectionModal.ad = section.ad ?? ''
+    sectionModal.aciklama = section.aciklama ?? ''
   } else {
     sectionModal.id = ''
     sectionModal.ad = ''
@@ -1454,34 +902,45 @@ const openSectionModal = (mode: 'create' | 'edit', section?: SectionListItem) =>
 const closeSectionModal = () => {
   if (sectionModal.saving) return
   sectionModal.visible = false
+  sectionModal.error = ''
 }
 
 const submitSection = async () => {
+  if (!sectionModal.visible || sectionModal.saving) return
+  if (!sectionModal.ad) {
+    sectionModal.error = 'Bolum adi zorunludur.'
+    return
+  }
   if (!selectedLibraryId.value) {
-    sectionModal.error = 'Kütüphane seçilmedi.'
+    sectionModal.error = 'Kutuphane bilgisi bulunamadi.'
     return
   }
-  if (!sectionModal.ad || sectionModal.ad.length < 2) {
-    sectionModal.error = 'Bölüm adı en az 2 karakter olmalıdır.'
-    return
-  }
+
   sectionModal.error = ''
   sectionModal.saving = true
+
+  const payload = {
+    kutuphaneId: selectedLibraryId.value,
+    ad: sectionModal.ad,
+    aciklama: sectionModal.aciklama || null
+  }
+
   try {
-    const payload = {
-      kutuphaneId: selectedLibraryId.value,
-      ad: sectionModal.ad,
-      aciklama: sectionModal.aciklama || null
-    }
     if (sectionModal.mode === 'create') {
-      await apiClient.post('/KutuphaneBolumleri', payload)
-      showFeedback('Bölüm oluşturuldu.', 'success')
+      const response = await apiClient.post<{ id?: string; Id?: string }>('/KutuphaneBolumleri', payload)
+      const createdId = response.data?.id ?? response.data?.Id ?? null
+      showFeedback('Bolum basariyla kaydedildi.', 'success')
+      sectionModal.visible = false
+      await loadSections(selectedLibraryId.value)
+      if (createdId) {
+        selectedSectionId.value = createdId
+      }
     } else {
       await apiClient.put('/KutuphaneBolumleri', { id: sectionModal.id, ...payload })
-      showFeedback('Bölüm güncellendi.', 'success')
+      showFeedback('Bolum guncellendi.', 'success')
+      sectionModal.visible = false
+      await loadSections(selectedLibraryId.value)
     }
-    sectionModal.visible = false
-    await loadSections(selectedLibraryId.value)
   } catch (err) {
     sectionModal.error = getErrorMessage(err)
   } finally {
@@ -1489,25 +948,27 @@ const submitSection = async () => {
   }
 }
 
-const deleteSection = async (section: SectionListItem) => {
-  const confirmMessage = section.ad + ' bölümünü silmek istediğinize emin misiniz?'
-  if (!window.confirm(confirmMessage)) {
-    return
-  }
+const deleteSection = async (section: LibrarySection) => {
+  if (!section?.id) return
+  const confirmed = window.confirm(`'${section.ad}' bolumunu silmek istediginizden emin misiniz?`)
+  if (!confirmed) return
   try {
-    await apiClient.delete('/KutuphaneBolumleri/' + section.id)
-    showFeedback('Bölüm silindi.', 'success')
-    await loadSections(section.kutuphaneId)
+    await apiClient.delete(`/KutuphaneBolumleri/${section.id}`)
+    showFeedback('Bolum silindi.', 'success')
+    if (selectedLibraryId.value) {
+      await loadSections(selectedLibraryId.value)
+    }
   } catch (err) {
     showFeedback(getErrorMessage(err), 'error')
   }
 }
 
-const openShelfModal = (mode: 'create' | 'edit', shelf?: ShelfListItem) => {
-  if (!selectedSectionId.value) {
-    showFeedback('Önce bir bölüm seçmelisiniz.', 'error')
+const openShelfModal = (mode: 'create' | 'edit', shelf?: Shelf) => {
+  if (!selectedSection.value) {
+    showFeedback('Lutfen once bir bolum secin.', 'error')
     return
   }
+
   shelfModal.visible = true
   shelfModal.mode = mode
   shelfModal.error = ''
@@ -1515,8 +976,8 @@ const openShelfModal = (mode: 'create' | 'edit', shelf?: ShelfListItem) => {
 
   if (mode === 'edit' && shelf) {
     shelfModal.id = shelf.id
-    shelfModal.kod = shelf.kod
-    shelfModal.aciklama = shelf.aciklama || ''
+    shelfModal.kod = shelf.kod ?? ''
+    shelfModal.aciklama = shelf.aciklama ?? ''
   } else {
     shelfModal.id = ''
     shelfModal.kod = ''
@@ -1527,34 +988,41 @@ const openShelfModal = (mode: 'create' | 'edit', shelf?: ShelfListItem) => {
 const closeShelfModal = () => {
   if (shelfModal.saving) return
   shelfModal.visible = false
+  shelfModal.error = ''
 }
 
 const submitShelf = async () => {
+  if (!shelfModal.visible || shelfModal.saving) return
+  if (!shelfModal.kod) {
+    shelfModal.error = 'Raf kodu zorunludur.'
+    return
+  }
   if (!selectedSectionId.value) {
-    shelfModal.error = 'Bölüm seçilmedi.'
+    shelfModal.error = 'Bolum bilgisi bulunamadi.'
     return
   }
-  if (!shelfModal.kod || shelfModal.kod.length < 1) {
-    shelfModal.error = 'Raf kodu gereklidir.'
-    return
-  }
+
   shelfModal.error = ''
   shelfModal.saving = true
+
+  const payload = {
+    kutuphaneBolumuId: selectedSectionId.value,
+    kod: shelfModal.kod,
+    aciklama: shelfModal.aciklama || null
+  }
+
   try {
-    const payload = {
-      kutuphaneBolumuId: selectedSectionId.value,
-      kod: shelfModal.kod,
-      aciklama: shelfModal.aciklama || null
-    }
     if (shelfModal.mode === 'create') {
       await apiClient.post('/Raflar', payload)
-      showFeedback('Raf oluşturuldu.', 'success')
+      showFeedback('Raf basariyla kaydedildi.', 'success')
+      shelfModal.visible = false
+      await loadShelves(selectedSectionId.value)
     } else {
       await apiClient.put('/Raflar', { id: shelfModal.id, ...payload })
-      showFeedback('Raf güncellendi.', 'success')
+      showFeedback('Raf guncellendi.', 'success')
+      shelfModal.visible = false
+      await loadShelves(selectedSectionId.value)
     }
-    shelfModal.visible = false
-    await loadShelves(selectedSectionId.value)
   } catch (err) {
     shelfModal.error = getErrorMessage(err)
   } finally {
@@ -1562,13 +1030,12 @@ const submitShelf = async () => {
   }
 }
 
-const deleteShelf = async (shelf: ShelfListItem) => {
-  const confirmMessage = shelf.kod + ' rafını silmek istediğinize emin misiniz?'
-  if (!window.confirm(confirmMessage)) {
-    return
-  }
+const deleteShelf = async (shelf: Shelf) => {
+  if (!shelf?.id) return
+  const confirmed = window.confirm(`'${shelf.kod}' rafini silmek istediginizden emin misiniz?`)
+  if (!confirmed) return
   try {
-    await apiClient.delete('/Raflar/' + shelf.id)
+    await apiClient.delete(`/Raflar/${shelf.id}`)
     showFeedback('Raf silindi.', 'success')
     if (selectedSectionId.value) {
       await loadShelves(selectedSectionId.value)
@@ -1578,32 +1045,34 @@ const deleteShelf = async (shelf: ShelfListItem) => {
   }
 }
 
-watch(selectedLibraryId, async newId => {
-  if (!newId) {
+watch(selectedLibraryId, async newLibraryId => {
+  if (!newLibraryId) {
     sections.value = []
+    sectionsCount.value = 0
     selectedSectionId.value = null
     shelves.value = []
+    shelvesCount.value = 0
     return
   }
-  await loadSections(newId)
+  await loadSections(newLibraryId)
 })
 
-watch(selectedSectionId, async newId => {
-  if (!newId) {
+watch(selectedSectionId, async newSectionId => {
+  if (!newSectionId) {
     shelves.value = []
+    shelvesCount.value = 0
     return
   }
-  await loadShelves(newId)
+  await loadShelves(newSectionId)
 })
 
 onMounted(async () => {
+  appliedLibraryFilters.value = {
+    search: libraryFilters.search,
+    type: libraryFilters.type,
+    status: libraryFilters.status
+  }
   await loadLibraries()
-  if (selectedLibraryId.value) {
-    await loadSections(selectedLibraryId.value)
-  }
-  if (selectedSectionId.value) {
-    await loadShelves(selectedSectionId.value)
-  }
 })
 </script>
 
@@ -1834,6 +1303,16 @@ onMounted(async () => {
   padding: 0.8rem 1rem;
   border-bottom: 1px solid rgba(226, 232, 240, 0.95);
   text-align: left;
+}
+
+.data-table tr.table-row {
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.data-table tr.table-row:hover:not(.selected) {
+  background: rgba(14, 165, 233, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.12);
 }
 
 .data-table tr.selected {
@@ -2240,3 +1719,7 @@ onMounted(async () => {
   }
 }
 </style>
+
+
+
+
